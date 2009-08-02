@@ -48,6 +48,20 @@ public class SAPWSClient {
 			System.err.println(cmdLine.getUsage());
 			System.exit(1);
 		}
+		try {
+			SAPWSClient client = new SAPWSClient();
+			client.setUsername(cmdLine.getParameter("u"));
+			client.setUrl(cmdLine.getParameter("url"));
+			client.setPassword(cmdLine.getParameter("p"));
+			client.setRequestTemplateFile(cmdLine.getParameter("i"));
+			client.setResponseFile(cmdLine.getParameter("o"));
+			client.execute(cmdLine.getVariables());
+			System.exit(0);
+		} catch(Throwable ex) {
+			System.err.println(ex.getLocalizedMessage());
+			ex.printStackTrace();
+			System.exit(2);
+		}
 	}
 
 	/**
@@ -61,11 +75,11 @@ public class SAPWSClient {
 		request.setRequestTemplate(Utils.readFile(getRequestTemplateFile()));
 		
 		SAPClientXmlResponse response = execute(request, context);
-		
+
 		if(getResponseFile() != null) {
-			System.out.println(response.getResponse());
-		} else {
 			Utils.writeFile(getResponseFile(), response.getResponse());
+		} else {
+			System.out.println(response.getResponse());
 		}
 	}
 	
@@ -75,7 +89,7 @@ public class SAPWSClient {
 	 * @return
 	 * @throws Exception
 	 */
-	private SAPClientXmlResponse execute(SAPClientXmlRequest request, Map<String, Object> context) throws Exception {
+	public SAPClientXmlResponse execute(SAPClientXmlRequest request, Map<String, Object> context) throws Exception {
 		if(request != null) {
 			request.compile(context);
 			
