@@ -5,6 +5,12 @@
  */
 package ar.com.bunge.util;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -55,4 +61,54 @@ public class Utils {
 		return StringUtils.leftPad(s, size, padChar);
 	}
 	
+	/**
+	 * 
+	 * @return
+	 */
+	public static String getNewLine() {
+		return System.getProperty("line.separator") != null ? System.getProperty("line.separator") : "\n";
+	}
+	
+	/**
+	 * 
+	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
+	public static String readFile(String file) throws IOException {
+		StringBuffer contents = new StringBuffer();
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new FileReader(file));
+			String line;
+			while( (line = reader.readLine()) != null) {
+				contents.append(line + getNewLine());
+			}
+		} finally {
+			if (reader != null) {
+				reader.close();
+			}
+		}
+		
+		return contents.toString();
+	}
+	
+	/**
+	 * 
+	 * @param file
+	 * @param contents
+	 * @throws IOException
+	 */
+	public static void writeFile(String file, String contents) throws IOException {
+		BufferedWriter writer = null;
+		try {
+			writer = new BufferedWriter(new FileWriter(file));
+			writer.write(contents);
+			writer.flush();
+		} finally {
+			if (writer != null) {
+				writer.close();
+			}
+		}
+	}	
 }

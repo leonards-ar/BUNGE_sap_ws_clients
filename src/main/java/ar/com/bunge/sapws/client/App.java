@@ -1,15 +1,18 @@
 package ar.com.bunge.sapws.client;
 
 import java.io.StringReader;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.log4j.Logger;
 import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
+import org.springframework.ws.transport.http.CommonsHttpMessageSender;
 
-import bsh.Interpreter;
+import ar.com.bunge.util.Utils;
 
 /**
  * Hello world!
@@ -17,6 +20,8 @@ import bsh.Interpreter;
  */
 public class App 
 {
+	private static final Logger LOG = Logger.getLogger(App.class);	
+
 	private final WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
 
 	private final String MESSAGE = "<urn:doSpellingSuggestion soapenv:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><key xsi:type=\"xsd:string\">ABQIAAAA51sPsH4l_w-4q_I3VuV2cxT2yXp_ZAY8_ufC3CFXhHIE1NvwkxSiYvxeUOS0JQ1fIvkQ0mKPaYPjQA</key><phrase xsi:type=\"xsd:string\">hola mundo</phrase></urn:doSpellingSuggestion>";
@@ -29,12 +34,35 @@ public class App
 	
     // send to an explicit URI
     public void customSendAndReceive() {
-        StreamSource source = new StreamSource(new StringReader(MESSAGE));
-        StreamResult result = new StreamResult(System.out);
-        webServiceTemplate.sendSourceAndReceiveToResult("http://api.google.com/search/beta2", source, result);
+    	try {
+            StreamSource source = new StreamSource(new StringReader(Utils.readFile("D:\\Development\\temp\\request.xml")));
+            StreamResult result = new StreamResult(System.out);
+            //webServiceTemplate.setMessageFactory(new SaajSoapMessageFactory());
+
+            // Start HTTP Basic Authentication
+            CommonsHttpMessageSender sender = new CommonsHttpMessageSender();
+            sender.setCredentials(new UsernamePasswordCredentials("user", "password"));
+            HttpClient client = new HttpClient();
+            client.getParams().setAuthenticationPreemptive(true);
+            sender.setHttpClient(client);
+            
+            sender.afterPropertiesSet();
+            webServiceTemplate.setMessageSender(sender);
+            //webServiceTemplate.sendSourceAndReceiveToResult("http://crm.mindpool-it.com/soap.php", source, result);
+            // End HTTP Basic Authentication
+            
+            
+            // WSSE Auth
+            webServiceTemplate.sendSourceAndReceiveToResult("http://crm.mindpool-it.com/soap.php", source, new WSSEHeaderWebServiceMessageCallback("username", "password"), result);
+    	} catch(Throwable e) {
+    		e.printStackTrace();
+    	}
+
     }
 
     public static void main(String args[]) {
+    	new App().customSendAndReceive();
+    	/*
     	try {
     		SAPClientXmlRequest req = new SAPClientXmlRequest();
     		req.setRequestTemplate("<xml><param1>${Utils.trim(#issue.id#)}</param1><param1>${Utils.leftPad(#issue.id#, 20, '*')}</param1></xml>");
@@ -46,5 +74,6 @@ public class App
     	} catch(Throwable ex) {
     		ex.printStackTrace();
     	}
+    	*/
     }
 }
