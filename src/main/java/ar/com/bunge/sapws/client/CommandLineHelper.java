@@ -27,7 +27,7 @@ public class CommandLineHelper {
 	private static final Map<String, String> PARAMS = new HashMap<String, String>();
 	private static List<String> REQUIRED_PARAMS = new ArrayList<String>();
 	
-	private Map<String, String> variables = new HashMap<String, String>();
+	private Map<String, Object> variables = new HashMap<String, Object>();
 	private Map<String, String> parameters = new HashMap<String, String>();
 	
 	private List<String> errors = new ArrayList<String>();
@@ -63,7 +63,7 @@ public class CommandLineHelper {
 		if(args != null) {
 			String name, value;
 			for(int i=0; i < args.length; i++) {
-				StringTokenizer st = new StringTokenizer(args[i], "=:");
+				StringTokenizer st = new StringTokenizer(args[i], "=");
 				name = st.hasMoreTokens() ? st.nextToken().trim().toLowerCase() : null;
 				value = st.hasMoreElements() ? st.nextToken().trim() : null;
 
@@ -135,7 +135,7 @@ public class CommandLineHelper {
 	/**
 	 * @return the variables
 	 */
-	public Map<String, String> getVariables() {
+	public Map<String, Object> getVariables() {
 		return variables;
 	}
 

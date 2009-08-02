@@ -5,6 +5,9 @@
  */
 package ar.com.bunge.sapws.client;
 
+import org.apache.xmlbeans.XmlObject;
+import org.w3c.dom.Node;
+
 /**
  *
  * @author <a href="mcapurro@gmail.com">Mariano Capurro</a>
@@ -14,6 +17,7 @@ package ar.com.bunge.sapws.client;
  */
 public class SAPClientXmlResponse {
 	private String response;
+	private XmlObject xmlResponse;
 	
 	/**
 	 * 
@@ -45,4 +49,31 @@ public class SAPClientXmlResponse {
 		this.response = response;
 	}
 
+	/**
+	 * 
+	 * @throws Exception
+	 */
+    public void parseResponse() throws Exception {
+        try {
+            setXmlResponse(XmlObject.Factory.parse(getResponse()));
+        } catch (Throwable ex) {
+        	throw new Exception(ex.getMessage(), ex);
+        }
+        Node result = getXmlResponse().getDomNode();
+    }
+
+	/**
+	 * @return the xmlResponse
+	 */
+	private XmlObject getXmlResponse() {
+		return xmlResponse;
+	}
+
+	/**
+	 * @param xmlResponse the xmlResponse to set
+	 */
+	private void setXmlResponse(XmlObject xmlResponse) {
+		this.xmlResponse = xmlResponse;
+	}
+	
 }
