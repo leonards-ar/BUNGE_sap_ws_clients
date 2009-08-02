@@ -29,8 +29,17 @@ public class SAPClientXmlRequest {
 	 * 
 	 */
 	public SAPClientXmlRequest() {
+		this(null);
 	}
 
+	/**
+	 * 
+	 * @param requestTemplate
+	 */
+	public SAPClientXmlRequest(String requestTemplate) {
+		super();
+		setRequestTemplate(requestTemplate);
+	}
 	
 	/**
 	 * 
