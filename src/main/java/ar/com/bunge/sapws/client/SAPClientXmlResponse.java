@@ -5,6 +5,7 @@
  */
 package ar.com.bunge.sapws.client;
 
+import org.apache.xmlbeans.XmlCursor;
 import org.apache.xmlbeans.XmlObject;
 import org.w3c.dom.Node;
 
