@@ -2,8 +2,6 @@
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
-
-
 	<appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="[%d{ISO8601}]%10p %C{1} - %m%n" />
@@ -47,11 +45,6 @@
 		<level value="${debug.level}"/>
 		<appender-ref ref="message_append"/>
 		<appender-ref ref="STDOUT"/>
-	</logger>
-	
-	<logger name="org.springframework" additivity="false">
-		<level value="WARN"/>
-		<appender-ref ref="STDOUT" />
 	</logger>
 	
 	<logger name="org.springframework.ws" additivity="false">
