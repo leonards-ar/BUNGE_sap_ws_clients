@@ -1,4 +1,4 @@
-i=D:\Development\temp\request.xml
+i=/home/mariano/Development/leonards/eclipse/workspace/sap-ws-clients/src/main/docs/req1.xml
 u=mariano
 p=tets97
 url=http://crm.mindpool-it.com/soap.php
