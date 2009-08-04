@@ -1,0 +1,9 @@
+<sug:login soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:sug="http://www.sugarcrm.com/sugarcrm">
+   <user_auth xsi:type="sug:user_auth">
+      <!--You may enter the following 3 items in any order-->
+      <user_name xsi:type="xsd:string">mariano</user_name>
+      <password xsi:type="xsd:string">tets97</password>
+      <version xsi:type="xsd:string"></version>
+   </user_auth>
+   <application_name xsi:type="xsd:string"></application_name>
+</sug:login>
