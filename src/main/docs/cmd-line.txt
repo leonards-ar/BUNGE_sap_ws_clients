@@ -1,0 +1,4 @@
+i=D:\Development\temp\request.xml
+u=mariano
+p=tets97
+url=http://crm.mindpool-it.com/soap.php
