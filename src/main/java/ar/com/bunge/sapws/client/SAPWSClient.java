@@ -14,6 +14,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.log4j.Logger;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.transport.http.CommonsHttpMessageSender;
 
@@ -27,12 +28,14 @@ import ar.com.bunge.util.Utils;
  *
  */
 public class SAPWSClient {
+	private static final Logger LOG = Logger.getLogger(SAPWSClient.class);
+	
 	private String username;
 	private String password;
 	private String url;
 	private String requestTemplateFile;
 	private String responseFile;
-	
+	private boolean basicAuthentication;
 	/**
 	 * 
 	 */
@@ -55,11 +58,14 @@ public class SAPWSClient {
 			client.setPassword(cmdLine.getParameter("p"));
 			client.setRequestTemplateFile(cmdLine.getParameter("i"));
 			client.setResponseFile(cmdLine.getParameter("o"));
+			//:TODO: Load from command line.
+			client.setBasicAuthentication(true);
 			client.execute(cmdLine.getVariables());
+			
 			System.exit(0);
 		} catch(Throwable ex) {
 			System.err.println(ex.getLocalizedMessage());
-			ex.printStackTrace();
+			LOG.error(ex.getLocalizedMessage(), ex);
 			System.exit(2);
 		}
 	}
@@ -81,6 +87,10 @@ public class SAPWSClient {
 		} else {
 			System.out.println(response.getResponse());
 		}
+		
+		if(!response.isSuccess()) {
+			throw new Exception(response.getMessage() + ". Error code: " + response.getNumber());
+		}
 	}
 	
 	/**
@@ -95,6 +105,7 @@ public class SAPWSClient {
 			
 			SAPClientXmlResponse response = new SAPClientXmlResponse();
 			response.setResponse(sendAndReceive(request.getRequest()));
+			response.parseResponse();
 			
 			return response;
 		} else {
@@ -158,17 +169,22 @@ public class SAPWSClient {
         StreamResult result = new StreamResult(response);
 
         // Start HTTP Basic Authentication
-        CommonsHttpMessageSender sender = new CommonsHttpMessageSender();
-        sender.setCredentials(new UsernamePasswordCredentials(getUsername(), getPassword()));
-        HttpClient client = new HttpClient();
-        client.getParams().setAuthenticationPreemptive(true);
-        sender.setHttpClient(client);
+        if(isBasicAuthentication()) {
+            CommonsHttpMessageSender sender = new CommonsHttpMessageSender();
+            sender.setCredentials(new UsernamePasswordCredentials(getUsername(), getPassword()));
+            HttpClient client = new HttpClient();
+            client.getParams().setAuthenticationPreemptive(true);
+            sender.setHttpClient(client);
+            
+            sender.afterPropertiesSet();
+            webServiceTemplate.setMessageSender(sender);
+
+            webServiceTemplate.sendSourceAndReceiveToResult(getUrl(), source, result);
+        } else {
+            // WSSE Auth
+            webServiceTemplate.sendSourceAndReceiveToResult(getUrl(), source, new WSSEHeaderWebServiceMessageCallback(getUsername(), getPassword()), result);
+        }
         
-        sender.afterPropertiesSet();
-        webServiceTemplate.setMessageSender(sender);
-        
-        // WSSE Auth
-        webServiceTemplate.sendSourceAndReceiveToResult(getUrl(), source, new WSSEHeaderWebServiceMessageCallback(getUsername(), getPassword()), result);
 
         return response.toString();
 	}
@@ -199,5 +215,19 @@ public class SAPWSClient {
 	 */
 	public void setResponseFile(String responseFile) {
 		this.responseFile = responseFile;
+	}
+
+	/**
+	 * @return the basicAuthentication
+	 */
+	public boolean isBasicAuthentication() {
+		return basicAuthentication;
+	}
+
+	/**
+	 * @param basicAuthentication the basicAuthentication to set
+	 */
+	public void setBasicAuthentication(boolean basicAuthentication) {
+		this.basicAuthentication = basicAuthentication;
 	}
 }
