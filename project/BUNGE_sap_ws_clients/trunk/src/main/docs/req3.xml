@@ -1,0 +1,45 @@
+      <urn:ProjectDefinitionCreateFromData xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:sap-com:document:sap:soap:functions:mc-style">
+         <ProjectDefinitionStr>
+            <Projectdefinition>6601</Projectdefinition>
+            <Description>Proyecto desde WS 01</Description>
+            <Maskid></Maskid>
+            <Responsibleno>01</Responsibleno>
+            <Applicantno>9999</Applicantno>
+            <Compcode>1000</Compcode>
+            <Busarea></Busarea>
+            <Controllingarea>9000</Controllingarea>
+            <Profitctr></Profitctr>
+            <Projectcurrency>ARS</Projectcurrency>
+            <Projectcurrencyiso>ARS</Projectcurrencyiso>
+            <Networkassignment></Networkassignment>
+            <Start>2009-08-04</Start>
+            <Finish>2009-09-30</Finish>
+            <Plant></Plant>
+            <Calendar></Calendar>
+            <Planbasic></Planbasic>
+            <Planfcst></Planfcst>
+            <Timeunit></Timeunit>
+            <Timeunitiso>DAY</Timeunitiso>
+            <Networkprofile></Networkprofile>
+            <Projectprofile>Z000001</Projectprofile>
+            <Budgetprofile></Budgetprofile>
+            <Projectstock></Projectstock>
+            <Objectclass></Objectclass>
+            <Statistical></Statistical>
+            <Taxjurcode></Taxjurcode>
+            <Intprofile></Intprofile>
+            <Wbsschedprofile></Wbsschedprofile>
+            <Cshbdgtprofile></Cshbdgtprofile>
+            <Planprofile></Planprofile>
+            <Jointventure></Jointventure>
+            <Recoveryind></Recoveryind>
+            <Equitytype></Equitytype>
+            <Jvobjecttype></Jvobjecttype>
+            <Jvjibclass></Jvjibclass>
+            <Jvjibsubclassa></Jvjibsubclassa>
+            <Objectclassext></Objectclassext>
+            <Funcarea></Funcarea>
+            <Funcarealong></Funcarealong>
+         </ProjectDefinitionStr>
+      </urn:ProjectDefinitionCreateFromData>
+

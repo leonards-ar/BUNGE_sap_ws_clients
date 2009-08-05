@@ -36,6 +36,24 @@ public class Utils {
 	public static String trim(Object o) {
 		return o != null ? o.toString().trim() : "";
 	}
+
+	/**
+	 * 
+	 * @param o
+	 * @return
+	 */
+	public static String toLower(Object o) {
+		return o != null ? o.toString().toLowerCase() : "";
+	}
+	
+	/**
+	 * 
+	 * @param o
+	 * @return
+	 */
+	public static String toUpper(Object o) {
+		return o != null ? o.toString().toUpperCase() : "";
+	}	
 	
 	/**
 	 * 

@@ -35,25 +35,25 @@ public class App
     // send to an explicit URI
     public void customSendAndReceive() {
     	try {
-            StreamSource source = new StreamSource(new StringReader(Utils.readFile("D:\\Development\\temp\\request.xml")));
+            StreamSource source = new StreamSource(new StringReader(Utils.readFile("/home/mariano/Development/leonards/eclipse/workspace/sap-ws-clients/src/main/docs/req1.xml")));
             StreamResult result = new StreamResult(System.out);
             //webServiceTemplate.setMessageFactory(new SaajSoapMessageFactory());
 
             // Start HTTP Basic Authentication
             CommonsHttpMessageSender sender = new CommonsHttpMessageSender();
-            sender.setCredentials(new UsernamePasswordCredentials("user", "password"));
+            sender.setCredentials(new UsernamePasswordCredentials("ugensapapar", "FREET238"));
             HttpClient client = new HttpClient();
             client.getParams().setAuthenticationPreemptive(true);
             sender.setHttpClient(client);
             
             sender.afterPropertiesSet();
             webServiceTemplate.setMessageSender(sender);
-            //webServiceTemplate.sendSourceAndReceiveToResult("http://crm.mindpool-it.com/soap.php", source, result);
+            webServiceTemplate.sendSourceAndReceiveToResult("http://bungesapqas.bar.sa.dir.bunge.com:8001/sap/bc/srt/rfc/sap/BAPI_PROJECTDEF_UPDATE4?sap-client=900", source, result);
             // End HTTP Basic Authentication
             
             
             // WSSE Auth
-            webServiceTemplate.sendSourceAndReceiveToResult("http://crm.mindpool-it.com/soap.php", source, new WSSEHeaderWebServiceMessageCallback("username", "password"), result);
+            //webServiceTemplate.sendSourceAndReceiveToResult("http://bungesapqas.bar.sa.dir.bunge.com:8001/sap/bc/srt/rfc/sap/BAPI_PROJECTDEF_UPDATE4?sap-client=900", source, new WSSEHeaderWebServiceMessageCallback("username", "password"), result);
     	} catch(Throwable e) {
     		e.printStackTrace();
     	}
