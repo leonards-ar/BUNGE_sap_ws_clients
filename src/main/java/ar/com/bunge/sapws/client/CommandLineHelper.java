@@ -35,6 +35,7 @@ public class CommandLineHelper {
 	
 	
 	static {
+		PARAMS.put("b", "basic_auth.help");
 		PARAMS.put("i", "input_file.help");
 		PARAMS.put("o", "output_file.help");
 		PARAMS.put("u", "username.help");

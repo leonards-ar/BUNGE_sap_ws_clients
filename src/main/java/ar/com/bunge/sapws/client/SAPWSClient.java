@@ -60,8 +60,9 @@ public class SAPWSClient {
 			client.setPassword(cmdLine.getParameter("p"));
 			client.setRequestTemplateFile(cmdLine.getParameter("i"));
 			client.setResponseFile(cmdLine.getParameter("o"));
-			//:TODO: Load from command line.
-			client.setBasicAuthentication(true);
+			String auth = cmdLine.getParameter("a");
+			client.setBasicAuthentication(auth != null ? "true".equalsIgnoreCase(auth) || "yes".equalsIgnoreCase(auth) : true);
+
 			client.execute(cmdLine.getVariables());
 			
 			System.exit(0);
@@ -79,19 +80,40 @@ public class SAPWSClient {
 	 * @throws Exception
 	 */
 	public void execute(Map<String, Object> context) throws Exception {
+		if(LOG.isDebugEnabled()) {
+			LOG.debug(this);
+		}
+
 		SAPClientXmlRequest request = new SAPClientXmlRequest();
 		request.setRequestTemplate(Utils.readFile(getRequestTemplateFile()));
 		
+		if(LOG.isDebugEnabled()) {
+			LOG.debug("Read file contents from [" + getRequestTemplateFile() + "]");
+			LOG.debug(request);
+		}
+		
 		SAPClientXmlResponse response = execute(request, context);
 
+		if(LOG.isDebugEnabled()) {
+			LOG.debug(response);
+		}
+		
 		if(getResponseFile() != null) {
+			if(LOG.isDebugEnabled()) {
+				LOG.debug("Writing response contents to [" + getResponseFile() + "]");
+			}
 			Utils.writeFile(getResponseFile(), response.getResponse());
 		} else {
+			if(LOG.isDebugEnabled()) {
+				LOG.debug("Writing response contents to [stdout]");
+			}
 			System.out.println(response.getResponse());
 		}
 		
 		if(!response.isSuccess()) {
-			throw new Exception(response.getMessage() + ". Error code: " + response.getNumber());
+			String msg = response.getMessage() + ". Error code: " + response.getNumber();
+			LOG.error(msg);
+			throw new Exception(msg);
 		}
 	}
 	
