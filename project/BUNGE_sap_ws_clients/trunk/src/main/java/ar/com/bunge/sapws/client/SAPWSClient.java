@@ -14,6 +14,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.log4j.Logger;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.transport.http.CommonsHttpMessageSender;
@@ -236,4 +238,20 @@ public class SAPWSClient {
 	public void setBasicAuthentication(boolean basicAuthentication) {
 		this.basicAuthentication = basicAuthentication;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+	   	.append("url" , getUrl())
+	   	.append("username", getUsername())
+	   	.append("password", getPassword())
+	   	.append("requestTemplateFile", getRequestTemplateFile())
+	   	.append("responseFile", getResponseFile())
+	   	.append("basicAuthentication", isBasicAuthentication())
+	   	.toString();		
+	}	
 }
