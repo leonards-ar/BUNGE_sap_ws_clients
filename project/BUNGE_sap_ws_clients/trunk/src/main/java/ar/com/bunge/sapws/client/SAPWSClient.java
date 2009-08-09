@@ -101,13 +101,19 @@ public class SAPWSClient {
 	 */
 	public SAPClientXmlResponse execute(SAPClientXmlRequest request, Map<String, Object> context) throws Exception {
 		if(request != null) {
-			request.compile(context);
-			
 			SAPClientXmlResponse response = new SAPClientXmlResponse();
-			response.setResponse(sendAndReceive(request.getRequest()));
-			response.parseResponse();
-			
-			return response;
+
+			try {
+				request.compile(context);
+				
+				response.setResponse(sendAndReceive(request.getRequest()));
+				response.parseResponse();
+				
+				return response;
+			} catch(Throwable ex) {
+				//:TODO: Handle Web Service Fault putting result in response!
+				throw new Exception(ex.getMessage(), ex.getCause());
+			}
 		} else {
 			throw new Exception("Request cannot be null");
 		}
