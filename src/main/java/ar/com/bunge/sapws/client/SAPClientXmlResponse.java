@@ -8,6 +8,8 @@ package ar.com.bunge.sapws.client;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.xmlbeans.XmlObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -152,6 +154,14 @@ public class SAPClientXmlResponse {
 	}
 
 	/**
+	 * 
+	 * @return
+	 */
+	public String getNumberAsString() {
+		return getNumber() != null ? getNumber().toString() : null;
+	}
+	
+	/**
 	 * @return the message
 	 */
 	public String getMessage() {
@@ -200,4 +210,20 @@ public class SAPClientXmlResponse {
 	public void setId(String id) {
 		this.id = id;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+	   	.append("id" , getId())
+	   	.append("type", getType())
+	   	.append("number", getNumber())
+	   	.append("message", getMessage())
+	   	.append("response", getResponse())
+	   	.toString();		
+	}	
+	
 }

@@ -8,6 +8,8 @@ package ar.com.bunge.sapws.client;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.apache.commons.lang.builder.ToStringStyle;
 
 import bsh.Interpreter;
 
@@ -132,4 +134,16 @@ public class SAPClientXmlRequest {
 	public void setRequest(String request) {
 		this.request = request;
 	}
+	
+	/**
+	 * 
+	 * @return
+	 * @see java.lang.Object#toString()
+	 */
+	public String toString() {
+		return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
+	   	.append("requestTemplate", getRequestTemplate())
+	   	.toString();		
+	}	
+	
 }
