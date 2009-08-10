@@ -18,6 +18,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.log4j.Logger;
 import org.springframework.ws.client.core.WebServiceTemplate;
+import org.springframework.ws.soap.client.SoapFaultClientException;
 import org.springframework.ws.transport.http.CommonsHttpMessageSender;
 
 import ar.com.bunge.util.Utils;
@@ -129,16 +130,19 @@ public class SAPWSClient {
 
 			try {
 				request.compile(context);
-				
 				response.setResponse(sendAndReceive(request.getRequest()));
 				response.parseResponse();
-				
-				return response;
+			} catch(SoapFaultClientException ex) {
+				LOG.error(ex.getMessage(), ex);
+				response.setNumber(new Long(-2));
+				response.setMessage(ex.getMessage());
 			} catch(Throwable ex) {
-				//:TODO: Handle Web Service Fault putting result in response!
+				LOG.error(ex.getMessage(), ex);
 				throw new Exception(ex.getMessage(), ex.getCause());
 			}
+			return response;
 		} else {
+			LOG.error("Request cannot be null");
 			throw new Exception("Request cannot be null");
 		}
 	}
