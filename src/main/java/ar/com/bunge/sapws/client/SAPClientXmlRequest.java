@@ -26,7 +26,9 @@ public class SAPClientXmlRequest {
 	public static final String VARIABLE_SEPARATOR = "#";
 	public static final String SCRIPT_OPEN_TOKEN = "${";
 	public static final String SCRIPT_CLOSE_TOKEN = "}";
-	
+
+	public static final String SCRIPT_ALT_OPEN_TOKEN = "%{";
+
 	/**
 	 * 
 	 */
@@ -49,7 +51,8 @@ public class SAPClientXmlRequest {
 	 * @throws Exception
 	 */
 	public void compile(Map<String, Object> context) throws Exception {
-		String request = new String(getRequestTemplate());
+		String request = new String(StringUtils.replace(getRequestTemplate(), SCRIPT_ALT_OPEN_TOKEN, SCRIPT_OPEN_TOKEN));
+		
 		String scripts[] = StringUtils.substringsBetween(request, SCRIPT_OPEN_TOKEN, SCRIPT_CLOSE_TOKEN);
 		Object value;
 		
@@ -145,5 +148,4 @@ public class SAPClientXmlRequest {
 	   	.append("requestTemplate", getRequestTemplate())
 	   	.toString();		
 	}	
-	
 }

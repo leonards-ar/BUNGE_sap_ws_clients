@@ -9,7 +9,7 @@
 	</appender>
 
 	<appender name="message_append" class="org.apache.log4j.RollingFileAppender">
-		<param name="file" value="message.log" />
+		<param name="file" value="sap-ws-client.log" />
 		<param name="append" value="true" />
 		<param name="bufferedIO" value="false" />
 		<param name="maxFileSize" value="500MB" />
@@ -19,26 +19,9 @@
 		</layout>
 	</appender>
 
-	<appender name="error_append" class="org.apache.log4j.RollingFileAppender">
-		<param name="file" value="error.log" />
-		<param name="append" value="true" />
-		<param name="bufferedIO" value="false" />
-		<param name="maxFileSize" value="500MB" />
-		<param name="maxBackupIndex" value="5" />
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern"
-				value="[%d{ISO8601}]%10p %C{1} - %m%n" />
-		</layout>
-	</appender>
-
 	<logger name="message" additivity="false">
 		<level value="DEBUG" />
 		<appender-ref ref="message_append"/>
-	</logger>
-	
-	<logger name="error" additivity="false">
-		<level value="ERROR" />
-		<appender-ref ref="error_append"/>
 	</logger>
 	
 	<logger name="ar.com.bunge" additivity="false">
@@ -53,7 +36,7 @@
 	</logger> 		
 	
 	<root>
-		<priority value="DEBUG" />
+		<priority value="WARN" />
 		<appender-ref ref="STDOUT" />
 	</root>
 </log4j:configuration>

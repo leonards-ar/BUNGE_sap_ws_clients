@@ -11,6 +11,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 
 /**
@@ -21,7 +22,8 @@ import org.apache.commons.lang.StringUtils;
  *
  */
 public class Utils {
-
+	private static final String ENCODE_TOKEN = "_b64_";
+	
 	/**
 	 * 
 	 */
@@ -128,5 +130,51 @@ public class Utils {
 				writer.close();
 			}
 		}
-	}	
+	}
+	
+	/**
+	 * 
+	 * @param str
+	 * @param maxLength
+	 * @return
+	 */
+	public static String truncate(String str, int maxLength) {
+		if(str != null && str.length() > maxLength) {
+			return str.substring(0, maxLength);
+		} else {
+			return str;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static String encode(String str) {
+		try {
+			Base64 b64 = new Base64();
+			return new String(ENCODE_TOKEN + b64.encode(str.getBytes()));
+		} catch(Exception ex) {
+			return str;
+		}
+	}
+
+	/**
+	 * 
+	 * @param str
+	 * @return
+	 */
+	public static String decode(String str) {
+		try {
+			Base64 b64 = new Base64();
+			if(str != null && str.startsWith(ENCODE_TOKEN)) {
+				return new String(b64.decode(StringUtils.remove(str, ENCODE_TOKEN).getBytes()));
+			} else {
+				return str;
+			}
+		} catch(Exception ex) {
+			return str;
+		}
+	}
 }
