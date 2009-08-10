@@ -154,7 +154,7 @@ public class Utils {
 	public static String encode(String str) {
 		try {
 			Base64 b64 = new Base64();
-			return new String(ENCODE_TOKEN + b64.encode(str.getBytes()));
+			return ENCODE_TOKEN + (new String(b64.encode(str.getBytes())));
 		} catch(Exception ex) {
 			return str;
 		}
