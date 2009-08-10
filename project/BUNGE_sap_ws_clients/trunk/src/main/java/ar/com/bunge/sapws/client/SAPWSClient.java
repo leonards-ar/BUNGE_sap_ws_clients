@@ -130,7 +130,13 @@ public class SAPWSClient {
 
 			try {
 				request.compile(context);
+				if(LOG.isDebugEnabled()) {
+					LOG.debug("About to execute compiled request [" + request.getRequest() + "]");
+				}
 				response.setResponse(sendAndReceive(request.getRequest()));
+				if(LOG.isDebugEnabled()) {
+					LOG.debug("Received raw response [" + response.getResponse() + "]");
+				}
 				response.parseResponse();
 			} catch(SoapFaultClientException ex) {
 				LOG.error(ex.getMessage(), ex);
