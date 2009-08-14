@@ -9,6 +9,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Map;
 
+import javax.xml.soap.MessageFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -19,6 +20,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.log4j.Logger;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.SoapFaultClientException;
+import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.transport.http.CommonsHttpMessageSender;
 
 import ar.com.bunge.util.Utils;
@@ -39,6 +41,10 @@ public class SAPWSClient {
 	private String requestTemplateFile;
 	private String responseFile;
 	private boolean basicAuthentication;
+	
+	private String messageFactoryImplementationClass = null;
+	
+	
 	/**
 	 * 
 	 */
@@ -208,6 +214,11 @@ public class SAPWSClient {
         StringWriter response = new StringWriter();
         StreamResult result = new StreamResult(response);
 
+        SaajSoapMessageFactory mf = getMessageFactory();
+        if(mf != null) {
+        	webServiceTemplate.setMessageFactory(mf);
+        }
+        
         // Start HTTP Basic Authentication
         if(isBasicAuthentication()) {
             CommonsHttpMessageSender sender = new CommonsHttpMessageSender();
@@ -284,6 +295,42 @@ public class SAPWSClient {
 	   	.append("requestTemplateFile", getRequestTemplateFile())
 	   	.append("responseFile", getResponseFile())
 	   	.append("basicAuthentication", isBasicAuthentication())
+	   	.append("messageFactoryImplementationClass", getMessageFactoryImplementationClass())
 	   	.toString();		
-	}	
+	}
+
+	/**
+	 * @return the messageFactoryImplementationClass
+	 */
+	public String getMessageFactoryImplementationClass() {
+		return messageFactoryImplementationClass;
+	}
+
+	/**
+	 * @param messageFactoryImplementationClass the messageFactoryImplementationClass to set
+	 */
+	public void setMessageFactoryImplementationClass(String messageFactoryImplementationClass) {
+		this.messageFactoryImplementationClass = messageFactoryImplementationClass;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	private SaajSoapMessageFactory getMessageFactory() {
+		if(getMessageFactoryImplementationClass() != null) {
+        	if(LOG.isDebugEnabled()) {
+        		LOG.debug("Setting message factory with class [" + getMessageFactoryImplementationClass() + "]");
+        	}
+			try {
+				MessageFactory instance = (MessageFactory) Class.forName(getMessageFactoryImplementationClass()).newInstance();
+				SaajSoapMessageFactory mf = new SaajSoapMessageFactory();
+				mf.setMessageFactory(instance);
+				return mf;
+			} catch(Throwable ex) {
+				LOG.error("Cannot create SaajSoapMessageFactory for class [" + getMessageFactoryImplementationClass() + "]", ex);
+			}
+		}
+		return null;
+	}
 }
