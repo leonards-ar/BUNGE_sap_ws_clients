@@ -1,7 +1,7 @@
       <urn:ProjectDefinitionCreateFromData xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:sap-com:document:sap:soap:functions:mc-style">
          <ProjectDefinitionStr>
-            <Projectdefinition>6601</Projectdefinition>
-            <Description>Proyecto desde WS 01</Description>
+            <Projectdefinition>6605</Projectdefinition>
+            <Description>${#project desc#}</Description>
             <Maskid></Maskid>
             <Responsibleno>01</Responsibleno>
             <Applicantno>9999</Applicantno>

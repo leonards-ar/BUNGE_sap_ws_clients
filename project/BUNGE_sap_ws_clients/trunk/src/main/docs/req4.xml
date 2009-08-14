@@ -1,0 +1,4 @@
+<urn:ProjectDefinitionGetdetail xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:sap-com:document:sap:soap:functions:mc-style">
+   <CurrentExternalProje>6605</CurrentExternalProje>
+   <CurrentInternalProje></CurrentInternalProje>
+</urn:ProjectDefinitionGetdetail>
