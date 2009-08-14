@@ -29,7 +29,7 @@ import ar.com.bunge.util.Utils;
  *
  * @author <a href="mcapurro@gmail.com">Mariano Capurro</a>
  * @version 1.0
- * @since SPM 1.0
+ * @since 1.0
  *
  */
 public class SAPWSClient {
@@ -70,7 +70,7 @@ public class SAPWSClient {
 			String auth = cmdLine.getParameter("a");
 			client.setBasicAuthentication(auth != null ? "true".equalsIgnoreCase(auth) || "yes".equalsIgnoreCase(auth) : true);
 
-			client.execute(cmdLine.getVariables());
+			client.executeCommandLine(cmdLine.getVariables());
 			
 			System.exit(0);
 		} catch(Throwable ex) {
@@ -86,20 +86,11 @@ public class SAPWSClient {
 	 * @return
 	 * @throws Exception
 	 */
-	public void execute(Map<String, Object> context) throws Exception {
+	public void executeCommandLine(Map<String, Object> context) throws Exception {
 		if(LOG.isDebugEnabled()) {
 			LOG.debug(this);
 		}
-
-		SAPClientXmlRequest request = new SAPClientXmlRequest();
-		request.setRequestTemplate(Utils.readFile(getRequestTemplateFile()));
-		
-		if(LOG.isDebugEnabled()) {
-			LOG.debug("Read file contents from [" + getRequestTemplateFile() + "]");
-			LOG.debug(request);
-		}
-		
-		SAPClientXmlResponse response = execute(request, context);
+		SAPClientXmlResponse response = execute(context);
 
 		if(LOG.isDebugEnabled()) {
 			LOG.debug(response);
@@ -122,6 +113,29 @@ public class SAPWSClient {
 			LOG.error(msg);
 			throw new Exception(msg);
 		}
+	}
+	
+	/**
+	 * 
+	 * @param context
+	 * @return
+	 * @throws Exception
+	 */
+	public SAPClientXmlResponse execute(Map<String, Object> context) throws Exception {
+		SAPClientXmlRequest request = new SAPClientXmlRequest();
+
+		if(LOG.isDebugEnabled()) {
+			LOG.debug("About to read Request Template from file [" + getRequestTemplateFile() + "]");
+		}
+		
+		request.setRequestTemplate(Utils.readFile(getRequestTemplateFile()));
+		
+		if(LOG.isDebugEnabled()) {
+			LOG.debug("Read file contents from [" + getRequestTemplateFile() + "]");
+			LOG.debug(request);
+		}
+		
+		return execute(request, context);		
 	}
 	
 	/**
