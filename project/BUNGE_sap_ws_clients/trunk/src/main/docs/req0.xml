@@ -1,6 +1,6 @@
 <sug:login soapenv:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:sug="http://www.sugarcrm.com/sugarcrm">
    <user_auth xsi:type="sug:user_auth">
-      <user_name xsi:type="xsd:string">${#issue reporter#}</user_name>
+      <user_name xsi:type="xsd:string">${#issue.reporter#}</user_name>
       <password xsi:type="xsd:string">tets97</password>
       <version xsi:type="xsd:string"></version>
    </user_auth>
