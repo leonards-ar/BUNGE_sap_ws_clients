@@ -24,6 +24,7 @@ import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.transport.http.CommonsHttpMessageSender;
 
 import ar.com.bunge.util.Utils;
+import ar.com.bunge.util.ValidationException;
 
 /**
  *
@@ -161,6 +162,10 @@ public class SAPWSClient {
 			} catch(SoapFaultClientException ex) {
 				LOG.error(ex.getMessage(), ex);
 				response.setNumber(new Long(-2));
+				response.setMessage(ex.getMessage());
+			} catch(ValidationException ex) {
+				LOG.error(ex.getMessage(), ex);
+				response.setNumber(new Long(-3));
 				response.setMessage(ex.getMessage());
 			} catch(Throwable ex) {
 				LOG.error(ex.getMessage(), ex);

@@ -11,6 +11,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import ar.com.bunge.util.ValidationException;
+import bsh.EvalError;
 import bsh.Interpreter;
 
 /**
@@ -100,11 +102,19 @@ public class SAPClientXmlRequest {
 	 * @throws Exception
 	 */
 	private String evalueateScript(String script, Map<String, Object> context) throws Exception {
-		Interpreter i = new Interpreter();
-		i.eval("import ar.com.bunge.util.Utils");
-		String bshScript = resolveScript(script, context);
-    	Object result = i.eval(bshScript);
-    	return result != null ? result.toString() : "";
+		try {
+			Interpreter i = new Interpreter();
+			i.eval("import ar.com.bunge.util.Utils");
+			String bshScript = resolveScript(script, context);
+	    	Object result = i.eval(bshScript);
+	    	return result != null ? result.toString() : "";
+		} catch(EvalError e) {
+			if(e.getCause() instanceof ValidationException) {
+				throw new ValidationException(e.getCause().getMessage(), e);
+			} else {
+				throw e;
+			}
+		}
 	}
 	
 	/**
