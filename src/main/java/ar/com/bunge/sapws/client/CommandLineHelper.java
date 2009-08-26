@@ -5,16 +5,16 @@
  */
 package ar.com.bunge.sapws.client;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
+
+import ar.com.bunge.util.Utils;
 
 /**
  *
@@ -103,16 +103,7 @@ public class CommandLineHelper {
 	 * @return
 	 */
 	private String getErrorMessage(String key, String name, String value) {
-		try {
-			String text = getBundleText(key);
-			if(text != null) {
-				return MessageFormat.format(text, name, value);
-			} else {
-				return key;
-			}
-		} catch(Throwable ex) {
-			return key;
-		}
+		return Utils.getErrorMessage(key, name, value);
 	}
 
 	/**
@@ -121,16 +112,7 @@ public class CommandLineHelper {
 	 * @return
 	 */
 	private String getBundleText(String key) {
-		try {
-			ResourceBundle bundle = ResourceBundle.getBundle("messages");
-			if(bundle != null) {
-				return bundle.getString(key);
-			} else {
-				return key;
-			}
-		} catch(Throwable ex) {
-			return key;
-		}
+		return Utils.getBundleText(key);
 	}
 	
 	/**
