@@ -13,10 +13,13 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.ResourceBundle;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -26,8 +29,10 @@ import org.apache.commons.lang.StringUtils;
  *
  */
 public class Utils {
+	private static final Logger LOG = Logger.getLogger(Utils.class);
+
 	private static final String ENCODE_TOKEN = "_b64_";
-	private static final String UNKNOWN_OBJECT = "-Unknown-";
+	private static final String UNKNOWN_OBJECT = getBundleText("error.validation.unknown.variable");
 	
 	/**
 	 * 
@@ -35,6 +40,69 @@ public class Utils {
 	private Utils() {
 	}
 
+	/**
+	 * 
+	 * @param d
+	 * @param format
+	 * @return
+	 */
+	public static String dateToString(Date d, String format) {
+		if(d != null) {
+			SimpleDateFormat df = new SimpleDateFormat(format);
+			return df.format(d);
+		} else {
+			return null;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param d
+	 * @param format
+	 * @return
+	 */
+	public static Date stringToDate(String d, String format) {
+		if(d != null) {
+			try {
+				SimpleDateFormat df = new SimpleDateFormat(format);
+				return df.parse(d);
+			} catch(Exception ex) {
+				LOG.error("Cannot parse " + d + " to date with format " + format, ex);
+				return null;
+			}
+		} else {
+			return null;
+		}		
+	}
+
+	/**
+	 * 
+	 * @param d
+	 * @param format
+	 * @param objectDescription
+	 * @return
+	 * @throws ValidationException
+	 */
+	public static String date(String d, String format, String objectDescription) throws ValidationException {
+		Date date = stringToDate(d, format);
+		if(date != null) {
+			return d;
+		} else {
+			throw new ValidationException(getErrorMessage("error.validation.date", objectDescription, d, format));
+		}
+	}
+	
+	/**
+	 * 
+	 * @param d
+	 * @param format
+	 * @return
+	 * @throws ValidationException
+	 */
+	public static String date(String d, String format) throws ValidationException {
+		return date(d, format, UNKNOWN_OBJECT);
+	}	
+	
 	/**
 	 * 
 	 * @param o
@@ -46,6 +114,7 @@ public class Utils {
 		if(o != null && !"".equals(o.toString())) {
 			return o;
 		} else {
+			LOG.error(getErrorMessage("error.validation.required", objectDescription));
 			throw new ValidationException(getErrorMessage("error.validation.required", objectDescription));
 		}
 	}
@@ -75,9 +144,11 @@ public class Utils {
 				Long.parseLong(o.toString());
 				return o;
 			} catch(Throwable ex) {
+				LOG.error(getErrorMessage("error.validation.int.number", objectDescription, o), ex);
 				throw new ValidationException(getErrorMessage("error.validation.int.number", objectDescription, o), ex);
 			}
 		} else {
+			LOG.error(getErrorMessage("error.validation.int.number", objectDescription, o));
 			throw new ValidationException(getErrorMessage("error.validation.int.number", objectDescription, o));
 		}
 	}
@@ -107,9 +178,11 @@ public class Utils {
 				Double.parseDouble(o.toString());
 				return o;
 			} catch(Throwable ex) {
+				LOG.error(getErrorMessage("error.validation.decimal.number", objectDescription, o), ex);
 				throw new ValidationException(getErrorMessage("error.validation.decimal.number", objectDescription, o), ex);
 			}
 		} else {
+			LOG.error(getErrorMessage("error.validation.decimal.number", objectDescription, o));
 			throw new ValidationException(getErrorMessage("error.validation.decimal.number", objectDescription, o));
 		}
 	}
@@ -136,6 +209,7 @@ public class Utils {
 		if(s != null && s.length() > minLength) {
 			return s;
 		} else {
+			LOG.error(getErrorMessage("error.validation.minlength.string", strDescription, s, new Integer(s != null ? s.length() : 0), minLength));
 			throw new ValidationException(getErrorMessage("error.validation.minlength.string", strDescription, s, new Integer(s != null ? s.length() : 0), minLength));
 		}
 	}
@@ -163,6 +237,7 @@ public class Utils {
 		if(s != null && s.length() <= maxLength) {
 			return s;
 		} else {
+			LOG.error(getErrorMessage("error.validation.maxlength.string", strDescription, s, new Integer(s != null ? s.length() : 0), maxLength));
 			throw new ValidationException(getErrorMessage("error.validation.maxlength.string", strDescription, s, new Integer(s != null ? s.length() : 0), maxLength));
 		}
 	}
@@ -193,6 +268,7 @@ public class Utils {
 		if(num >= from && num <= to) {
 			return o;
 		} else {
+			LOG.error(getErrorMessage("error.validation.number.range", objDescription, o, from, to));
 			throw new ValidationException(getErrorMessage("error.validation.number.range", objDescription, o, from, to));
 		}
 	}
