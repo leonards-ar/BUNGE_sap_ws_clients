@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -64,9 +63,9 @@ public class CommandLineHelper {
 		if(args != null) {
 			String name, value;
 			for(int i=0; i < args.length; i++) {
-				StringTokenizer st = new StringTokenizer(args[i], "=");
-				name = st.hasMoreTokens() ? st.nextToken().trim().toLowerCase() : null;
-				value = st.hasMoreElements() ? st.nextToken().trim() : null;
+				String paramValue[] = parseParameter(args[i]);
+				name = paramValue != null ? paramValue[0] : null;
+				value = paramValue != null ? paramValue[1] : null;
 
 				if(!StringUtils.isEmpty(name) && !StringUtils.isEmpty(value)) {
 					if(PARAMS.containsKey(name)) {
@@ -87,6 +86,36 @@ public class CommandLineHelper {
 		}
 	}
 
+	/**
+	 * 
+	 * @param paramValuePair
+	 * @return
+	 */
+	private String[] parseParameter(String paramValuePair) {
+		if(paramValuePair != null) {
+			String[] parsed = new String[2];
+			
+			int i = paramValuePair.indexOf('=');
+			
+			if(i > 0 && i < paramValuePair.length() - 1) {
+				parsed[0] = paramValuePair.substring(0, i).trim().toLowerCase();
+				parsed[1] = paramValuePair.substring(i + 1).trim();
+			} else if(i == 0) {
+				parsed[0] = null;
+				parsed[1] = paramValuePair.substring(1).trim();
+			} else if(i == paramValuePair.length() - 1) {
+				parsed[0] = paramValuePair.substring(0, paramValuePair.length() - 1).trim().toLowerCase();
+				parsed[1] = null;
+			} else {
+				parsed[0] = paramValuePair.trim().toLowerCase();
+				parsed[1] = null;
+			}
+			return parsed;
+		} else {
+			return null;
+		}
+	}
+	
 	/**
 	 * 
 	 * @return
