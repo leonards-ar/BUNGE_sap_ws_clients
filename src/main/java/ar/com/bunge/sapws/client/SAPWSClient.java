@@ -93,8 +93,9 @@ public class SAPWSClient {
 	/**
 	 * 
 	 * @return
+	 * @throws Exception
 	 */
-	private Map<String, Object> parseVariablesFile() {
+	private Map<String, Object> parseVariablesFile() throws Exception {
 		Map<String, Object> fileVariables = new HashMap<String, Object>();
 		
 		if(getVariablesFile() != null) {
