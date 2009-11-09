@@ -29,7 +29,7 @@ public class SAPClientXmlRequest {
 	public static final String VARIABLE_SEPARATOR = "#";
 	public static final String SCRIPT_OPEN_TOKEN = "${";
 	public static final String SCRIPT_CLOSE_TOKEN = "}";
-	public static final String ITERATOR_VARIABLE_OPEN_TOKEN = "{loop(";
+	public static final String ITERATOR_VARIABLE_OPEN_TOKEN = "${loop(";
 	public static final String ITERATOR_VARIABLE_CLOSE_TOKEN = ")}";
 	public static final String ITERATOR_BLOCK_END_TOKEN = "{end loop}";
 
