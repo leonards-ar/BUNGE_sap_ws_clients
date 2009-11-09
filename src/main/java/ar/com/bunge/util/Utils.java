@@ -14,7 +14,9 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.commons.codec.binary.Base64;
@@ -371,6 +373,30 @@ public class Utils {
 	/**
 	 * 
 	 * @param file
+	 * @return
+	 * @throws IOException
+	 */
+	public static List<String> readFileLines(String file) throws IOException {
+		List<String> lines = new ArrayList<String>();
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new FileReader(file));
+			String line;
+			while( (line = reader.readLine()) != null) {
+				lines.add(line);
+			}
+		} finally {
+			if (reader != null) {
+				reader.close();
+			}
+		}
+		
+		return lines;		
+	}
+	
+	/**
+	 * 
+	 * @param file
 	 * @param contents
 	 * @throws IOException
 	 */
@@ -400,6 +426,38 @@ public class Utils {
 			return str;
 		}
 	}
+	
+	/**
+	 * 
+	 * @param paramValuePair
+	 * @return
+	 */
+	public static String[] parseParameter(String paramValuePair) {
+		if(paramValuePair != null) {
+			String[] parsed = new String[2];
+			
+			int i = paramValuePair.indexOf('=');
+			
+			if(i > 0 && i < paramValuePair.length() - 1) {
+				parsed[0] = paramValuePair.substring(0, i).trim().toLowerCase();
+				parsed[1] = paramValuePair.substring(i + 1).trim();
+			} else if(i == 0) {
+				parsed[0] = null;
+				parsed[1] = paramValuePair.substring(1).trim();
+			} else if(i == paramValuePair.length() - 1) {
+				parsed[0] = paramValuePair.substring(0, paramValuePair.length() - 1).trim().toLowerCase();
+				parsed[1] = null;
+			} else {
+				parsed[0] = paramValuePair.trim().toLowerCase();
+				parsed[1] = null;
+			}
+			return parsed;
+		} else {
+			return null;
+		}
+	}
+	
+
 	
 	/**
 	 * 
