@@ -7,6 +7,9 @@ package ar.com.bunge.sapws.client;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.soap.MessageFactory;
@@ -15,6 +18,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.log4j.Logger;
@@ -41,6 +45,7 @@ public class SAPWSClient {
 	private String url;
 	private String requestTemplateFile;
 	private String responseFile;
+	private String variablesFile;
 	private boolean basicAuthentication;
 	
 	private String messageFactoryImplementationClass = null;
@@ -66,12 +71,16 @@ public class SAPWSClient {
 			client.setUsername(cmdLine.getParameter("u"));
 			client.setUrl(cmdLine.getParameter("url"));
 			client.setPassword(cmdLine.getParameter("p"));
+			client.setVariablesFile(cmdLine.getParameter("v"));
 			client.setRequestTemplateFile(cmdLine.getParameter("i"));
 			client.setResponseFile(cmdLine.getParameter("o"));
 			String auth = cmdLine.getParameter("a");
 			client.setBasicAuthentication(auth != null ? "true".equalsIgnoreCase(auth) || "yes".equalsIgnoreCase(auth) : true);
 
-			client.executeCommandLine(cmdLine.getVariables());
+			Map<String, Object> context = client.parseVariablesFile();
+			context.putAll(cmdLine.getVariables());
+			
+			client.executeCommandLine(context);
 			
 			System.exit(0);
 		} catch(Throwable ex) {
@@ -81,6 +90,36 @@ public class SAPWSClient {
 		}
 	}
 
+	/**
+	 * 
+	 * @return
+	 */
+	private Map<String, Object> parseVariablesFile() {
+		Map<String, Object> fileVariables = new HashMap<String, Object>();
+		
+		if(getVariablesFile() != null) {
+			List<String> lines = Utils.readFileLines(getVariablesFile());
+			if(lines != null && lines.size() > 0) {
+				String paramValue[];
+				String name, value;
+				for(Iterator<String> it = lines.iterator(); it.hasNext(); ) {
+					paramValue = Utils.parseParameter(it.next());
+					if(paramValue != null && paramValue.length == 2) {
+						name = paramValue != null ? paramValue[0] : null;
+						value = paramValue != null ? paramValue[1] : null;			
+						if(!StringUtils.isEmpty(name) && !StringUtils.isEmpty(value)) {
+							fileVariables.put(name, value);
+						}
+					}
+					
+				}
+				
+			}
+		}
+		
+		return fileVariables;
+	}
+	
 	/**
 	 * 
 	 * @param context
@@ -313,6 +352,7 @@ public class SAPWSClient {
 	   	.append("password", getPassword())
 	   	.append("requestTemplateFile", getRequestTemplateFile())
 	   	.append("responseFile", getResponseFile())
+	   	.append("variablesFile", getVariablesFile())
 	   	.append("basicAuthentication", isBasicAuthentication())
 	   	.append("messageFactoryImplementationClass", getMessageFactoryImplementationClass())
 	   	.toString();		
@@ -351,5 +391,21 @@ public class SAPWSClient {
 			}
 		}
 		return null;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public String getVariablesFile() {
+		return variablesFile;
+	}
+
+	/**
+	 * 
+	 * @param variablesFile
+	 */
+	public void setVariablesFile(String variablesFile) {
+		this.variablesFile = variablesFile;
 	}
 }
