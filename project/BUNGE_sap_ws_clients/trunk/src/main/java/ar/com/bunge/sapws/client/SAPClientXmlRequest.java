@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import ar.com.bunge.util.Utils;
 import ar.com.bunge.util.ValidationException;
 import bsh.EvalError;
 import bsh.Interpreter;
@@ -102,7 +101,6 @@ public class SAPClientXmlRequest {
 			
 			for(int i = 0; i < repetitions; i++) {
 				expandedRequest += addIndexToVariables(xml, i);
-				expandedRequest += Utils.getNewLine();
 			}
 			
 			expandedRequest += suffix;
