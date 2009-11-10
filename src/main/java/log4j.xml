@@ -25,7 +25,7 @@
 	</logger>
 	
 	<logger name="ar.com.bunge" additivity="false">
-		<level value="${debug.level}"/>
+		<level value="DEBUG"/>
 		<appender-ref ref="message_append"/>
 		<appender-ref ref="STDOUT"/>
 	</logger>
