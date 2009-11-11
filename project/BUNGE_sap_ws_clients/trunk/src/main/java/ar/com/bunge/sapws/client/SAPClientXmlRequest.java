@@ -122,7 +122,7 @@ public class SAPClientXmlRequest {
 		
 		if(vars != null) {
 			for(int i=0; i < vars.length; i++) {
-				indexedXml = StringUtils.replace(indexedXml, VARIABLE_SEPARATOR + vars[i] + VARIABLE_SEPARATOR, VARIABLE_SEPARATOR + vars[i] + "(" + index + ")" + VARIABLE_SEPARATOR);
+				indexedXml = StringUtils.replace(indexedXml, VARIABLE_SEPARATOR + vars[i] + VARIABLE_SEPARATOR, VARIABLE_SEPARATOR + vars[i] + "(" + (index + 1) + ")" + VARIABLE_SEPARATOR);
 			}
 		}
 		return indexedXml;		
