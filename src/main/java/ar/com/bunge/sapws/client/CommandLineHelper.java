@@ -7,9 +7,11 @@ package ar.com.bunge.sapws.client;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -23,8 +25,10 @@ import ar.com.bunge.util.Utils;
  *
  */
 public class CommandLineHelper {
+	private static final String GLOBAL_KEY = "_global";
+	
 	private static final Map<String, String> PARAMS = new HashMap<String, String>();
-	private static List<String> REQUIRED_PARAMS = new ArrayList<String>();
+	private static final Map<String, List<String>> REQUIRED_PARAMS = new HashMap<String, List<String>>();
 	
 	private Map<String, Object> variables = new HashMap<String, Object>();
 	private Map<String, String> parameters = new HashMap<String, String>();
@@ -35,18 +39,35 @@ public class CommandLineHelper {
 	
 	static {
 		PARAMS.put("b", "basic_auth.help");
+		PARAMS.put("w", "wss_auth.help");
 		PARAMS.put("i", "input_file.help");
 		PARAMS.put("o", "output_file.help");
 		PARAMS.put("u", "username.help");
 		PARAMS.put("p", "password.help");
 		PARAMS.put("url", "url.help");
 		PARAMS.put("v", "variables.help");
+		PARAMS.put("ssl", "ssl_auth.help");
+		PARAMS.put("ks", "keystore.help");
+		PARAMS.put("ksp", "keystore_password.help");
+		PARAMS.put("px", "proxy.help");
+		PARAMS.put("pxp", "proxy_port.help");
 		
+		List<String> global = new ArrayList<String>();
+		global.add("i");
+		global.add("url");
+		REQUIRED_PARAMS.put(GLOBAL_KEY, global);
+
+		List<String> sslAuth = new ArrayList<String>();
+		sslAuth.add("ks");
+		sslAuth.add("ksp");
+		REQUIRED_PARAMS.put("ssl", sslAuth);
 		
-		REQUIRED_PARAMS.add("i");
-		REQUIRED_PARAMS.add("u");
-		REQUIRED_PARAMS.add("p");
-		REQUIRED_PARAMS.add("url");
+		List<String> otherAuth = new ArrayList<String>();
+		otherAuth.add("u");
+		otherAuth.add("p");		
+		REQUIRED_PARAMS.put("b", otherAuth);
+		REQUIRED_PARAMS.put("w", otherAuth);
+		
 	}
 	
 	/**
@@ -62,8 +83,11 @@ public class CommandLineHelper {
 	 * @param args
 	 */
 	private void parseArgs(String args[]) {
+		Set<String> requiredParams = new HashSet<String>();
+		requiredParams.addAll(REQUIRED_PARAMS.get(GLOBAL_KEY));
 		if(args != null) {
 			String name, value;
+			
 			for(int i=0; i < args.length; i++) {
 				String paramValue[] = Utils.parseParameter(args[i]);
 				name = paramValue != null ? paramValue[0] : null;
@@ -72,6 +96,9 @@ public class CommandLineHelper {
 				if(!StringUtils.isEmpty(name) && !StringUtils.isEmpty(value)) {
 					if(PARAMS.containsKey(name)) {
 						getParameters().put(name, value);
+						if(REQUIRED_PARAMS.containsKey(name)) {
+							requiredParams.addAll(REQUIRED_PARAMS.get(name));
+						}
 					} else {
 						getVariables().put(name, value);
 					}
@@ -81,7 +108,7 @@ public class CommandLineHelper {
 			}
 		}
 		// Validate required parameters
-		for(String param : REQUIRED_PARAMS) {
+		for(String param : requiredParams) {
 			if(!getParameters().containsKey(param)) {
 				getErrors().add(getErrorMessage("error.missing_arg_value.message", param, null));
 			}
@@ -178,20 +205,57 @@ public class CommandLineHelper {
 	
 	/**
 	 * 
+	 * @param param
+	 * @return
+	 */
+	private boolean isOptionalParameter(String param) {
+		for(Iterator<String> keys = REQUIRED_PARAMS.keySet().iterator(); keys.hasNext(); ) {
+			String key = keys.next();
+			if(key != null && key.equals(param)) {
+				return false;
+			} else {
+				if(key != null && REQUIRED_PARAMS.get(key).contains(param)) {
+					return false;
+				}					
+			}
+			
+		}
+		return true;
+	}
+	
+	/**
+	 * 
 	 * @return
 	 */
 	public String getUsage() {
 		StringBuffer sb = new StringBuffer( getBundleText("command.label") + " ");
 		// Required first
-		for(Iterator<String> it = REQUIRED_PARAMS.iterator(); it.hasNext(); ) {
+		for(Iterator<String> it = REQUIRED_PARAMS.get(GLOBAL_KEY).iterator(); it.hasNext(); ) {
 			String param = it.next();
 			sb.append(param + "=" + getBundleText("value.label") + " ");
 		}
+
+		// Dependant
+		sb.append("[");
+		for(Iterator<String> keys = REQUIRED_PARAMS.keySet().iterator(); keys.hasNext(); ) {
+			String key = keys.next();
+			if(!GLOBAL_KEY.equals(key)) {
+				sb.append(key + "=" + getBundleText("value.label"));
+				for(Iterator<String> it = REQUIRED_PARAMS.get(key).iterator(); it.hasNext(); ) {
+					String param = it.next();
+					sb.append(" " + param + "=" + getBundleText("value.label"));
+				}
+				if(keys.hasNext()) {
+					sb.append(" | ");
+				}
+			}
+		}
+		sb.append("] ");
 		
 		// Optional params
 		for(Iterator<String> it = PARAMS.keySet().iterator(); it.hasNext(); ) {
 			String param = it.next();
-			if(!REQUIRED_PARAMS.contains(param)) {
+			if(isOptionalParameter(param)) {
 				sb.append("[" + param + "=" + getBundleText("value.label") + "] ");
 			}	
 		}

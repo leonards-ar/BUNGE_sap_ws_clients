@@ -5,6 +5,7 @@
  */
 package ar.com.bunge.sapws.client;
 
+import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -18,9 +19,14 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
+import org.apache.commons.httpclient.protocol.Protocol;
+import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.commons.ssl.HttpSecureProtocol;
+import org.apache.commons.ssl.KeyMaterial;
+import org.apache.commons.ssl.TrustMaterial;
 import org.apache.log4j.Logger;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.SoapFaultClientException;
@@ -47,6 +53,12 @@ public class SAPWSClient {
 	private String responseFile;
 	private String variablesFile;
 	private boolean basicAuthentication;
+	private boolean sslAuthentication;
+	private boolean wssAuthentication;
+	private String keyStore;
+	private String keyStorePassword;
+	private String proxyServer;
+	private int proxyPort;
 	
 	private String messageFactoryImplementationClass = null;
 	
@@ -74,8 +86,16 @@ public class SAPWSClient {
 			client.setVariablesFile(cmdLine.getParameter("v"));
 			client.setRequestTemplateFile(cmdLine.getParameter("i"));
 			client.setResponseFile(cmdLine.getParameter("o"));
-			String auth = cmdLine.getParameter("a");
+			String auth = cmdLine.getParameter("b");
 			client.setBasicAuthentication(auth != null ? "true".equalsIgnoreCase(auth) || "yes".equalsIgnoreCase(auth) : true);
+			auth = cmdLine.getParameter("w");
+			client.setWssAuthentication(auth != null ? "true".equalsIgnoreCase(auth) || "yes".equalsIgnoreCase(auth) : false);
+			auth = cmdLine.getParameter("ssl");
+			client.setSslAuthentication(auth != null ? "true".equalsIgnoreCase(auth) || "yes".equalsIgnoreCase(auth) : false);
+			client.setKeyStore(cmdLine.getParameter("ks"));
+			client.setKeyStorePassword(cmdLine.getParameter("ksp"));
+			client.setProxyServer(cmdLine.getParameter("px"));
+			client.setProxyPort(cmdLine.getParameter("pxp") != null ? Integer.parseInt(cmdLine.getParameter("pxp")) : 8080);
 
 			Map<String, Object> context = client.parseVariablesFile();
 			context.putAll(cmdLine.getVariables());
@@ -278,12 +298,31 @@ public class SAPWSClient {
         	webServiceTemplate.setMessageFactory(mf);
         }
         
-        // Start HTTP Basic Authentication
-        if(isBasicAuthentication()) {
+        if(isSslAuthentication()) {
+        	// SSL Auth
+        	sslProtocolInit();
+            CommonsHttpMessageSender sender = new CommonsHttpMessageSender();
+            HttpClient client = new HttpClient();
+            if(getProxyServer() != null) {
+            	client.getHostConfiguration().setProxy(getProxyServer(), getProxyPort());
+            }
+
+            sender.setHttpClient(client);
+            sender.afterPropertiesSet();
+            
+        	webServiceTemplate.setMessageSender(sender);
+
+            webServiceTemplate.sendSourceAndReceiveToResult(getUrl(), source, result);
+        } else if(isBasicAuthentication()) {
+        	// Start HTTP Basic Authentication
             CommonsHttpMessageSender sender = new CommonsHttpMessageSender();
             sender.setCredentials(new UsernamePasswordCredentials(getUsername(), getPassword()));
             HttpClient client = new HttpClient();
             client.getParams().setAuthenticationPreemptive(true);
+            if(getProxyServer() != null) {
+            	client.getHostConfiguration().setProxy(getProxyServer(), getProxyPort());
+            }
+            
             sender.setHttpClient(client);
             
             sender.afterPropertiesSet();
@@ -299,6 +338,28 @@ public class SAPWSClient {
         return response.toString();
 	}
 
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	protected void sslProtocolInit() throws Exception {
+		HttpSecureProtocol protocolSocketFactory;
+		protocolSocketFactory = new HttpSecureProtocol();
+		File jksTrustStore = new File(getKeyStore());
+		TrustMaterial trustMaterial = new TrustMaterial(jksTrustStore, getKeyStorePassword().toCharArray());
+		protocolSocketFactory.addTrustMaterial(trustMaterial);
+		// No host name verification
+		protocolSocketFactory.setCheckHostname(false);
+		File jksKeyStore = new File(getKeyStore());
+		KeyMaterial key = new KeyMaterial(jksKeyStore, getKeyStorePassword().toCharArray());
+		protocolSocketFactory.setKeyMaterial(key);
+		// Timeout
+		// protocolSocketFactory.setConnectTimeout(getTimeOutMs());
+		// Register protocol
+		Protocol protocol = new Protocol("https", (ProtocolSocketFactory) protocolSocketFactory, 443);
+		Protocol.registerProtocol("https", protocol);
+	}  
+	
 	/**
 	 * @return the requestTemplateFile
 	 */
@@ -355,6 +416,12 @@ public class SAPWSClient {
 	   	.append("responseFile", getResponseFile())
 	   	.append("variablesFile", getVariablesFile())
 	   	.append("basicAuthentication", isBasicAuthentication())
+	   	.append("wssAuthentication", isWssAuthentication())
+	   	.append("sslAuthentication", isSslAuthentication())
+	   	.append("keystore", getKeyStore())
+	   	.append("ketStorePassword", getKeyStorePassword())
+	   	.append("proxyServer", getProxyServer())
+	   	.append("proxyPort", getProxyPort())
 	   	.append("messageFactoryImplementationClass", getMessageFactoryImplementationClass())
 	   	.toString();		
 	}
@@ -403,10 +470,96 @@ public class SAPWSClient {
 	}
 
 	/**
+	 * @return the sslAuthentication
+	 */
+	public boolean isSslAuthentication() {
+		return sslAuthentication;
+	}
+
+	/**
+	 * @param sslAuthentication the sslAuthentication to set
+	 */
+	public void setSslAuthentication(boolean sslAuthentication) {
+		this.sslAuthentication = sslAuthentication;
+	}
+
+	/**
+	 * @return the wssAuthentication
+	 */
+	public boolean isWssAuthentication() {
+		return wssAuthentication;
+	}
+
+	/**
+	 * @param wssAuthentication the wssAuthentication to set
+	 */
+	public void setWssAuthentication(boolean wssAuthentication) {
+		this.wssAuthentication = wssAuthentication;
+	}
+
+	/**
 	 * 
 	 * @param variablesFile
 	 */
 	public void setVariablesFile(String variablesFile) {
 		this.variablesFile = variablesFile;
 	}
+
+	/**
+	 * @return the keyStore
+	 */
+	public String getKeyStore() {
+		return keyStore;
+	}
+
+	/**
+	 * @param keyStore the keyStore to set
+	 */
+	public void setKeyStore(String keyStore) {
+		this.keyStore = keyStore;
+	}
+
+	/**
+	 * @return the keyStorePassword
+	 */
+	public String getKeyStorePassword() {
+		return keyStorePassword;
+	}
+
+	/**
+	 * @param keyStorePassword the keyStorePassword to set
+	 */
+	public void setKeyStorePassword(String keyStorePassword) {
+		this.keyStorePassword = keyStorePassword;
+	}
+
+	/**
+	 * @return the proxyServer
+	 */
+	public String getProxyServer() {
+		return proxyServer;
+	}
+
+	/**
+	 * @param proxyServer the proxyServer to set
+	 */
+	public void setProxyServer(String proxyServer) {
+		this.proxyServer = proxyServer;
+	}
+
+	/**
+	 * @return the proxyPort
+	 */
+	public int getProxyPort() {
+		return proxyPort;
+	}
+
+	/**
+	 * @param proxyPort the proxyPort to set
+	 */
+	public void setProxyPort(int proxyPort) {
+		this.proxyPort = proxyPort;
+	}
+
+
 }
