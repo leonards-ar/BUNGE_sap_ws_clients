@@ -108,6 +108,20 @@ public class Utils {
 	/**
 	 * 
 	 * @param o
+	 * @param d
+	 * @return
+	 */
+	public static Object objectOrDefault(Object o, Object d) {
+		if(o != null && !"".equals(o.toString())) {
+			return o;
+		} else {
+			return d;
+		}
+	}
+	
+	/**
+	 * 
+	 * @param o
 	 * @param objectDescription
 	 * @return
 	 * @throws ValidationException
@@ -433,7 +447,7 @@ public class Utils {
 	 * @return
 	 */
 	public static String[] parseParameter(String paramValuePair) {
-		if(paramValuePair != null) {
+		if(paramValuePair != null && paramValuePair.trim().length() > 0) {
 			String[] parsed = new String[2];
 			
 			int i = paramValuePair.indexOf('=');

@@ -33,6 +33,7 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.transport.http.CommonsHttpMessageSender;
 
+import ar.com.bunge.sapws.client.parser.ResponseParser;
 import ar.com.bunge.util.Utils;
 import ar.com.bunge.util.ValidationException;
 
@@ -59,6 +60,7 @@ public class SAPWSClient {
 	private String keyStorePassword;
 	private String proxyServer;
 	private int proxyPort;
+	private ResponseParser responseParser = null;
 	
 	private String messageFactoryImplementationClass = null;
 	
@@ -73,12 +75,14 @@ public class SAPWSClient {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		CommandLineHelper cmdLine = new CommandLineHelper(args);
-		if(!cmdLine.isValid()) {
-			System.err.println(cmdLine.getUsage());
-			System.exit(1);
-		}
 		try {
+			CommandLineHelper cmdLine = new CommandLineHelper(args);
+
+			if(!cmdLine.isValid()) {
+				System.err.println(cmdLine.getUsage());
+				System.exit(1);
+			}
+
 			SAPWSClient client = new SAPWSClient();
 			client.setUsername(cmdLine.getParameter("u"));
 			client.setUrl(cmdLine.getParameter("url"));
@@ -96,7 +100,8 @@ public class SAPWSClient {
 			client.setKeyStorePassword(cmdLine.getParameter("ksp"));
 			client.setProxyServer(cmdLine.getParameter("px"));
 			client.setProxyPort(cmdLine.getParameter("pxp") != null ? Integer.parseInt(cmdLine.getParameter("pxp")) : 8080);
-
+			client.setResponseParser(client.getResponseParserInstance(cmdLine.getParameter("rp")));
+			
 			Map<String, Object> context = client.parseVariablesFile();
 			context.putAll(cmdLine.getVariables());
 			
@@ -110,6 +115,31 @@ public class SAPWSClient {
 		}
 	}
 
+	/**
+	 * 
+	 * @param responseParserClass
+	 * @return
+	 * @throws Exception
+	 */
+	private ResponseParser getResponseParserInstance(String responseParserClass) throws Exception {
+		if(responseParserClass != null) {
+			try {
+				if(LOG.isDebugEnabled()) {
+					LOG.debug("About to read create instance for response parser for class [" + responseParserClass + "]");
+				}				
+				return (ResponseParser)Class.forName(responseParserClass).newInstance();
+			} catch(Exception ex) {
+				LOG.error("Could not create response parser instance for class [" + responseParserClass + "]. " + ex.getMessage(), ex);
+				throw ex;
+			}
+		} else {
+			if(LOG.isDebugEnabled()) {
+				LOG.debug("No response parser configured. Returning null");
+			}					
+			return null;
+		}
+	}
+	
 	/**
 	 * 
 	 * @return
@@ -157,16 +187,30 @@ public class SAPWSClient {
 			LOG.debug(response);
 		}
 		
+		String parsedResponse = null;
+		
+		if(getResponseParser() != null) {
+			if(LOG.isDebugEnabled()) {
+				LOG.debug("Parsing response with parser [" + getResponseParser().getClass().getName() + "]");
+			}
+			parsedResponse = getResponseParser().parseResponse(response.getResponse());
+		} else {
+			if(LOG.isDebugEnabled()) {
+				LOG.debug("No response parser configured");
+			}
+			parsedResponse = response.getResponse();
+		}
+		
 		if(getResponseFile() != null) {
 			if(LOG.isDebugEnabled()) {
 				LOG.debug("Writing response contents to [" + getResponseFile() + "]");
 			}
-			Utils.writeFile(getResponseFile(), response.getResponse());
+			Utils.writeFile(getResponseFile(), parsedResponse);
 		} else {
 			if(LOG.isDebugEnabled()) {
 				LOG.debug("Writing response contents to [stdout]");
 			}
-			System.out.println(response.getResponse());
+			System.out.println(parsedResponse);
 		}
 		
 		if(!response.isSuccess()) {
@@ -423,6 +467,7 @@ public class SAPWSClient {
 	   	.append("proxyServer", getProxyServer())
 	   	.append("proxyPort", getProxyPort())
 	   	.append("messageFactoryImplementationClass", getMessageFactoryImplementationClass())
+	   	.append("responseParser", getResponseParser() != null ? getResponseParser().getClass().getName() : null)
 	   	.toString();		
 	}
 
@@ -559,6 +604,20 @@ public class SAPWSClient {
 	 */
 	public void setProxyPort(int proxyPort) {
 		this.proxyPort = proxyPort;
+	}
+
+	/**
+	 * @return the responseParser
+	 */
+	public ResponseParser getResponseParser() {
+		return responseParser;
+	}
+
+	/**
+	 * @param responseParser the responseParser to set
+	 */
+	public void setResponseParser(ResponseParser responseParser) {
+		this.responseParser = responseParser;
 	}
 
 
