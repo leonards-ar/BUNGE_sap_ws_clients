@@ -51,6 +51,8 @@ public class CommandLineHelper {
 		PARAMS.put("ksp", "keystore_password.help");
 		PARAMS.put("px", "proxy.help");
 		PARAMS.put("pxp", "proxy_port.help");
+		PARAMS.put("rp", "response_parser.help");
+		PARAMS.put("dc", "default_config.help");
 		
 		List<String> global = new ArrayList<String>();
 		global.add("i");
@@ -69,11 +71,13 @@ public class CommandLineHelper {
 		REQUIRED_PARAMS.put("w", otherAuth);
 		
 	}
-	
+
 	/**
 	 * 
+	 * @param args
+	 * @throws Exception
 	 */
-	public CommandLineHelper(String[] args) {
+	public CommandLineHelper(String[] args) throws Exception {
 		super();
 		parseArgs(args);
 	}
@@ -81,8 +85,9 @@ public class CommandLineHelper {
 	/**
 	 * 
 	 * @param args
+	 * @throws Exception
 	 */
-	private void parseArgs(String args[]) {
+	private void parseArgs(String args[]) throws Exception {
 		Set<String> requiredParams = new HashSet<String>();
 		requiredParams.addAll(REQUIRED_PARAMS.get(GLOBAL_KEY));
 		if(args != null) {
@@ -107,6 +112,20 @@ public class CommandLineHelper {
 				}
 			}
 		}
+		
+		// Add defaults values from configuration file
+		if(getParameters().containsKey("dc")) {
+			Map<String, String> defaultConfiguration = parseDefaultConfigurationFile(getParameter("dc"));
+			if(defaultConfiguration != null) {
+				for(String key : defaultConfiguration.keySet()) {
+					if(!getParameters().containsKey(key)) {
+						getParameters().put(key, defaultConfiguration.get(key));
+					}
+				}
+				
+			}
+		}
+		
 		// Validate required parameters
 		for(String param : requiredParams) {
 			if(!getParameters().containsKey(param)) {
@@ -115,7 +134,36 @@ public class CommandLineHelper {
 		}
 	}
 
-
+	/**
+	 * 
+	 * @param configurationFile
+	 * @return
+	 * @throws Exception
+	 */
+	private Map<String, String> parseDefaultConfigurationFile(String configurationFile) throws Exception {
+		Map<String, String> fileConfiguration = new HashMap<String, String>();
+		if(configurationFile != null) {
+			List<String> lines = Utils.readFileLines(configurationFile);
+			if(lines != null && lines.size() > 0) {
+				String paramValue[];
+				String name, value;
+				for(Iterator<String> it = lines.iterator(); it.hasNext(); ) {
+					paramValue = Utils.parseParameter(it.next());
+					if(paramValue != null && paramValue.length == 2) {
+						name = paramValue != null ? paramValue[0] : null;
+						value = paramValue != null ? paramValue[1] : null;			
+						if(!StringUtils.isEmpty(name) && !StringUtils.isEmpty(value)) {
+							fileConfiguration.put(name, value);
+						}
+					}
+					
+				}
+				
+			}
+		}
+		
+		return fileConfiguration;
+	}
 	
 	/**
 	 * 

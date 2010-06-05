@@ -197,7 +197,7 @@ public class SAPClientXmlRequest {
 		
 		if(vars != null) {
 			for(int i=0; i < vars.length; i++) {
-				value = context.get(vars[i]);
+				value = context.get(vars[i] != null ? vars[i].toLowerCase() : vars[i]);
 				if(value == null) {
 					value = "";
 				}

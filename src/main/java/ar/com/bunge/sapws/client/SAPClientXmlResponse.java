@@ -79,36 +79,36 @@ public class SAPClientXmlResponse {
      */
     private void parseReturn() throws Exception {
     	Document doc1 = (Document) getXmlResponse().getDomNode();
-	   DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-	   Document doc2 = builder.newDocument();
+		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+		Document doc2 = builder.newDocument();
 
-    	   Element newRoot = (Element) doc2.importNode (doc1.getDocumentElement(), true);
-    	   doc2.appendChild (newRoot);    	
-        Node result = getReturnNode(doc2);
-        
-        if(result != null && result.getChildNodes() != null) {
-        	Node n;
-            for(int i=0; i < result.getChildNodes().getLength(); i++) {
-            	n = result.getChildNodes().item(i);
-            	if("type".equalsIgnoreCase(n.getNodeName())) {
-            		setType(n.getTextContent());
-            	} else if("id".equalsIgnoreCase(n.getNodeName())) {
-            		setId(n.getTextContent());
-            	} else if("number".equalsIgnoreCase(n.getNodeName())) {
-            		setNumber(new Long(n.getTextContent()));
-            	} else if("message".equalsIgnoreCase(n.getNodeName())) {
-            		setMessage(n.getTextContent());
-            	}
-            }
-        }
+		Element newRoot = (Element) doc2.importNode(doc1.getDocumentElement(), true);
+		doc2.appendChild(newRoot);
+		Node result = getReturnNode(doc2);
+
+		if (result != null && result.getChildNodes() != null) {
+			Node n;
+			for (int i = 0; i < result.getChildNodes().getLength(); i++) {
+				n = result.getChildNodes().item(i);
+				if ("type".equalsIgnoreCase(n.getNodeName())) {
+					setType(n.getTextContent());
+				} else if ("id".equalsIgnoreCase(n.getNodeName())) {
+					setId(n.getTextContent());
+				} else if ("number".equalsIgnoreCase(n.getNodeName())) {
+					setNumber(new Long(n.getTextContent()));
+				} else if ("message".equalsIgnoreCase(n.getNodeName())) {
+					setMessage(n.getTextContent());
+				}
+			}
+		}
     }
     
     /**
-     * 
-     * @param parent
-     * @return
-     * @throws Exception
-     */
+	 * 
+	 * @param parent
+	 * @return
+	 * @throws Exception
+	 */
     private Node getReturnNode(Node node) throws Exception {
     	if("return".equalsIgnoreCase(node.getNodeName())) {
     		return node;
@@ -224,6 +224,5 @@ public class SAPClientXmlResponse {
 	   	.append("message", getMessage())
 	   	.append("response", getResponse())
 	   	.toString();		
-	}	
-	
+	}
 }
