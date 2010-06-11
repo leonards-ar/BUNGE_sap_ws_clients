@@ -53,6 +53,8 @@ public class CommandLineHelper {
 		PARAMS.put("pxp", "proxy_port.help");
 		PARAMS.put("rp", "response_parser.help");
 		PARAMS.put("dc", "default_config.help");
+		PARAMS.put("td", "trace_path.help");
+		PARAMS.put("tp", "trace_prefix.help");
 		
 		List<String> global = new ArrayList<String>();
 		global.add("i");
@@ -105,7 +107,7 @@ public class CommandLineHelper {
 							requiredParams.addAll(REQUIRED_PARAMS.get(name));
 						}
 					} else {
-						getVariables().put(name, value);
+						getVariables().put(Utils.fixIndexedVariableName(name), value);
 					}
 				} else if(!StringUtils.isEmpty(name) && StringUtils.isEmpty(value) && PARAMS.containsKey(name)) {
 					getErrors().add(getErrorMessage("error.missing_arg_value.message", name, value));

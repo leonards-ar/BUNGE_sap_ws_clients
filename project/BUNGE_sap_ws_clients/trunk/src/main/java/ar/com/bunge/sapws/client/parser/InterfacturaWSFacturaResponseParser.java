@@ -32,6 +32,7 @@ public class InterfacturaWSFacturaResponseParser implements ResponseParser {
 	private static final String SUCCESS_STATUS = "OK";
 	private static final String RECEIVE_FACTURAS_ERRORS_NODE = "errores_comprobante";
 	private static final String GET_LOTES_FACTURAS_ERRORS_NODE = "errores_consulta";
+	private static final String GET_LOTES_FACTURAS_INFO_NODE = "informacion_comprobante";
 	
 	// Common error nodes
 	private static final String ERROR_NODE = "error";
@@ -46,6 +47,7 @@ public class InterfacturaWSFacturaResponseParser implements ResponseParser {
 	// Tokens
 	private static final String ERROR_MESSAGE_SEPARATOR = "\n";
 	private static final String ERROR_MESSAGE_TOKEN = "=";
+	private static final String SUCCESS_MESSAGE_SEPARATOR = ";";
 	
 	/**
 	 * 
@@ -93,8 +95,16 @@ public class InterfacturaWSFacturaResponseParser implements ResponseParser {
 			return errorResult;
 		}
 		
-		//:TODO: Find CAE and append to success message
-		return SUCCESS_RESULT;
+		Node info = getNode(response, GET_LOTES_FACTURAS_INFO_NODE);
+		if(info != null) {
+			String successResult = buildGetLotesFacturasSuccessResult(info);
+			LOG.debug("Found errors node [" + GET_LOTES_FACTURAS_INFO_NODE + "]. Returning [" + successResult + "]");
+			return successResult;
+		}
+
+		LOG.warn("No node " + GET_LOTES_FACTURAS_INFO_NODE + " or " + GET_LOTES_FACTURAS_ERRORS_NODE + " found. Returning [" + NO_STATUS_RESULT + "]");
+
+		return NO_STATUS_RESULT;
 	}
 	
 	/**
@@ -145,6 +155,36 @@ public class InterfacturaWSFacturaResponseParser implements ResponseParser {
 		}
 		
 		return errorResult.toString();
+	}
+	
+	/**
+	 * 
+	 * @param info
+	 * @return
+	 * @throws Exception
+	 */
+	private String buildGetLotesFacturasSuccessResult(Node info) throws Exception {
+		StringBuffer result = new StringBuffer(SUCCESS_RESULT);
+		
+		if (info != null) {
+			result.append(SUCCESS_MESSAGE_SEPARATOR);
+
+			Node n = getNode(info, "cae");
+			result.append(n != null ? n.getTextContent() : "");
+			
+			result.append(SUCCESS_MESSAGE_SEPARATOR);
+
+			n = getNode(info, "fecha_vencimiento_cae");
+			result.append(n != null ? n.getTextContent() : "");
+
+			result.append(SUCCESS_MESSAGE_SEPARATOR);
+
+			n = getNode(info, "fecha_obtencion_cae");
+			result.append(n != null ? n.getTextContent() : "");
+			
+		}
+		
+		return result.toString();
 	}
 	
 	/**
