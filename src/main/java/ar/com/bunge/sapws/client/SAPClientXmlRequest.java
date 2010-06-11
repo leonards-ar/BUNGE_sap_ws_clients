@@ -32,6 +32,10 @@ public class SAPClientXmlRequest {
 	public static final String ITERATOR_VARIABLE_CLOSE_TOKEN = ")}";
 	public static final String ITERATOR_BLOCK_END_TOKEN = "{end loop}";
 
+	public static final String IF_VALUE_VARIABLE_OPEN_TOKEN = "${if value(";
+	public static final String IF_VALUE_VARIABLE_CLOSE_TOKEN = ")}";
+	public static final String IF_VALUE_BLOCK_END_TOKEN = "{end if value}";
+
 	public static final String SCRIPT_ALT_OPEN_TOKEN = "%{";
 
 	/**
@@ -58,6 +62,8 @@ public class SAPClientXmlRequest {
 	public void compile(Map<String, Object> context) throws Exception {
 		String request = expandLoops(getRequestTemplate(), context);
 		
+		request = evaluateIfValues(request, context);
+		
 		request = StringUtils.replace(request, SCRIPT_ALT_OPEN_TOKEN, SCRIPT_OPEN_TOKEN);
 		
 		String scripts[] = StringUtils.substringsBetween(request, SCRIPT_OPEN_TOKEN, SCRIPT_CLOSE_TOKEN);
@@ -75,6 +81,40 @@ public class SAPClientXmlRequest {
 		setRequest(request);
 	}
 
+	/**
+	 * 
+	 * @param request
+	 * @param context
+	 * @return
+	 * @throws Exception
+	 */
+	private String evaluateIfValues(String request, Map<String, Object> context) throws Exception {
+		String evaluatedRequest = new String(request);
+
+		String prefix, suffix , ifVariable, xml;
+		String parts[];
+		while(evaluatedRequest.indexOf(IF_VALUE_VARIABLE_OPEN_TOKEN) > -1) {
+			parts = splitByWholeSeparators(evaluatedRequest, new String[] {IF_VALUE_VARIABLE_OPEN_TOKEN, IF_VALUE_VARIABLE_CLOSE_TOKEN, IF_VALUE_BLOCK_END_TOKEN});
+			
+			prefix = parts.length > 0 ? parts[0] : null;
+			ifVariable = parts.length > 1 ?  StringUtils.substringBetween(parts[1], VARIABLE_SEPARATOR, VARIABLE_SEPARATOR) : null;
+			xml = parts.length > 2 ? parts[2] : null;
+			suffix = parts.length > 3 ? parts[3] : null;
+			
+			evaluatedRequest = prefix;
+			
+			if(ifVariable != null && context.get(ifVariable) != null) {
+				evaluatedRequest += xml;
+			}
+			
+			evaluatedRequest += suffix;
+		}
+		
+		
+		return evaluatedRequest;
+		
+	}
+	
 	/**
 	 * 
 	 * @param request
@@ -125,6 +165,8 @@ public class SAPClientXmlRequest {
 				indexedXml = StringUtils.replace(indexedXml, VARIABLE_SEPARATOR + vars[i] + VARIABLE_SEPARATOR, VARIABLE_SEPARATOR + vars[i] + "(" + (index + 1) + ")" + VARIABLE_SEPARATOR);
 			}
 		}
+		
+		
 		return indexedXml;		
 	}
 	

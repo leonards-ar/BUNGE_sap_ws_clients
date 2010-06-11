@@ -46,6 +46,8 @@ import ar.com.bunge.util.ValidationException;
  */
 public class SAPWSClient {
 	private static final Logger LOG = Logger.getLogger(SAPWSClient.class);
+	private static final String TRACE_REQUEST_SUFFIX = "req.xml";
+	private static final String TRACE_RESPONSE_SUFFIX = "resp.xml";
 	
 	private String username;
 	private String password;
@@ -61,10 +63,40 @@ public class SAPWSClient {
 	private String proxyServer;
 	private int proxyPort;
 	private ResponseParser responseParser = null;
+	private String tracePath;
+	private String tracePrefix = null;
 	
 	private String messageFactoryImplementationClass = null;
 	
 	
+	/**
+	 * @return the tracePath
+	 */
+	public String getTracePath() {
+		return tracePath;
+	}
+
+	/**
+	 * @param tracePath the tracePath to set
+	 */
+	public void setTracePath(String tracePath) {
+		this.tracePath = tracePath;
+	}
+
+	/**
+	 * @return the tracePrefix
+	 */
+	public String getTracePrefix() {
+		return tracePrefix;
+	}
+
+	/**
+	 * @param tracePrefix the tracePrefix to set
+	 */
+	public void setTracePrefix(String tracePrefix) {
+		this.tracePrefix = tracePrefix;
+	}
+
 	/**
 	 * 
 	 */
@@ -101,6 +133,8 @@ public class SAPWSClient {
 			client.setProxyServer(cmdLine.getParameter("px"));
 			client.setProxyPort(cmdLine.getParameter("pxp") != null ? Integer.parseInt(cmdLine.getParameter("pxp")) : 8080);
 			client.setResponseParser(client.getResponseParserInstance(cmdLine.getParameter("rp")));
+			client.setTracePath(cmdLine.getParameter("td"));
+			client.setTracePrefix(cmdLine.getParameter("tp"));
 			
 			Map<String, Object> context = client.parseVariablesFile();
 			context.putAll(cmdLine.getVariables());
@@ -159,7 +193,7 @@ public class SAPWSClient {
 						name = paramValue != null ? paramValue[0] : null;
 						value = paramValue != null ? paramValue[1] : null;			
 						if(!StringUtils.isEmpty(name) && !StringUtils.isEmpty(value)) {
-							fileVariables.put(name, value);
+							fileVariables.put(Utils.fixIndexedVariableName(name), value);
 						}
 					}
 					
@@ -243,6 +277,18 @@ public class SAPWSClient {
 		return execute(request, context);		
 	}
 	
+	private void trace(String suffix, String contents) {
+		if(isTraceEnabled()) {
+			String file = Utils.buildTraceFileName(getTracePath(), getTracePrefix(), suffix);
+			try {
+				Utils.writeFile(file, contents);
+			} catch(Exception ex) {
+				LOG.warn("Could not create trace file [" + file + "]: " + ex.getMessage(), ex);
+			}
+		}
+		
+	}
+	
 	/**
 	 * 
 	 * @param request
@@ -258,10 +304,16 @@ public class SAPWSClient {
 				if(LOG.isDebugEnabled()) {
 					LOG.debug("About to execute compiled request [" + request.getRequest() + "]");
 				}
+				
+				trace(TRACE_REQUEST_SUFFIX, request.getRequest());
+				
 				response.setResponse(sendAndReceive(request.getRequest()));
 				if(LOG.isDebugEnabled()) {
 					LOG.debug("Received raw response [" + response.getResponse() + "]");
 				}
+
+				trace(TRACE_RESPONSE_SUFFIX, request.getRequest());
+
 				response.parseResponse();
 			} catch(SoapFaultClientException ex) {
 				LOG.error(ex.getMessage(), ex);
@@ -620,5 +672,11 @@ public class SAPWSClient {
 		this.responseParser = responseParser;
 	}
 
-
+	/**
+	 * 
+	 * @return
+	 */
+	private boolean isTraceEnabled() {
+		return getTracePrefix() != null;
+	}
 }

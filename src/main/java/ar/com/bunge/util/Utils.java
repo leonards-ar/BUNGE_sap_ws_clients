@@ -35,6 +35,11 @@ public class Utils {
 
 	private static final String ENCODE_TOKEN = "_b64_";
 	private static final String UNKNOWN_OBJECT = getBundleText("error.validation.unknown.variable");
+	private static final String FILE_PATH_SEPARATOR = System.getProperty("file.separator") != null ? System.getProperty("file.separator") : "/";
+	private static final String TRACE_FILE_SEPARATOR = "_";
+
+	private static final String VARIABLE_INDEX_OPEN_TOKEN = "(";
+	private static final String VARIABLE_INDEX_CLOSE_TOKEN = ")";
 	
 	/**
 	 * 
@@ -429,6 +434,35 @@ public class Utils {
 	
 	/**
 	 * 
+	 * @param tracePath
+	 * @param prefix
+	 * @param suffix
+	 * @return
+	 */
+	public static String buildTraceFileName(String tracePath, String prefix, String suffix) {
+		final SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd.HHmmss");
+		StringBuffer filename = new StringBuffer();
+		
+		if(prefix != null) {
+			if(tracePath != null && !tracePath.trim().endsWith(FILE_PATH_SEPARATOR)) {
+				tracePath = tracePath.trim() + FILE_PATH_SEPARATOR;
+			} else if(tracePath != null) {
+				filename.append(tracePath.trim());
+			}
+			
+			filename.append(prefix.trim());
+			filename.append(TRACE_FILE_SEPARATOR);
+			
+			filename.append(df.format(new Date()));
+			filename.append(TRACE_FILE_SEPARATOR);
+			filename.append(suffix);
+		}
+		
+		return filename.toString();
+	}
+	
+	/**
+	 * 
 	 * @param str
 	 * @param maxLength
 	 * @return
@@ -541,4 +575,24 @@ public class Utils {
 			return key;
 		}
 	}	
+	
+	/**
+	 * 
+	 * @param name
+	 * @return
+	 */
+	public static String fixIndexedVariableName(String name) {
+		if(name != null && StringUtils.contains(name, VARIABLE_INDEX_OPEN_TOKEN) && StringUtils.contains(name, VARIABLE_INDEX_CLOSE_TOKEN)) {
+			String indexStr = StringUtils.substringBetween(name, VARIABLE_INDEX_OPEN_TOKEN, VARIABLE_INDEX_CLOSE_TOKEN);
+			try {
+				String correctedIndex = String.valueOf(Integer.parseInt(indexStr, 10));
+				return StringUtils.replace(name, VARIABLE_INDEX_OPEN_TOKEN + indexStr + VARIABLE_INDEX_CLOSE_TOKEN, VARIABLE_INDEX_OPEN_TOKEN + correctedIndex + VARIABLE_INDEX_CLOSE_TOKEN);
+			} catch(Exception ex) {
+				return name;
+			}
+		} else {
+			return name;
+		}
+	}
+	
 }
