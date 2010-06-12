@@ -30,20 +30,33 @@ public class InterfacturaWSFacturaResponseParser implements ResponseParser {
 	
 	private static final String RECEIVE_FACTURAS_STATUS_NODE = "estado";
 	private static final String SUCCESS_STATUS = "OK";
-	private static final String RECEIVE_FACTURAS_ERRORS_NODE = "errores_comprobante";
+	private static final String CERROR_STATUS = "EC";
+	private static final String LERROR_STATUS = "EL";
+	
+	private static final String RECEIVE_FACTURAS_CERRORS_NODE = "errores_comprobante";
+	private static final String RECEIVE_FACTURAS_LERRORS_NODE = "errores_lote";
+	private static final String RECEIVE_FACTURAS_SUCCESS_RESULT = "A";
+	private static final String RECEIVE_FACTURAS_RESULT_NODE = "resultado";
+
 	private static final String GET_LOTES_FACTURAS_ERRORS_NODE = "errores_consulta";
 	private static final String GET_LOTES_FACTURAS_INFO_NODE = "informacion_comprobante";
+	private static final String GET_LOTES_FACTURAS_RESULT_NODE = "resultado";
+	private static final String GET_LOTES_FACTURAS_SUCCESS_RESULT = "A";
+	private static final String GET_LOTES_FACTURAS_CAE_NODE = "cae";
+	private static final String GET_LOTES_FACTURAS_EXP_CAE_DATE_NODE = "fecha_vencimiento_cae";
+	private static final String GET_LOTES_FACTURAS_GET_CAE_DATE_NODE = "fecha_obtencion_cae";
 	
 	// Common error nodes
 	private static final String ERROR_NODE = "error";
 	private static final String ERROR_CODE_NODE = "codigo_error";
 	private static final String ERROR_MESSAGE_NODE = "descripcion_error";
+	private static final String REASON_NODE = "motivo";
 	
 	// Result codes
 	private static final String NO_STATUS_RESULT = "UNKNOWN";
 	private static final String SUCCESS_RESULT = "OK";
 	private static final String ERROR_RESULT = "ERROR";
-	
+	private static final String PARTIAL_SUCCESS_RESULT = "OERROR";
 	// Tokens
 	private static final String ERROR_MESSAGE_SEPARATOR = "\n";
 	private static final String ERROR_MESSAGE_TOKEN = "=";
@@ -95,18 +108,26 @@ public class InterfacturaWSFacturaResponseParser implements ResponseParser {
 			return errorResult;
 		}
 		
+		
 		Node info = getNode(response, GET_LOTES_FACTURAS_INFO_NODE);
 		if(info != null) {
-			String successResult = buildGetLotesFacturasSuccessResult(info);
-			LOG.debug("Found errors node [" + GET_LOTES_FACTURAS_INFO_NODE + "]. Returning [" + successResult + "]");
-			return successResult;
+			String result = getNodeText(response, GET_LOTES_FACTURAS_RESULT_NODE);
+			if(GET_LOTES_FACTURAS_SUCCESS_RESULT.equalsIgnoreCase(result)) {
+				String successResult = buildGetLotesFacturasSuccessResult(info);
+				LOG.debug("Found node [" + GET_LOTES_FACTURAS_INFO_NODE + "] and result node [" + GET_LOTES_FACTURAS_RESULT_NODE + "] has value [" + result + "]. Returning [" + successResult + "]");
+				return successResult;
+			} else {
+				String errorResult = buildStatusErrorResult(response);
+				LOG.debug("Found node [" + GET_LOTES_FACTURAS_INFO_NODE + "] and result node [" + GET_LOTES_FACTURAS_RESULT_NODE + "] has value [" + result + "]. Returning [" + errorResult + "]");
+				return errorResult;
+			}
 		}
 
 		LOG.warn("No node " + GET_LOTES_FACTURAS_INFO_NODE + " or " + GET_LOTES_FACTURAS_ERRORS_NODE + " found. Returning [" + NO_STATUS_RESULT + "]");
 
 		return NO_STATUS_RESULT;
 	}
-	
+
 	/**
 	 * 
 	 * @param responseNode
@@ -122,12 +143,26 @@ public class InterfacturaWSFacturaResponseParser implements ResponseParser {
 			LOG.debug("Status node " + RECEIVE_FACTURAS_STATUS_NODE + " found. Value is: [" + statusText + "]");
 			
 			if(SUCCESS_STATUS.equalsIgnoreCase(statusText)) {
-				LOG.debug("Result status [" + statusText + "] matches success text [" + SUCCESS_STATUS + "]. Returning [" + SUCCESS_RESULT + "]");
-				return SUCCESS_RESULT;
-			} else {
-				String errorResult = buildErrorResult(getNode(response, RECEIVE_FACTURAS_ERRORS_NODE));
+				String result = getNodeText(response, RECEIVE_FACTURAS_RESULT_NODE);
+				if(result == null || RECEIVE_FACTURAS_SUCCESS_RESULT.equalsIgnoreCase(result)) {
+					LOG.debug("Result status [" + statusText + "] matches success text [" + SUCCESS_STATUS + "] and result node [" + RECEIVE_FACTURAS_RESULT_NODE + "] has value [" + result + "]. Returning [" + SUCCESS_RESULT + "]");
+					return SUCCESS_RESULT;
+				} else {
+					String errorResult = buildStatusErrorResult(response);
+					LOG.debug("Found node [" + GET_LOTES_FACTURAS_INFO_NODE + "] and result node [" + GET_LOTES_FACTURAS_RESULT_NODE + "] has value [" + result + "]. Returning [" + errorResult + "]");
+					return errorResult;
+				}
+			} else if(CERROR_STATUS.equalsIgnoreCase(statusText)) {
+				String errorResult = buildErrorResult(getNode(response, RECEIVE_FACTURAS_CERRORS_NODE));
 				LOG.debug("Result status [" + statusText + "] does not match success text [" + SUCCESS_STATUS + "]. Returning [" + errorResult + "]");
 				return errorResult;
+			} else if(LERROR_STATUS.equalsIgnoreCase(statusText)) {
+				String errorResult = buildErrorResult(getNode(response, RECEIVE_FACTURAS_LERRORS_NODE));
+				LOG.debug("Result status [" + statusText + "] does not match success text [" + SUCCESS_STATUS + "]. Returning [" + errorResult + "]");
+				return errorResult;
+			} else {
+				LOG.warn("Result status [" + statusText + "] does not match expected status [" + SUCCESS_STATUS + ", " + CERROR_STATUS + ", " + LERROR_STATUS + "]. Returning [" + ERROR_RESULT + "]");
+				return ERROR_RESULT;
 			}
 		} else {
 			LOG.warn("No node " + RECEIVE_FACTURAS_STATUS_NODE + " found. Returning [" + NO_STATUS_RESULT + "]");
@@ -157,6 +192,26 @@ public class InterfacturaWSFacturaResponseParser implements ResponseParser {
 		return errorResult.toString();
 	}
 	
+	
+
+	/**
+	 * 
+	 * @param info
+	 * @return
+	 * @throws Exception
+	 */
+	private String buildStatusErrorResult(Node node) throws Exception {
+		StringBuffer result = new StringBuffer(PARTIAL_SUCCESS_RESULT);
+		
+		if (node != null) {
+			Node n = getNode(node, REASON_NODE);
+			result.append(n != null ? ERROR_MESSAGE_SEPARATOR + n.getTextContent() : "");
+			
+		}
+		
+		return result.toString();
+	}	
+	
 	/**
 	 * 
 	 * @param info
@@ -169,17 +224,17 @@ public class InterfacturaWSFacturaResponseParser implements ResponseParser {
 		if (info != null) {
 			result.append(SUCCESS_MESSAGE_SEPARATOR);
 
-			Node n = getNode(info, "cae");
+			Node n = getNode(info, GET_LOTES_FACTURAS_CAE_NODE);
 			result.append(n != null ? n.getTextContent() : "");
 			
 			result.append(SUCCESS_MESSAGE_SEPARATOR);
 
-			n = getNode(info, "fecha_vencimiento_cae");
+			n = getNode(info, GET_LOTES_FACTURAS_EXP_CAE_DATE_NODE);
 			result.append(n != null ? n.getTextContent() : "");
 
 			result.append(SUCCESS_MESSAGE_SEPARATOR);
 
-			n = getNode(info, "fecha_obtencion_cae");
+			n = getNode(info, GET_LOTES_FACTURAS_GET_CAE_DATE_NODE);
 			result.append(n != null ? n.getTextContent() : "");
 			
 		}
