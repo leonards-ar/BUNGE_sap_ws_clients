@@ -5,13 +5,8 @@
  */
 package ar.com.bunge.sapws.client.parser;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.apache.log4j.Logger;
-import org.apache.xmlbeans.XmlObject;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
@@ -21,7 +16,7 @@ import org.w3c.dom.Node;
  * @since SPM 1.0
  *
  */
-public class InterfacturaWSFacturaResponseParser implements ResponseParser {
+public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 	private static final Logger LOG = Logger.getLogger(InterfacturaWSFacturaResponseParser.class);
 	
 	// Receive Factura keys
@@ -33,6 +28,7 @@ public class InterfacturaWSFacturaResponseParser implements ResponseParser {
 	private static final String CERROR_STATUS = "EC";
 	private static final String LERROR_STATUS = "EL";
 	
+	private static final String RECEIVE_FACTURAS_RERRORS_NODE = "errores_response";
 	private static final String RECEIVE_FACTURAS_CERRORS_NODE = "errores_comprobante";
 	private static final String RECEIVE_FACTURAS_LERRORS_NODE = "errores_lote";
 	private static final String RECEIVE_FACTURAS_SUCCESS_RESULT = "A";
@@ -165,8 +161,15 @@ public class InterfacturaWSFacturaResponseParser implements ResponseParser {
 				return ERROR_RESULT;
 			}
 		} else {
-			LOG.warn("No node " + RECEIVE_FACTURAS_STATUS_NODE + " found. Returning [" + NO_STATUS_RESULT + "]");
-			return NO_STATUS_RESULT;
+			Node responseErrors = getNode(response, RECEIVE_FACTURAS_RERRORS_NODE);
+			if(responseErrors != null) {
+				String errorResult = buildErrorResult(responseErrors);
+				LOG.debug("Receive response error node [" + RECEIVE_FACTURAS_RERRORS_NODE + "]. Returning [" + errorResult + "]");
+				return errorResult;
+			} else {
+				LOG.warn("No node " + RECEIVE_FACTURAS_STATUS_NODE + " found. Returning [" + NO_STATUS_RESULT + "]");
+				return NO_STATUS_RESULT;
+			}
 		}
 	}
 
@@ -241,58 +244,4 @@ public class InterfacturaWSFacturaResponseParser implements ResponseParser {
 		
 		return result.toString();
 	}
-	
-	/**
-	 * 
-	 * @param xml
-	 * @return
-	 * @throws Exception
-	 */
-	private Document getXmlDocumentFromString(String xml) throws Exception {
-		XmlObject xmlObject = XmlObject.Factory.parse(xml);
-		
-    	Document doc1 = (Document) xmlObject.getDomNode();
-		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		Document doc2 = builder.newDocument();
-
-		Element newRoot = (Element) doc2.importNode(doc1.getDocumentElement(), true);
-		doc2.appendChild(newRoot);		
-		
-		return doc2;
-	}
-    /**
-	 * 
-	 * @param parent
-	 * @return
-	 * @throws Exception
-	 */
-    private Node getNode(Node node, String nodeName) throws Exception {
-    	if(nodeName == null) {
-    		return null;
-    	} else if(nodeName.equalsIgnoreCase(node.getNodeName())) {
-    		return node;
-    	} else if(node == null || node.getChildNodes() == null || node.getChildNodes().getLength() <= 0) {
-    		return null;
-    	} else {
-    		for(int i = 0; i < node.getChildNodes().getLength(); i++) {
-    			Node n = getNode(node.getChildNodes().item(i), nodeName);
-    			if(n != null) {
-    				return n;
-    			}
-    		}
-    		return null;
-    	}
-    }	
-    
-    /**
-     * 
-     * @param node
-     * @param nodeName
-     * @return
-     * @throws Exception
-     */
-    private String getNodeText(Node node, String nodeName) throws Exception {
-    	Node childNode = getNode(node, nodeName);
-    	return childNode != null ? childNode.getTextContent() : null;
-    }
 }

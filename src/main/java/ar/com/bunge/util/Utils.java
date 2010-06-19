@@ -5,23 +5,19 @@
  */
 package ar.com.bunge.util;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 /**
  *
@@ -35,12 +31,9 @@ public class Utils {
 
 	private static final String ENCODE_TOKEN = "_b64_";
 	private static final String UNKNOWN_OBJECT = getBundleText("error.validation.unknown.variable");
-	private static final String FILE_PATH_SEPARATOR = System.getProperty("file.separator") != null ? System.getProperty("file.separator") : "/";
-	private static final String TRACE_FILE_SEPARATOR = "_";
 
-	private static final String VARIABLE_INDEX_OPEN_TOKEN = "(";
-	private static final String VARIABLE_INDEX_CLOSE_TOKEN = ")";
-	
+	private static final DateTimeFormatter XML_DATE_TIME_FORMAT = ISODateTimeFormat.dateTimeNoMillis();  
+
 	/**
 	 * 
 	 */
@@ -357,109 +350,6 @@ public class Utils {
 		return StringUtils.leftPad(s, size, padChar);
 	}
 	
-	/**
-	 * 
-	 * @return
-	 */
-	public static String getNewLine() {
-		return System.getProperty("line.separator") != null ? System.getProperty("line.separator") : "\n";
-	}
-	
-	/**
-	 * 
-	 * @param file
-	 * @return
-	 * @throws IOException
-	 */
-	public static String readFile(String file) throws IOException {
-		StringBuffer contents = new StringBuffer();
-		BufferedReader reader = null;
-		try {
-			reader = new BufferedReader(new FileReader(file));
-			String line;
-			while( (line = reader.readLine()) != null) {
-				contents.append(line + getNewLine());
-			}
-		} finally {
-			if (reader != null) {
-				reader.close();
-			}
-		}
-		
-		return contents.toString();
-	}
-	
-	/**
-	 * 
-	 * @param file
-	 * @return
-	 * @throws IOException
-	 */
-	public static List<String> readFileLines(String file) throws IOException {
-		List<String> lines = new ArrayList<String>();
-		BufferedReader reader = null;
-		try {
-			reader = new BufferedReader(new FileReader(file));
-			String line;
-			while( (line = reader.readLine()) != null) {
-				lines.add(line);
-			}
-		} finally {
-			if (reader != null) {
-				reader.close();
-			}
-		}
-		
-		return lines;		
-	}
-	
-	/**
-	 * 
-	 * @param file
-	 * @param contents
-	 * @throws IOException
-	 */
-	public static void writeFile(String file, String contents) throws IOException {
-		BufferedWriter writer = null;
-		try {
-			writer = new BufferedWriter(new FileWriter(file));
-			writer.write(contents);
-			writer.flush();
-		} finally {
-			if (writer != null) {
-				writer.close();
-			}
-		}
-	}
-	
-	/**
-	 * 
-	 * @param tracePath
-	 * @param prefix
-	 * @param suffix
-	 * @return
-	 */
-	public static String buildTraceFileName(String tracePath, String prefix, String suffix) {
-		final SimpleDateFormat df = new SimpleDateFormat("yyyyMMdd.HHmmss");
-		StringBuffer filename = new StringBuffer();
-		
-		if(prefix != null) {
-			if(tracePath != null && !tracePath.trim().endsWith(FILE_PATH_SEPARATOR)) {
-				tracePath = tracePath.trim() + FILE_PATH_SEPARATOR;
-			} else if(tracePath != null) {
-				filename.append(tracePath.trim());
-			}
-			
-			filename.append(prefix.trim());
-			filename.append(TRACE_FILE_SEPARATOR);
-			
-			filename.append(df.format(new Date()));
-			filename.append(TRACE_FILE_SEPARATOR);
-			filename.append(suffix);
-		}
-		
-		return filename.toString();
-	}
 	
 	/**
 	 * 
@@ -475,37 +365,6 @@ public class Utils {
 		}
 	}
 	
-	/**
-	 * 
-	 * @param paramValuePair
-	 * @return
-	 */
-	public static String[] parseParameter(String paramValuePair) {
-		if(paramValuePair != null && paramValuePair.trim().length() > 0) {
-			String[] parsed = new String[2];
-			
-			int i = paramValuePair.indexOf('=');
-			
-			if(i > 0 && i < paramValuePair.length() - 1) {
-				parsed[0] = paramValuePair.substring(0, i).trim().toLowerCase();
-				parsed[1] = paramValuePair.substring(i + 1).trim();
-			} else if(i == 0) {
-				parsed[0] = null;
-				parsed[1] = paramValuePair.substring(1).trim();
-			} else if(i == paramValuePair.length() - 1) {
-				parsed[0] = paramValuePair.substring(0, paramValuePair.length() - 1).trim().toLowerCase();
-				parsed[1] = null;
-			} else {
-				parsed[0] = paramValuePair.trim().toLowerCase();
-				parsed[1] = null;
-			}
-			return parsed;
-		} else {
-			return null;
-		}
-	}
-	
-
 	
 	/**
 	 * 
@@ -575,24 +434,24 @@ public class Utils {
 			return key;
 		}
 	}	
-	
+
 	/**
-	 * 
-	 * @param name
+	 * Parse from ISO8601 string to date
+	 * @param d
 	 * @return
 	 */
-	public static String fixIndexedVariableName(String name) {
-		if(name != null && StringUtils.contains(name, VARIABLE_INDEX_OPEN_TOKEN) && StringUtils.contains(name, VARIABLE_INDEX_CLOSE_TOKEN)) {
-			String indexStr = StringUtils.substringBetween(name, VARIABLE_INDEX_OPEN_TOKEN, VARIABLE_INDEX_CLOSE_TOKEN);
-			try {
-				String correctedIndex = String.valueOf(Integer.parseInt(indexStr, 10));
-				return StringUtils.replace(name, VARIABLE_INDEX_OPEN_TOKEN + indexStr + VARIABLE_INDEX_CLOSE_TOKEN, VARIABLE_INDEX_OPEN_TOKEN + correctedIndex + VARIABLE_INDEX_CLOSE_TOKEN);
-			} catch(Exception ex) {
-				return name;
-			}
-		} else {
-			return name;
-		}
+	public static Date isoStringToDate(String d) {
+		DateTime dt = XML_DATE_TIME_FORMAT.parseDateTime(d);
+		return dt.toDate();
 	}
 	
+	/**
+	 * Parse from date to ISO8601 format string
+	 * @param d
+	 * @return
+	 */
+	public static String dateToIsoString(Date d) {
+		return XML_DATE_TIME_FORMAT.print(d.getTime());
+	}
+
 }

@@ -8,9 +8,6 @@ package ar.com.bunge.sapws.client;
 import java.io.File;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.xml.soap.MessageFactory;
@@ -21,7 +18,6 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.commons.ssl.HttpSecureProtocol;
@@ -34,7 +30,7 @@ import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.transport.http.CommonsHttpMessageSender;
 
 import ar.com.bunge.sapws.client.parser.ResponseParser;
-import ar.com.bunge.util.Utils;
+import ar.com.bunge.util.FileUtils;
 import ar.com.bunge.util.ValidationException;
 
 /**
@@ -155,7 +151,7 @@ public class SAPWSClient {
 	 * @return
 	 * @throws Exception
 	 */
-	private ResponseParser getResponseParserInstance(String responseParserClass) throws Exception {
+	public ResponseParser getResponseParserInstance(String responseParserClass) throws Exception {
 		if(responseParserClass != null) {
 			try {
 				if(LOG.isDebugEnabled()) {
@@ -180,29 +176,7 @@ public class SAPWSClient {
 	 * @throws Exception
 	 */
 	private Map<String, Object> parseVariablesFile() throws Exception {
-		Map<String, Object> fileVariables = new HashMap<String, Object>();
-		
-		if(getVariablesFile() != null) {
-			List<String> lines = Utils.readFileLines(getVariablesFile());
-			if(lines != null && lines.size() > 0) {
-				String paramValue[];
-				String name, value;
-				for(Iterator<String> it = lines.iterator(); it.hasNext(); ) {
-					paramValue = Utils.parseParameter(it.next());
-					if(paramValue != null && paramValue.length == 2) {
-						name = paramValue != null ? paramValue[0] : null;
-						value = paramValue != null ? paramValue[1] : null;			
-						if(!StringUtils.isEmpty(name) && !StringUtils.isEmpty(value)) {
-							fileVariables.put(Utils.fixIndexedVariableName(name), value);
-						}
-					}
-					
-				}
-				
-			}
-		}
-		
-		return fileVariables;
+		return FileUtils.parseKeyValueFile(getVariablesFile());
 	}
 	
 	/**
@@ -215,7 +189,7 @@ public class SAPWSClient {
 		if(LOG.isDebugEnabled()) {
 			LOG.debug(this);
 		}
-		SAPClientXmlResponse response = execute(context);
+		ClientXmlResponse response = execute(context);
 
 		if(LOG.isDebugEnabled()) {
 			LOG.debug(response);
@@ -239,7 +213,7 @@ public class SAPWSClient {
 			if(LOG.isDebugEnabled()) {
 				LOG.debug("Writing response contents to [" + getResponseFile() + "]");
 			}
-			Utils.writeFile(getResponseFile(), parsedResponse);
+			FileUtils.writeFile(getResponseFile(), parsedResponse);
 		} else {
 			if(LOG.isDebugEnabled()) {
 				LOG.debug("Writing response contents to [stdout]");
@@ -260,14 +234,14 @@ public class SAPWSClient {
 	 * @return
 	 * @throws Exception
 	 */
-	public SAPClientXmlResponse execute(Map<String, Object> context) throws Exception {
-		SAPClientXmlRequest request = new SAPClientXmlRequest();
+	public ClientXmlResponse execute(Map<String, Object> context) throws Exception {
+		ClientXmlRequest request = new ClientXmlRequest();
 
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("About to read Request Template from file [" + getRequestTemplateFile() + "]");
 		}
 		
-		request.setRequestTemplate(Utils.readFile(getRequestTemplateFile()));
+		request.setRequestTemplate(FileUtils.readFile(getRequestTemplateFile()));
 		
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("Read file contents from [" + getRequestTemplateFile() + "]");
@@ -277,11 +251,16 @@ public class SAPWSClient {
 		return execute(request, context);		
 	}
 	
+	/**
+	 * 
+	 * @param suffix
+	 * @param contents
+	 */
 	private void trace(String suffix, String contents) {
 		if(isTraceEnabled()) {
-			String file = Utils.buildTraceFileName(getTracePath(), getTracePrefix(), suffix);
+			String file = FileUtils.buildTraceFileName(getTracePath(), getTracePrefix(), suffix);
 			try {
-				Utils.writeFile(file, contents);
+				FileUtils.writeFile(file, contents);
 			} catch(Exception ex) {
 				LOG.warn("Could not create trace file [" + file + "]: " + ex.getMessage(), ex);
 			}
@@ -295,9 +274,9 @@ public class SAPWSClient {
 	 * @return
 	 * @throws Exception
 	 */
-	public SAPClientXmlResponse execute(SAPClientXmlRequest request, Map<String, Object> context) throws Exception {
+	public ClientXmlResponse execute(ClientXmlRequest request, Map<String, Object> context) throws Exception {
 		if(request != null) {
-			SAPClientXmlResponse response = new SAPClientXmlResponse();
+			ClientXmlResponse response = new ClientXmlResponse();
 
 			try {
 				request.compile(context);
@@ -312,7 +291,7 @@ public class SAPWSClient {
 					LOG.debug("Received raw response [" + response.getResponse() + "]");
 				}
 
-				trace(TRACE_RESPONSE_SUFFIX, request.getRequest());
+				trace(TRACE_RESPONSE_SUFFIX, response.getResponse());
 
 				response.parseResponse();
 			} catch(SoapFaultClientException ex) {
