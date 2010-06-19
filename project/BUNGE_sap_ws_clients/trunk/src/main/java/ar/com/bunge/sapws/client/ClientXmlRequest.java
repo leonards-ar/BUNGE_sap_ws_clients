@@ -1,5 +1,5 @@
 /*
- * File name: SAPClientXmlRequest.java
+ * File name: ClientXmlRequest.java
  * Creation date: Jul 28, 2009 5:11:37 PM
  * Copyright Mindpool
  */
@@ -22,7 +22,7 @@ import bsh.Interpreter;
  * @since 1.0
  *
  */
-public class SAPClientXmlRequest {
+public class ClientXmlRequest {
 	private String requestTemplate;
 	private String request;
 	public static final String VARIABLE_SEPARATOR = "#";
@@ -41,7 +41,7 @@ public class SAPClientXmlRequest {
 	/**
 	 * 
 	 */
-	public SAPClientXmlRequest() {
+	public ClientXmlRequest() {
 		this(null);
 	}
 
@@ -49,7 +49,7 @@ public class SAPClientXmlRequest {
 	 * 
 	 * @param requestTemplate
 	 */
-	public SAPClientXmlRequest(String requestTemplate) {
+	public ClientXmlRequest(String requestTemplate) {
 		super();
 		setRequestTemplate(requestTemplate);
 	}
@@ -180,8 +180,8 @@ public class SAPClientXmlRequest {
 	private int getRepetitions(String loopVariable, Map<String, Object> context) throws Exception {
 		try {
 			Object reps = context.get(loopVariable);
-			int repetitions = reps != null ? Integer.parseInt(reps.toString()) : 1;
-			return repetitions > 0 ? repetitions : 1;
+			int repetitions = reps != null ? Integer.parseInt(reps.toString()) : 0;
+			return repetitions >= 0 ? repetitions : 0;
 		} catch(Throwable ex) {
 			throw new Exception("Loop variable [" + loopVariable + "] must be a valid variable name which value is a valid integer representing the number of times to repeat the loop", ex);
 		}

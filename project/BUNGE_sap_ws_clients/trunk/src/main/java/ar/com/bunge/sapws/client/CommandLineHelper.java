@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
+import ar.com.bunge.util.FileUtils;
 import ar.com.bunge.util.Utils;
 
 /**
@@ -96,7 +97,7 @@ public class CommandLineHelper {
 			String name, value;
 			
 			for(int i=0; i < args.length; i++) {
-				String paramValue[] = Utils.parseParameter(args[i]);
+				String paramValue[] = FileUtils.parseParameter(args[i]);
 				name = paramValue != null ? paramValue[0] : null;
 				value = paramValue != null ? paramValue[1] : null;
 
@@ -107,7 +108,7 @@ public class CommandLineHelper {
 							requiredParams.addAll(REQUIRED_PARAMS.get(name));
 						}
 					} else {
-						getVariables().put(Utils.fixIndexedVariableName(name), value);
+						getVariables().put(FileUtils.fixIndexedVariableName(name), value);
 					}
 				} else if(!StringUtils.isEmpty(name) && StringUtils.isEmpty(value) && PARAMS.containsKey(name)) {
 					getErrors().add(getErrorMessage("error.missing_arg_value.message", name, value));
@@ -117,11 +118,14 @@ public class CommandLineHelper {
 		
 		// Add defaults values from configuration file
 		if(getParameters().containsKey("dc")) {
-			Map<String, String> defaultConfiguration = parseDefaultConfigurationFile(getParameter("dc"));
+			Map<String, Object> defaultConfiguration = parseDefaultConfigurationFile(getParameter("dc"));
 			if(defaultConfiguration != null) {
 				for(String key : defaultConfiguration.keySet()) {
 					if(!getParameters().containsKey(key)) {
-						getParameters().put(key, defaultConfiguration.get(key));
+						Object value = defaultConfiguration.get(key);
+						if(value != null) {
+							getParameters().put(key, value.toString());
+						}
 					}
 				}
 				
@@ -142,29 +146,8 @@ public class CommandLineHelper {
 	 * @return
 	 * @throws Exception
 	 */
-	private Map<String, String> parseDefaultConfigurationFile(String configurationFile) throws Exception {
-		Map<String, String> fileConfiguration = new HashMap<String, String>();
-		if(configurationFile != null) {
-			List<String> lines = Utils.readFileLines(configurationFile);
-			if(lines != null && lines.size() > 0) {
-				String paramValue[];
-				String name, value;
-				for(Iterator<String> it = lines.iterator(); it.hasNext(); ) {
-					paramValue = Utils.parseParameter(it.next());
-					if(paramValue != null && paramValue.length == 2) {
-						name = paramValue != null ? paramValue[0] : null;
-						value = paramValue != null ? paramValue[1] : null;			
-						if(!StringUtils.isEmpty(name) && !StringUtils.isEmpty(value)) {
-							fileConfiguration.put(name, value);
-						}
-					}
-					
-				}
-				
-			}
-		}
-		
-		return fileConfiguration;
+	private Map<String, Object> parseDefaultConfigurationFile(String configurationFile) throws Exception {
+		return FileUtils.parseKeyValueFile(configurationFile);
 	}
 	
 	/**

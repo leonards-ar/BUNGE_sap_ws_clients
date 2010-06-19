@@ -56,6 +56,16 @@
       <artifactId>not-yet-commons-ssl</artifactId>
       <version>0.3.11</version>
     </dependency>
+    <dependency>
+      <groupId>bouncycastle</groupId>
+      <artifactId>bcmail-jdk15</artifactId>
+      <version>140</version>
+    </dependency>
+    <dependency>
+      <groupId>joda-time</groupId>
+      <artifactId>joda-time</artifactId>
+      <version>1.6</version>
+    </dependency>
   </dependencies>
 	<build>
 		<plugins>

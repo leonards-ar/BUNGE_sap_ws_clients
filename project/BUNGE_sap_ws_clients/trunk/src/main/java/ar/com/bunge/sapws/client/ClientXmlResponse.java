@@ -1,5 +1,5 @@
 /*
- * File name: SAPClientXmlResponse.java
+ * File name: ClientXmlResponse.java
  * Creation date: Jul 28, 2009 5:15:47 PM
  * Copyright Mindpool
  */
@@ -22,7 +22,7 @@ import org.w3c.dom.Node;
  * @since 1.0
  *
  */
-public class SAPClientXmlResponse {
+public class ClientXmlResponse {
 	private String response;
 	private XmlObject xmlResponse;
 	private Long number = new Long(0L);
@@ -33,7 +33,7 @@ public class SAPClientXmlResponse {
 	/**
 	 * 
 	 */
-	public SAPClientXmlResponse() {
+	public ClientXmlResponse() {
 		this(null);
 	}
 
@@ -41,7 +41,7 @@ public class SAPClientXmlResponse {
 	 * 
 	 * @param response
 	 */
-	public SAPClientXmlResponse(String response) {
+	public ClientXmlResponse(String response) {
 		super();
 		setResponse(response);
 	}
