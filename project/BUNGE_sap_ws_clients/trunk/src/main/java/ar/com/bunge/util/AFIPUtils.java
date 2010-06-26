@@ -45,7 +45,7 @@ public class AFIPUtils {
 	private static final String WSAA_TICKET_EXP_TIME_PARAM = "wsaa_ticket_expiration_time";
 	private static final String WSAA_TICKET_EXP_THRESHOLD_PARAM = "wsaa_ticket_expiration_threshold";
 	private static final String WSAA_TICKET_TEMP_DIR_PARAM = "wsaa_ticket_temp_dir";
-	private static final String WSAA_ENDPOINT_PARAM = "wsaa_endpoint";
+	private static final String WSAA_ENDPOINT_PARAM = "u";
 	private static final String WSAA_SERVICE_PARAM = "wsaa_service";
 	private static final String WSAA_SRC_DN_PARAM = "wsaa_source_dn";
 	private static final String WSAA_DEST_DN_PARAM = "wsaa_destination_dn";
@@ -182,7 +182,7 @@ public class AFIPUtils {
 	private static SAPWSClient getWSClient(Map<String, Object> config) throws Exception {
 		SAPWSClient client = new SAPWSClient();
 		client.setUsername(getMapValue(config, "u"));
-		client.setUrl(getMapValue(config, "url"));
+		client.setUrl(getMapValue(config, WSAA_ENDPOINT_PARAM));
 		client.setPassword(getMapValue(config, "p"));
 		client.setRequestTemplateFile(getMapValue(config, WSAA_REQ_TEMPLATE_PATH_PARAM));
 		String auth = getMapValue(config, "b");
@@ -358,5 +358,17 @@ public class AFIPUtils {
 	private static long getMapMinuteValueAsMillis(Map<String, Object> map, String key, long defaultValue) {
 		String value = getMapValue(map, key);
 		return (value != null ? Long.parseLong(value) : defaultValue) * 60000L;
+	}
+	
+	/**
+	 * 
+	 * @param args
+	 */
+	public static void main(String args[]) {
+		try {
+			System.out.println(getWSAAValues("D:\\Development\\Projects\\bunge\\CTG\\files\\wsaa.config"));
+		} catch(Throwable ex) {
+			ex.printStackTrace();
+		}
 	}
 }
