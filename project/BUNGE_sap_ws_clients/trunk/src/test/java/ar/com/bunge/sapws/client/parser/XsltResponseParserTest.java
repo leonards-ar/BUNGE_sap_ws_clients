@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 
 import java.io.FileInputStream;
 import java.io.File;
+import java.io.InputStream;
 
 /**
  * Docs
@@ -21,7 +22,7 @@ public class XsltResponseParserTest extends TestCase {
 
         XsltResponseParser parser = new XsltResponseParser();
 
-        parser.setXsltFile(new FileInputStream(new File("C:\\federico\\workspace\\sap_ws_clients\\src\\test\\java\\ar\\com\\bunge\\sapws\\client\\parser\\XsltTransformTestStylesheet.xsl")));
+        parser.setXsltFile(getClass().getResourceAsStream("XsltTransformTestStylesheet.xsl"));
 
         System.out.println(parser.parseResponse("<root><response>pepepepepe</response></root>"));
 
