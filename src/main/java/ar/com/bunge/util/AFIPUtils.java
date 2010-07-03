@@ -170,7 +170,7 @@ public class AFIPUtils {
 		
 		ClientXmlResponse response = client.execute(context);
 
-		return FileUtils.parseKeyValueString(client.getResponseParser().parseResponse(response.getResponse()));
+		return FileUtils.parseKeyValueString(client.getResponseParser().parseResponse(response.getResponse(), context));
 	}
 
 	/**

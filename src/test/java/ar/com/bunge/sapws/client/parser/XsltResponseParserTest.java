@@ -1,10 +1,9 @@
 package ar.com.bunge.sapws.client.parser;
 
-import junit.framework.TestCase;
+import java.util.Hashtable;
+import java.util.Map;
 
-import java.io.FileInputStream;
-import java.io.File;
-import java.io.InputStream;
+import junit.framework.TestCase;
 
 /**
  * Docs
@@ -21,10 +20,11 @@ public class XsltResponseParserTest extends TestCase {
     public void testParseResponse() throws Exception {
 
         XsltResponseParser parser = new XsltResponseParser();
+        Map<String, Object> context = new Hashtable<String, Object>();
+        
+        context.put(XsltResponseParser.XSLT_FILE_PARAM, "XsltTransformTestStylesheet.xsl");
 
-        parser.setXsltFile(getClass().getResourceAsStream("XsltTransformTestStylesheet.xsl"));
-
-        System.out.println(parser.parseResponse("<root><response>pepepepepe</response></root>"));
+        System.out.println(parser.parseResponse("<root><response>pepepepepe</response></root>", context));
 
     }
 }
