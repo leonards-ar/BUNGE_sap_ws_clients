@@ -5,6 +5,8 @@
  */
 package ar.com.bunge.sapws.client.parser;
 
+import java.util.Map;
+
 /**
  *
  * @author <a href="mcapurro@gmail.com">Mariano Capurro</a>
@@ -21,12 +23,14 @@ public class DefaultResponseParser implements ResponseParser {
 	}
 
 	/**
+	 * 
 	 * @param rawResponse
+	 * @param context
 	 * @return
 	 * @throws Exception
-	 * @see ar.com.bunge.sapws.client.parser.ResponseParser#parseResponse(java.lang.String)
+	 * @see ar.com.bunge.sapws.client.parser.ResponseParser#parseResponse(java.lang.String, java.util.Map)
 	 */
-	public String parseResponse(String rawResponse) throws Exception {
+	public String parseResponse(String rawResponse, Map<String, Object> context) throws Exception {
 		return rawResponse;
 	}
 

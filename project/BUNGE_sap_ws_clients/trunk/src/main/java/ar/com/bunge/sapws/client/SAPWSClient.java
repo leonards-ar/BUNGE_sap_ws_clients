@@ -103,6 +103,7 @@ public class SAPWSClient {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		SAPWSClient client = new SAPWSClient();
 		try {
 			CommandLineHelper cmdLine = new CommandLineHelper(args);
 
@@ -111,7 +112,6 @@ public class SAPWSClient {
 				System.exit(1);
 			}
 
-			SAPWSClient client = new SAPWSClient();
 			client.setUsername(cmdLine.getParameter("u"));
 			client.setUrl(cmdLine.getParameter("url"));
 			client.setPassword(cmdLine.getParameter("p"));
@@ -140,6 +140,7 @@ public class SAPWSClient {
 			System.exit(0);
 		} catch(Throwable ex) {
 			System.err.println(ex.getLocalizedMessage());
+			LOG.error("Fail to execute web service: " + client.getClientDescription());
 			LOG.error(ex.getLocalizedMessage(), ex);
 			System.exit(2);
 		}
@@ -201,7 +202,7 @@ public class SAPWSClient {
 			if(LOG.isDebugEnabled()) {
 				LOG.debug("Parsing response with parser [" + getResponseParser().getClass().getName() + "]");
 			}
-			parsedResponse = getResponseParser().parseResponse(response.getResponse());
+			parsedResponse = getResponseParser().parseResponse(response.getResponse(), context);
 		} else {
 			if(LOG.isDebugEnabled()) {
 				LOG.debug("No response parser configured");
@@ -209,22 +210,24 @@ public class SAPWSClient {
 			parsedResponse = response.getResponse();
 		}
 		
-		if(getResponseFile() != null) {
-			if(LOG.isDebugEnabled()) {
-				LOG.debug("Writing response contents to [" + getResponseFile() + "]");
+		if(parsedResponse != null) {
+			if(getResponseFile() != null) {
+				if(LOG.isDebugEnabled()) {
+					LOG.debug("Writing response contents to [" + getResponseFile() + "]");
+				}
+				FileUtils.writeFile(getResponseFile(), parsedResponse);
+			} else {
+				if(LOG.isDebugEnabled()) {
+					LOG.debug("Writing response contents to [stdout]");
+				}
+				System.out.println(parsedResponse);
 			}
-			FileUtils.writeFile(getResponseFile(), parsedResponse);
 		} else {
-			if(LOG.isDebugEnabled()) {
-				LOG.debug("Writing response contents to [stdout]");
-			}
-			System.out.println(parsedResponse);
+			LOG.warn("Response is null. Response will not be written to [" + (getResponseFile() != null ? getResponseFile() : "stdout") + "]");
 		}
 		
 		if(!response.isSuccess()) {
-			String msg = response.getMessage() + ". Error code: " + response.getNumber();
-			LOG.error(msg);
-			throw new Exception(msg);
+			throw new Exception(response.getMessage() + ". Error code: " + response.getNumber());
 		}
 	}
 	
@@ -499,6 +502,8 @@ public class SAPWSClient {
 	   	.append("proxyPort", getProxyPort())
 	   	.append("messageFactoryImplementationClass", getMessageFactoryImplementationClass())
 	   	.append("responseParser", getResponseParser() != null ? getResponseParser().getClass().getName() : null)
+	   	.append("tracePath", getTracePath())
+	   	.append("tracePrefix", getTracePrefix())
 	   	.toString();		
 	}
 
@@ -657,5 +662,13 @@ public class SAPWSClient {
 	 */
 	private boolean isTraceEnabled() {
 		return getTracePrefix() != null;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public String getClientDescription() {
+		return "Url: [" + getUrl() + "] - Template: [" + getRequestTemplateFile() + "]" + (getVariablesFile() != null ? " - Variables File [" + getVariablesFile() + "]" : "");
 	}
 }

@@ -32,6 +32,10 @@ public class ClientXmlRequest {
 	public static final String ITERATOR_VARIABLE_CLOSE_TOKEN = ")}";
 	public static final String ITERATOR_BLOCK_END_TOKEN = "{end loop}";
 
+	public static final String ITERATOR_NULL_VARIABLE_OPEN_TOKEN = "${loopn(";
+	public static final String ITERATOR_NULL_VARIABLE_CLOSE_TOKEN = ")}";
+	public static final String ITERATOR_NULL_BLOCK_END_TOKEN = "{end loopn}";
+	
 	public static final String IF_VALUE_VARIABLE_OPEN_TOKEN = "${if value(";
 	public static final String IF_VALUE_VARIABLE_CLOSE_TOKEN = ")}";
 	public static final String IF_VALUE_BLOCK_END_TOKEN = "{end if value}";
@@ -61,6 +65,8 @@ public class ClientXmlRequest {
 	 */
 	public void compile(Map<String, Object> context) throws Exception {
 		String request = expandLoops(getRequestTemplate(), context);
+		
+		request = expandNullLoops(request, context);
 		
 		request = evaluateIfValues(request, context);
 		
@@ -135,7 +141,42 @@ public class ClientXmlRequest {
 			xml = parts.length > 2 ? parts[2] : null;
 			suffix = parts.length > 3 ? parts[3] : null;
 			
-			int repetitions = getRepetitions(loopVariable, context);
+			int repetitions = getRepetitions(loopVariable, context, 1);
+			
+			expandedRequest = prefix;
+			
+			for(int i = 0; i < repetitions; i++) {
+				expandedRequest += addIndexToVariables(xml, i);
+			}
+			
+			expandedRequest += suffix;
+		}
+		
+		
+		return expandedRequest;
+	}
+
+	/**
+	 * 
+	 * @param request
+	 * @param context
+	 * @return
+	 * @throws Exception
+	 */
+	private String expandNullLoops(String request, Map<String, Object> context) throws Exception {
+		String expandedRequest = new String(request);
+		
+		String prefix, suffix , loopVariable, xml;
+		String parts[];
+		while(expandedRequest.indexOf(ITERATOR_NULL_VARIABLE_OPEN_TOKEN) > -1) {
+			parts = splitByWholeSeparators(expandedRequest, new String[] {ITERATOR_NULL_VARIABLE_OPEN_TOKEN, ITERATOR_NULL_VARIABLE_CLOSE_TOKEN, ITERATOR_NULL_BLOCK_END_TOKEN});
+			
+			prefix = parts.length > 0 ? parts[0] : null;
+			loopVariable = parts.length > 1 ? parts[1] : null;
+			xml = parts.length > 2 ? parts[2] : null;
+			suffix = parts.length > 3 ? parts[3] : null;
+			
+			int repetitions = getRepetitions(loopVariable, context, 0);
 			
 			expandedRequest = prefix;
 			
@@ -169,19 +210,20 @@ public class ClientXmlRequest {
 		
 		return indexedXml;		
 	}
-	
+
 	/**
 	 * 
 	 * @param loopVariable
 	 * @param context
+	 * @param minRepetitions
 	 * @return
 	 * @throws Exception
 	 */
-	private int getRepetitions(String loopVariable, Map<String, Object> context) throws Exception {
+	private int getRepetitions(String loopVariable, Map<String, Object> context, int minRepetitions) throws Exception {
 		try {
 			Object reps = context.get(loopVariable);
-			int repetitions = reps != null ? Integer.parseInt(reps.toString()) : 0;
-			return repetitions >= 0 ? repetitions : 0;
+			int repetitions = reps != null ? Integer.parseInt(reps.toString()) : minRepetitions;
+			return repetitions >= 0 ? repetitions : minRepetitions;
 		} catch(Throwable ex) {
 			throw new Exception("Loop variable [" + loopVariable + "] must be a valid variable name which value is a valid integer representing the number of times to repeat the loop", ex);
 		}
