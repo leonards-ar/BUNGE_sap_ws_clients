@@ -20,6 +20,7 @@ import java.util.Map;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
@@ -39,13 +40,16 @@ import ar.com.bunge.sapws.client.parser.AfipWSAAResponseParser;
  *
  */
 public class AFIPUtils {
+	private static final Logger LOG = Logger.getLogger(AFIPUtils.class);
+	
 	private static final String WSAA_TICKET_TEMP_FILE = "afip_wsaa.tmp";
 
 	private static final String WSAA_REQ_TEMPLATE_PATH_PARAM = "i";
+	private static final String WSAA_REQUEST_PARAM_TEMPLATE_PATH_PARAM = "wsaa_i";
 	private static final String WSAA_TICKET_EXP_TIME_PARAM = "wsaa_ticket_expiration_time";
 	private static final String WSAA_TICKET_EXP_THRESHOLD_PARAM = "wsaa_ticket_expiration_threshold";
 	private static final String WSAA_TICKET_TEMP_DIR_PARAM = "wsaa_ticket_temp_dir";
-	private static final String WSAA_ENDPOINT_PARAM = "u";
+	private static final String WSAA_ENDPOINT_PARAM = "url";
 	private static final String WSAA_SERVICE_PARAM = "wsaa_service";
 	private static final String WSAA_SRC_DN_PARAM = "wsaa_source_dn";
 	private static final String WSAA_DEST_DN_PARAM = "wsaa_destination_dn";
@@ -56,7 +60,7 @@ public class AFIPUtils {
 	private static final String WSAA_TICKET_GEN_TIME_PARAM = "wsaa_ticket_generation_time";
 	
 
-	private static final String[] WSAA_REQUIRED_PARAMS = new String[] {WSAA_REQ_TEMPLATE_PATH_PARAM, WSAA_ENDPOINT_PARAM, WSAA_SERVICE_PARAM, WSAA_DEST_DN_PARAM, WSAA_KEYSTORE_PATH_PARAM, WSAA_KEYSTORE_PATH_PARAM, WSAA_KEYSTORE_SIGNER_PARAM, WSAA_KEYSTORE_PASSWORD_PARAM};
+	private static final String[] WSAA_REQUIRED_PARAMS = new String[] {WSAA_REQ_TEMPLATE_PATH_PARAM, WSAA_REQUEST_PARAM_TEMPLATE_PATH_PARAM, WSAA_ENDPOINT_PARAM, WSAA_SERVICE_PARAM, WSAA_DEST_DN_PARAM, WSAA_KEYSTORE_PATH_PARAM, WSAA_KEYSTORE_PATH_PARAM, WSAA_KEYSTORE_SIGNER_PARAM, WSAA_KEYSTORE_PASSWORD_PARAM};
 
 	// In minutes
 	private static final long DEFAULT_WSAA_TICKET_EXP_TIME = 12 * 60; // 12 hours
@@ -104,7 +108,7 @@ public class AFIPUtils {
 		if(FileUtils.existsFile(ticketTempFilename)) {
 			Map<String, Object> wsaaValues = FileUtils.parseKeyValueFile(ticketTempFilename);
 			
-			if(isWSAATicketValid(config, wsaaValues)) {
+			if(!isWSAATicketValid(config, wsaaValues)) {
 				wsaaValues = generateWSAATicket(config, ticketTempFilename);
 			}
 			
@@ -253,7 +257,10 @@ public class AFIPUtils {
 		}
 		
 		String xmlRequestParam = buildXMLRequestParameter(config, signerDN);
-	
+		if(LOG.isDebugEnabled()) {
+			LOG.debug("WSAA request XML: " + xmlRequestParam);
+		}
+		
 		//
 		// Create CMS Message
 		//
@@ -284,7 +291,7 @@ public class AFIPUtils {
 	 */
 	private static String buildXMLRequestParameter(Map<String, Object> config, String signerDN) throws Exception {
 		Map<String, Object> context = new HashMap<String, Object>();
-		ClientXmlRequest request = new ClientXmlRequest(FileUtils.readFile(getMapValue(config, WSAA_REQ_TEMPLATE_PATH_PARAM)));
+		ClientXmlRequest request = new ClientXmlRequest(FileUtils.readFile(getMapValue(config, WSAA_REQUEST_PARAM_TEMPLATE_PATH_PARAM)));
 		
 		context.put(WSAA_SRC_DN_PARAM, signerDN);
 		context.put(WSAA_DEST_DN_PARAM, config.get(WSAA_DEST_DN_PARAM));
@@ -366,7 +373,10 @@ public class AFIPUtils {
 	 */
 	public static void main(String args[]) {
 		try {
-			System.out.println(getWSAAValues("D:\\Development\\Projects\\bunge\\CTG\\files\\wsaa.config"));
+			
+			//System.out.println(new Date(Utils.isoStringToDate("2010-07-09T05:02:18.796-03:00").getTime()));
+			System.out.println(getWSAASign("D:\\Development\\Projects\\bunge\\CTG\\files\\wsaa.config"));
+			System.exit(0);
 		} catch(Throwable ex) {
 			ex.printStackTrace();
 		}

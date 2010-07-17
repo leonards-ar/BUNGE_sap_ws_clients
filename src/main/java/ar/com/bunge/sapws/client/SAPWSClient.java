@@ -394,9 +394,11 @@ public class SAPWSClient {
         } else if(isBasicAuthentication()) {
         	// Start HTTP Basic Authentication
             CommonsHttpMessageSender sender = new CommonsHttpMessageSender();
-            sender.setCredentials(new UsernamePasswordCredentials(getUsername(), getPassword()));
             HttpClient client = new HttpClient();
-            client.getParams().setAuthenticationPreemptive(true);
+            if(getUsername() != null) {
+                sender.setCredentials(new UsernamePasswordCredentials(getUsername(), getPassword()));
+                client.getParams().setAuthenticationPreemptive(true);
+            }
             if(getProxyServer() != null) {
             	client.getHostConfiguration().setProxy(getProxyServer(), getProxyPort());
             }

@@ -301,7 +301,7 @@ public class ClientXmlRequest {
 	private String evaluateScript(String script, Map<String, Object> context) throws Exception {
 		try {
 			Interpreter i = new Interpreter();
-			i.eval("import ar.com.bunge.util.Utils");
+			i.eval("import ar.com.bunge.util.*");
 			String bshScript = resolveScript(script, context);
 	    	Object result = i.eval(bshScript);
 	    	return result != null ? result.toString() : "";

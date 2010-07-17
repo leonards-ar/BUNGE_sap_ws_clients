@@ -135,7 +135,7 @@ public class FileUtils {
 			completeFilename.append(filename);
 		}
 		
-		return filename.toString();
+		return completeFilename.toString();
 		
 	}
 	

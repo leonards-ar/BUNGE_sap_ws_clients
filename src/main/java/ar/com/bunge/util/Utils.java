@@ -32,7 +32,7 @@ public class Utils {
 	private static final String ENCODE_TOKEN = "_b64_";
 	private static final String UNKNOWN_OBJECT = getBundleText("error.validation.unknown.variable");
 
-	private static final DateTimeFormatter XML_DATE_TIME_FORMAT = ISODateTimeFormat.dateTimeNoMillis();  
+	private static final DateTimeFormatter XML_DATE_TIME_FORMAT = ISODateTimeFormat.dateTime();  
 
 	/**
 	 * 
