@@ -83,4 +83,18 @@ public class XsltResponseParser implements ResponseParser {
 			throw new Exception("Required parameter [" + XSLT_FILE_PARAM + "] missing from input variables. This parameter must hold the complete path to the XSLT file");
 		}
 	}
+	
+	/**
+	 * 
+	 * @param errorNumber
+	 * @param message
+	 * @param context
+	 * @return
+	 * @throws Exception
+	 * @see ar.com.bunge.sapws.client.parser.ResponseParser#parseError(java.lang.Long, java.lang.String, java.util.Map)
+	 */
+	public String parseError(Long errorNumber, String message, Map<String, Object> context) throws Exception {
+		// Default implementation. Return null and so just an Exception will be thrown
+		return null;
+	}   	
 }

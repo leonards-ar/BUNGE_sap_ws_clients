@@ -98,13 +98,22 @@ public class AFIPUtils {
 	
 	/**
 	 * 
+	 * @return
+	 */
+	private static String getConfigTempFileName() {
+		String user = System.getProperty("user.name");
+		return (user != null ? user : "all") + "_" + WSAA_TICKET_TEMP_FILE;
+	}
+	
+	/**
+	 * 
 	 * @param configFilePath
 	 * @return
 	 * @throws Exception
 	 */
 	private static Map<String, Object> getWSAAValues(String configFilePath) throws Exception {
 		Map<String, Object> config = getWSAAConfiguration(configFilePath);
-		String ticketTempFilename = FileUtils.buildFileName(getMapValue(config, WSAA_TICKET_TEMP_DIR_PARAM), WSAA_TICKET_TEMP_FILE);
+		String ticketTempFilename = FileUtils.buildFileName(getMapValue(config, WSAA_TICKET_TEMP_DIR_PARAM), getConfigTempFileName());
 		if(FileUtils.existsFile(ticketTempFilename)) {
 			Map<String, Object> wsaaValues = FileUtils.parseKeyValueFile(ticketTempFilename);
 			
@@ -365,20 +374,5 @@ public class AFIPUtils {
 	private static long getMapMinuteValueAsMillis(Map<String, Object> map, String key, long defaultValue) {
 		String value = getMapValue(map, key);
 		return (value != null ? Long.parseLong(value) : defaultValue) * 60000L;
-	}
-	
-	/**
-	 * 
-	 * @param args
-	 */
-	public static void main(String args[]) {
-		try {
-			
-			//System.out.println(new Date(Utils.isoStringToDate("2010-07-09T05:02:18.796-03:00").getTime()));
-			System.out.println(getWSAASign("D:\\Development\\Projects\\bunge\\CTG\\files\\wsaa.config"));
-			System.exit(0);
-		} catch(Throwable ex) {
-			ex.printStackTrace();
-		}
 	}
 }

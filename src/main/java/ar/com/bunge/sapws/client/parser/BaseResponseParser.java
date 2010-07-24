@@ -5,6 +5,8 @@
  */
 package ar.com.bunge.sapws.client.parser;
 
+import java.util.Map;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -81,5 +83,18 @@ public abstract class BaseResponseParser implements ResponseParser {
     	Node childNode = getNode(node, nodeName);
     	return childNode != null ? childNode.getTextContent() : null;
     }
-	
+    
+	/**
+	 * 
+	 * @param errorNumber
+	 * @param message
+	 * @param context
+	 * @return
+	 * @throws Exception
+	 * @see ar.com.bunge.sapws.client.parser.ResponseParser#parseError(java.lang.Long, java.lang.String, java.util.Map)
+	 */
+	public String parseError(Long errorNumber, String message, Map<String, Object> context) throws Exception {
+		// Default implementation. Return null and so just an Exception will be thrown
+		return null;
+	}    
 }

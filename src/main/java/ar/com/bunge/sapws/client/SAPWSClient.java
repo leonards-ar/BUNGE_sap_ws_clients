@@ -202,7 +202,11 @@ public class SAPWSClient {
 			if(LOG.isDebugEnabled()) {
 				LOG.debug("Parsing response with parser [" + getResponseParser().getClass().getName() + "]");
 			}
-			parsedResponse = getResponseParser().parseResponse(response.getResponse(), context);
+			if(response.isSuccess()) {
+				parsedResponse = getResponseParser().parseResponse(response.getResponse(), context);
+			} else {
+				parsedResponse = getResponseParser().parseError(response.getNumber(), response.getMessage(), context);
+			}
 		} else {
 			if(LOG.isDebugEnabled()) {
 				LOG.debug("No response parser configured");
