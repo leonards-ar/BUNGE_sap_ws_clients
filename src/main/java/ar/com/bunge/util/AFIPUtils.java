@@ -78,11 +78,24 @@ public class AFIPUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String getWSAAToken(String configFilePath) throws Exception {
-		Map<String, Object> wsaaValues = getWSAAValues(configFilePath);
+	public static String getWSAAToken(String configFilePath, String forceNewTicket) throws Exception {
+		Map<String, Object> wsaaValues = getWSAAValues(configFilePath, getForceNewTicket(forceNewTicket));
 		
 		return getMapValue(wsaaValues, AfipWSAAResponseParser.TICKET_TOKEN_KEY);
 	}
+
+	/**
+	 * 
+	 * @param configFilePath
+	 * @return
+	 * @throws Exception
+	 */
+	public static String getWSAASign(String configFilePath, String forceNewTicket) throws Exception {
+		// The sign has to match the token, so for the moment ignore the forceNewTicket flag
+		Map<String, Object> wsaaValues = getWSAAValues(configFilePath, false);
+		
+		return getMapValue(wsaaValues, AfipWSAAResponseParser.TICKET_SIGN_KEY);
+	}	
 	
 	/**
 	 * 
@@ -91,9 +104,27 @@ public class AFIPUtils {
 	 * @throws Exception
 	 */
 	public static String getWSAASign(String configFilePath) throws Exception {
-		Map<String, Object> wsaaValues = getWSAAValues(configFilePath);
-		
-		return getMapValue(wsaaValues, AfipWSAAResponseParser.TICKET_SIGN_KEY);
+		return getWSAASign(configFilePath, "false");
+	}
+
+	/**
+	 * 
+	 * @param configFilePath
+	 * @return
+	 * @throws Exception
+	 */
+	public static String getWSAAToken(String configFilePath) throws Exception {
+		return getWSAAToken(configFilePath, "false");
+	}
+	
+	/**
+	 * 
+	 * @param forceNewTicket
+	 * @return
+	 */
+	private static boolean getForceNewTicket(String forceNewTicket) {
+		Boolean b = Utils.stringToBoolean(forceNewTicket);
+		return b != null ? b.booleanValue() : false;
 	}
 	
 	/**
@@ -111,10 +142,10 @@ public class AFIPUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	private static Map<String, Object> getWSAAValues(String configFilePath) throws Exception {
+	private static Map<String, Object> getWSAAValues(String configFilePath, boolean forceNewTicket) throws Exception {
 		Map<String, Object> config = getWSAAConfiguration(configFilePath);
 		String ticketTempFilename = FileUtils.buildFileName(getMapValue(config, WSAA_TICKET_TEMP_DIR_PARAM), getConfigTempFileName());
-		if(FileUtils.existsFile(ticketTempFilename)) {
+		if(!forceNewTicket && FileUtils.existsFile(ticketTempFilename)) {
 			Map<String, Object> wsaaValues = FileUtils.parseKeyValueFile(ticketTempFilename);
 			
 			if(!isWSAATicketValid(config, wsaaValues)) {

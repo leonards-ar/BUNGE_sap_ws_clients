@@ -454,4 +454,18 @@ public class Utils {
 		return XML_DATE_TIME_FORMAT.print(d.getTime());
 	}
 
+	/**
+	 * 
+	 * @param b
+	 * @return
+	 */
+	public static Boolean stringToBoolean(String b) {
+		if(b == null || b.trim().length() <= 0) {
+			return null;
+		} else if("false".equalsIgnoreCase(b) || "no".equalsIgnoreCase(b) || "n".equalsIgnoreCase(b) || "f".equalsIgnoreCase(b)) {
+			return Boolean.FALSE;
+		} else {
+			return Boolean.TRUE;
+		}
+	}
 }
