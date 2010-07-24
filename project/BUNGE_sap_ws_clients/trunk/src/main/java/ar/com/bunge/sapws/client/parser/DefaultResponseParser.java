@@ -34,4 +34,16 @@ public class DefaultResponseParser implements ResponseParser {
 		return rawResponse;
 	}
 
+	/**
+	 * 
+	 * @param errorNumber
+	 * @param message
+	 * @param context
+	 * @return
+	 * @throws Exception
+	 * @see ar.com.bunge.sapws.client.parser.ResponseParser#parseError(java.lang.Long, java.lang.String, java.util.Map)
+	 */
+	public String parseError(Long errorNumber, String message, Map<String, Object> context) throws Exception {
+		return null;
+	}
 }

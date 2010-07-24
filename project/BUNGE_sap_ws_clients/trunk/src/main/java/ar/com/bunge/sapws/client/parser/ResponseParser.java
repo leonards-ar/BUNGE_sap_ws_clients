@@ -23,4 +23,14 @@ public interface ResponseParser {
 	 * @throws Exception
 	 */
 	String parseResponse(String rawResponse, Map<String, Object> context) throws Exception;
+
+	/**
+	 * 
+	 * @param errorNumber
+	 * @param message
+	 * @param context
+	 * @return
+	 * @throws Exception
+	 */
+	String parseError(Long errorNumber, String message, Map<String, Object> context) throws Exception;
 }
