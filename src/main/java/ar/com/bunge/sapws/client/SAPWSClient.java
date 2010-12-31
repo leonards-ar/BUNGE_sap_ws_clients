@@ -18,6 +18,7 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.commons.ssl.HttpSecureProtocol;
@@ -44,6 +45,7 @@ public class SAPWSClient {
 	private static final Logger LOG = Logger.getLogger(SAPWSClient.class);
 	private static final String TRACE_REQUEST_SUFFIX = "req.xml";
 	private static final String TRACE_RESPONSE_SUFFIX = "resp.xml";
+	private static final String VARIABLE_SEPARATOR = "#";
 	
 	private String username;
 	private String password;
@@ -85,7 +87,53 @@ public class SAPWSClient {
 	public String getTracePrefix() {
 		return tracePrefix;
 	}
-
+	
+	/**
+	 * 
+	 * @param context
+	 */
+	private void replaceParameterVariables(Map<String, Object> context) {
+		setUrl(replaceVariablesInParameter(getUrl(), context));
+		setUsername(replaceVariablesInParameter(getUsername(), context));
+		setPassword(replaceVariablesInParameter(getPassword(), context));
+		setRequestTemplateFile(replaceVariablesInParameter(getRequestTemplateFile(), context));
+		setResponseFile(replaceVariablesInParameter(getResponseFile(), context));
+		setVariablesFile(replaceVariablesInParameter(getVariablesFile(), context));
+		setKeyStore(replaceVariablesInParameter(getKeyStore(), context));
+		setKeyStorePassword(replaceVariablesInParameter(getKeyStorePassword(), context));
+		setProxyServer(replaceVariablesInParameter(getProxyServer(), context));
+		setTracePath(replaceVariablesInParameter(getTracePath(), context));
+		setTracePrefix(replaceVariablesInParameter(getTracePrefix(), context));
+		setMessageFactoryImplementationClass(replaceVariablesInParameter(getMessageFactoryImplementationClass(), context));		
+	}
+	
+	/**
+	 * 
+	 * @param parameterValue
+	 * @param context
+	 * @return
+	 */
+	private String replaceVariablesInParameter(String parameterValue, Map<String, Object> context) {
+		if(parameterValue != null && parameterValue.trim().indexOf(VARIABLE_SEPARATOR) >= 0) {
+			String vars[] = StringUtils.substringsBetween(parameterValue, VARIABLE_SEPARATOR, VARIABLE_SEPARATOR);
+			Object value;
+			String replacedParameter = new String(parameterValue);
+			
+			if(vars != null) {
+				for(int i=0; i < vars.length; i++) {
+					value = context.get(vars[i] != null ? vars[i].toLowerCase() : vars[i]);
+					if(value == null) {
+						value = "";
+					}
+					replacedParameter = StringUtils.replace(replacedParameter, VARIABLE_SEPARATOR + vars[i] + VARIABLE_SEPARATOR, String.valueOf(value));
+				}
+			}
+			return replacedParameter;
+		} else {
+			return parameterValue;
+		}
+	}
+	
 	/**
 	 * @param tracePrefix the tracePrefix to set
 	 */
@@ -134,6 +182,8 @@ public class SAPWSClient {
 			
 			Map<String, Object> context = client.parseVariablesFile();
 			context.putAll(cmdLine.getVariables());
+			
+			client.replaceParameterVariables(context);
 			
 			client.executeCommandLine(context);
 			
