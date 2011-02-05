@@ -17,7 +17,7 @@ import ar.com.bunge.util.FileUtils;
  *
  * @author <a href="mcapurro@gmail.com">Mariano Capurro</a>
  * @version 1.0
- * @since SPM 1.0
+ * @since 1.0
  *
  */
 public class AfipCTGResponseParser extends BaseResponseParser implements ResponseParser {
