@@ -5,11 +5,14 @@
  */
 package ar.com.bunge.sapws.client.parser;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+
+import ar.com.bunge.util.FileUtils;
 
 /**
  *
@@ -49,6 +52,10 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 	private static final String ERROR_CODE_NODE = "codigo_error";
 	private static final String ERROR_MESSAGE_NODE = "descripcion_error";
 	private static final String REASON_NODE = "motivo";
+	private static final String AFIP_REASON_NODES = "observaciones_respuesta_afip";
+	private static final String AFIP_REASON_NODE = "observacion_afip";
+	private static final String AFIP_REASON_CODE = "codigo";
+	private static final String AFIP_REASON_DESCRIPTION = "descripcion";
 	
 	// Result codes
 	private static final String NO_STATUS_RESULT = "UNKNOWN";
@@ -199,8 +206,6 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 		return errorResult.toString();
 	}
 	
-	
-
 	/**
 	 * 
 	 * @param info
@@ -209,11 +214,23 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 	 */
 	private String buildStatusErrorResult(Node node) throws Exception {
 		StringBuffer result = new StringBuffer(PARTIAL_SUCCESS_RESULT);
+		boolean hasAfipReasons = false;
 		
-		if (node != null) {
+		Node errors = getNode(node, AFIP_REASON_NODES);
+		if (errors != null && errors.getChildNodes() != null) {
+			Node n;
+			for (int i = 0; i < errors.getChildNodes().getLength(); i++) {
+				n = errors.getChildNodes().item(i);
+				if (AFIP_REASON_NODE.equalsIgnoreCase(n.getNodeName())) {
+					hasAfipReasons = true;
+					result.append(ERROR_MESSAGE_SEPARATOR + getNodeText(n, AFIP_REASON_CODE) + ERROR_MESSAGE_TOKEN + getNodeText(n, AFIP_REASON_DESCRIPTION));
+				}
+			}
+		}
+		
+		if(!hasAfipReasons && node != null) {
 			Node n = getNode(node, REASON_NODE);
 			result.append(n != null ? ERROR_MESSAGE_SEPARATOR + n.getTextContent() : "");
-			
 		}
 		
 		return result.toString();
