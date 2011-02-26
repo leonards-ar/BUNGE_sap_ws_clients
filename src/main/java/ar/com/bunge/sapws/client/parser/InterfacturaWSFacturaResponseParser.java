@@ -5,14 +5,11 @@
  */
 package ar.com.bunge.sapws.client.parser;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
-
-import ar.com.bunge.util.FileUtils;
 
 /**
  *
