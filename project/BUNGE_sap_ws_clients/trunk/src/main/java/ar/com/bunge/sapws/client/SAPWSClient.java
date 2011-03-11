@@ -182,7 +182,7 @@ public class SAPWSClient {
 			
 			Map<String, Object> context = client.parseVariablesFile();
 			context.putAll(cmdLine.getVariables());
-			
+
 			client.replaceParameterVariables(context);
 			
 			client.executeCommandLine(context);
