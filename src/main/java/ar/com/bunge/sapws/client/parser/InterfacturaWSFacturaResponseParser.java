@@ -24,12 +24,15 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 	// Receive Factura keys
 	private static final String RECEIVE_FACTURAS_NODE = "m:receiveFacturasOutput";
 	private static final String GET_LOTES_FACTURAS_NODE = "m:getLoteFacturasOutput";
+	private static final String SOLICITA_CAEA_NODE = "m:solicitaCaeaOutput";
 	
 	private static final String RECEIVE_FACTURAS_STATUS_NODE = "estado";
 	private static final String SUCCESS_STATUS = "OK";
 	private static final String CERROR_STATUS = "EC";
 	private static final String LERROR_STATUS = "EL";
-	
+
+	private static final String SOLICITA_CAEA_RERRORS_NODE = "errores_caea";
+
 	private static final String RECEIVE_FACTURAS_RERRORS_NODE = "errores_response";
 	private static final String RECEIVE_FACTURAS_CERRORS_NODE = "errores_comprobante";
 	private static final String RECEIVE_FACTURAS_LERRORS_NODE = "errores_lote";
@@ -92,10 +95,52 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 			LOG.debug("Parsing " + GET_LOTES_FACTURAS_NODE + " response");
 			return parseGetLotesFacturas(responseNode);
 		}
+
+		responseNode = getNode(doc, SOLICITA_CAEA_NODE);
+		if(responseNode != null) {
+			LOG.debug("Parsing " + SOLICITA_CAEA_NODE + " response");
+			return parseGetCaea(responseNode);
+		}
 		
 		return rawResponse;
 	}
 
+	/**
+	 * 
+	 * @param responseNode
+	 * @return
+	 * @throws Exception
+	 */
+	private String parseGetCaea(Node responseNode) throws Exception {
+		Document response = getXmlDocumentFromString(responseNode.getTextContent());
+		
+		Node errors = getNode(response, SOLICITA_CAEA_RERRORS_NODE);
+		if(errors != null) {
+			String errorResult = buildErrorResult(errors);
+			LOG.debug("Found errors node [" + SOLICITA_CAEA_RERRORS_NODE + "]. Returning [" + errorResult + "]");
+			return errorResult;
+		}
+		
+		
+		Node info = getNode(response, GET_LOTES_FACTURAS_INFO_NODE);
+		if(info != null) {
+			String result = getNodeText(response, GET_LOTES_FACTURAS_RESULT_NODE);
+			if(GET_LOTES_FACTURAS_SUCCESS_RESULT.equalsIgnoreCase(result)) {
+				String successResult = buildGetLotesFacturasSuccessResult(info);
+				LOG.debug("Found node [" + GET_LOTES_FACTURAS_INFO_NODE + "] and result node [" + GET_LOTES_FACTURAS_RESULT_NODE + "] has value [" + result + "]. Returning [" + successResult + "]");
+				return successResult;
+			} else {
+				String errorResult = buildStatusErrorResult(response);
+				LOG.debug("Found node [" + GET_LOTES_FACTURAS_INFO_NODE + "] and result node [" + GET_LOTES_FACTURAS_RESULT_NODE + "] has value [" + result + "]. Returning [" + errorResult + "]");
+				return errorResult;
+			}
+		}
+
+		LOG.warn("No node " + GET_LOTES_FACTURAS_INFO_NODE + " or " + GET_LOTES_FACTURAS_ERRORS_NODE + " found. Returning [" + NO_STATUS_RESULT + "]");
+
+		return NO_STATUS_RESULT;
+	}
+	
 	/**
 	 * 
 	 * @param responseNode
