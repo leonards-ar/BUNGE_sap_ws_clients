@@ -109,7 +109,7 @@ public class ClientXmlRequest {
 			
 			evaluatedRequest = prefix;
 			
-			if(ifVariable != null && context.get(ifVariable) != null) {
+			if(ifVariable != null && getFromContext(ifVariable, context) != null) {
 				evaluatedRequest += xml;
 			}
 			
@@ -119,6 +119,20 @@ public class ClientXmlRequest {
 		
 		return evaluatedRequest;
 		
+	}
+	
+	/**
+	 * 
+	 * @param key
+	 * @param context
+	 * @return
+	 */
+	private Object getFromContext(String key, Map<String, Object> context) {
+		if(key != null && context != null) {
+			return context.get(key.toLowerCase());
+		} else {
+			return null;
+		}
 	}
 	
 	/**
@@ -221,7 +235,7 @@ public class ClientXmlRequest {
 	 */
 	private int getRepetitions(String loopVariable, Map<String, Object> context, int minRepetitions) throws Exception {
 		try {
-			Object reps = context.get(loopVariable);
+			Object reps = getFromContext(loopVariable, context);
 			int repetitions = reps != null ? Integer.parseInt(reps.toString()) : minRepetitions;
 			return repetitions >= 0 ? repetitions : minRepetitions;
 		} catch(Throwable ex) {
@@ -281,7 +295,7 @@ public class ClientXmlRequest {
 		
 		if(vars != null) {
 			for(int i=0; i < vars.length; i++) {
-				value = context.get(vars[i] != null ? vars[i].toLowerCase() : vars[i]);
+				value = getFromContext(vars[i], context);
 				if(value == null) {
 					value = "";
 				}
