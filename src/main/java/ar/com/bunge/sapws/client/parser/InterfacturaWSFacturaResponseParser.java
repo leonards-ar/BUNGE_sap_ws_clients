@@ -44,7 +44,7 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 	
 	//:TODO: Fix!
 	private static final String INFORMA_CAEA_NO_UTILIZADO_RESULT_NODE = "caea_no_utilizado_por_punto_de_venta_response";
-	private static final String INFORMA_CAEA_NO_UTILIZADO_NODES[] = {""};
+	private static final String INFORMA_CAEA_NO_UTILIZADO_NODES[] = {"caea", "resultado", "fecha_proceso", "punto_de_venta"};
 
 	private static final String RECEIVE_FACTURAS_RERRORS_NODE = "errores_response";
 	private static final String RECEIVE_FACTURAS_CERRORS_NODE = "errores_comprobante";
