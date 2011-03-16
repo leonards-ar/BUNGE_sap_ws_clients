@@ -42,7 +42,6 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 	private static final String CONSULTA_CAEA_RESULT_NODE = "detalle_caea_response";
 	private static final String CONSULTA_CAEA_SUCCESS_NODES[] = {"caea", "fecha_proceso_caea", "periodo", "orden", "fecha_vigencia_desde", "fecha_vigencia_hasta", "fecha_tope_informar_no_utilizado", "punto_de_venta", "estado"};
 	
-	//:TODO: Fix!
 	private static final String INFORMA_CAEA_NO_UTILIZADO_RESULT_NODE = "caea_no_utilizado_por_punto_de_venta_response";
 	private static final String INFORMA_CAEA_NO_UTILIZADO_NODES[] = {"caea", "resultado", "fecha_proceso", "punto_de_venta"};
 
