@@ -25,13 +25,26 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 	private static final String RECEIVE_FACTURAS_NODE = "m:receiveFacturasOutput";
 	private static final String GET_LOTES_FACTURAS_NODE = "m:getLoteFacturasOutput";
 	private static final String SOLICITA_CAEA_NODE = "m:solicitaCaeaOutput";
+	private static final String CONSULTA_CAEA_NODE = "m:consultaDetalleCaeaResponse";
+	private static final String INFORMA_CAEA_NO_UTILIZADO_NODE = "m:informarCaeaNoUtilizadoResponse";
+	
 	
 	private static final String RECEIVE_FACTURAS_STATUS_NODE = "estado";
 	private static final String SUCCESS_STATUS = "OK";
 	private static final String CERROR_STATUS = "EC";
 	private static final String LERROR_STATUS = "EL";
 
-	private static final String SOLICITA_CAEA_RERRORS_NODE = "errores_caea";
+	private static final String CAEA_ERRORS_NODES[] = {"errores_caea", "errores_response", "errores"};
+	
+	private static final String SOLICITA_CAEA_RESULT_NODE = "caea_response";
+	private static final String SOLICITA_CAEA_SUCCESS_NODES[] = {"caea", "fecha_proceso_caea", "periodo", "orden", "fecha_vigencia_desde", "fecha_vigencia_hasta", "fecha_tope_informar_no_utilizado"};
+
+	private static final String CONSULTA_CAEA_RESULT_NODE = "detalle_caea_response";
+	private static final String CONSULTA_CAEA_SUCCESS_NODES[] = {"caea", "fecha_proceso_caea", "periodo", "orden", "fecha_vigencia_desde", "fecha_vigencia_hasta", "fecha_tope_informar_no_utilizado", "punto_de_venta", "estado"};
+	
+	//:TODO: Fix!
+	private static final String INFORMA_CAEA_NO_UTILIZADO_RESULT_NODE = "caea_no_utilizado_por_punto_de_venta_response";
+	private static final String INFORMA_CAEA_NO_UTILIZADO_NODES[] = {""};
 
 	private static final String RECEIVE_FACTURAS_RERRORS_NODE = "errores_response";
 	private static final String RECEIVE_FACTURAS_CERRORS_NODE = "errores_comprobante";
@@ -101,6 +114,18 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 			LOG.debug("Parsing " + SOLICITA_CAEA_NODE + " response");
 			return parseGetCaea(responseNode);
 		}
+
+		responseNode = getNode(doc, CONSULTA_CAEA_NODE);
+		if(responseNode != null) {
+			LOG.debug("Parsing " + CONSULTA_CAEA_NODE + " response");
+			return parseConsultaCaea(responseNode);
+		}
+
+		responseNode = getNode(doc, INFORMA_CAEA_NO_UTILIZADO_NODE);
+		if(responseNode != null) {
+			LOG.debug("Parsing " + INFORMA_CAEA_NO_UTILIZADO_NODE + " response");
+			return parseInformaCaeaNoUtilizado(responseNode);
+		}
 		
 		return rawResponse;
 	}
@@ -111,32 +136,95 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 	 * @return
 	 * @throws Exception
 	 */
-	private String parseGetCaea(Node responseNode) throws Exception {
-		Document response = getXmlDocumentFromString(responseNode.getTextContent());
-		
-		Node errors = getNode(response, SOLICITA_CAEA_RERRORS_NODE);
-		if(errors != null) {
-			String errorResult = buildErrorResult(errors);
-			LOG.debug("Found errors node [" + SOLICITA_CAEA_RERRORS_NODE + "]. Returning [" + errorResult + "]");
-			return errorResult;
-		}
-		
-		
-		Node info = getNode(response, GET_LOTES_FACTURAS_INFO_NODE);
-		if(info != null) {
-			String result = getNodeText(response, GET_LOTES_FACTURAS_RESULT_NODE);
-			if(GET_LOTES_FACTURAS_SUCCESS_RESULT.equalsIgnoreCase(result)) {
-				String successResult = buildGetLotesFacturasSuccessResult(info);
-				LOG.debug("Found node [" + GET_LOTES_FACTURAS_INFO_NODE + "] and result node [" + GET_LOTES_FACTURAS_RESULT_NODE + "] has value [" + result + "]. Returning [" + successResult + "]");
-				return successResult;
-			} else {
-				String errorResult = buildStatusErrorResult(response);
-				LOG.debug("Found node [" + GET_LOTES_FACTURAS_INFO_NODE + "] and result node [" + GET_LOTES_FACTURAS_RESULT_NODE + "] has value [" + result + "]. Returning [" + errorResult + "]");
+	private String parseCaeaErrors(Document response) throws Exception {
+		for(int i=0; i < CAEA_ERRORS_NODES.length; i++) {
+			Node errors = getNode(response, CAEA_ERRORS_NODES[i]);
+			if(errors != null) {
+				String errorResult = buildErrorResult(errors);
+				LOG.debug("Found errors node [" + CAEA_ERRORS_NODES[i] + "]. Returning [" + errorResult + "]");
 				return errorResult;
 			}
 		}
+		
+		return null;
+	}
+	
+	/**
+	 * 
+	 * @param responseNode
+	 * @return
+	 * @throws Exception
+	 */
+	private String parseInformaCaeaNoUtilizado(Node responseNode) throws Exception {
+		Document response = getXmlDocumentFromString(responseNode.getTextContent());
+		
+		String errorResult = parseCaeaErrors(response);
+		if(errorResult != null) {
+			return errorResult;
+		}
+		
+		Node caeaResponse = getNode(response, INFORMA_CAEA_NO_UTILIZADO_RESULT_NODE);
+		if(caeaResponse != null) {
+			String successResult = buildInformaCaeaNoUtilizadoSuccessResult(caeaResponse);
+			LOG.debug("Found node [" + INFORMA_CAEA_NO_UTILIZADO_RESULT_NODE + "]. Returning [" + successResult + "]");
+			return successResult;
+		}
 
-		LOG.warn("No node " + GET_LOTES_FACTURAS_INFO_NODE + " or " + GET_LOTES_FACTURAS_ERRORS_NODE + " found. Returning [" + NO_STATUS_RESULT + "]");
+		LOG.warn("No node " + INFORMA_CAEA_NO_UTILIZADO_RESULT_NODE + " found. Returning [" + NO_STATUS_RESULT + "]");
+
+		return NO_STATUS_RESULT;
+		
+	}
+	
+	/**
+	 * 
+	 * @param responseNode
+	 * @return
+	 * @throws Exception
+	 */
+	private String parseConsultaCaea(Node responseNode) throws Exception {
+		Document response = getXmlDocumentFromString(responseNode.getTextContent());
+		
+		String errorResult = parseCaeaErrors(response);
+		if(errorResult != null) {
+			return errorResult;
+		}
+		
+		Node caeaResponse = getNode(response, CONSULTA_CAEA_RESULT_NODE);
+		if(caeaResponse != null) {
+			String successResult = buildConsultaCaeaSuccessResult(caeaResponse);
+			LOG.debug("Found node [" + CONSULTA_CAEA_RESULT_NODE + "]. Returning [" + successResult + "]");
+			return successResult;
+		}
+
+		LOG.warn("No node " + CONSULTA_CAEA_RESULT_NODE + " found. Returning [" + NO_STATUS_RESULT + "]");
+
+		return NO_STATUS_RESULT;
+		
+	}
+	
+	/**
+	 * 
+	 * @param responseNode
+	 * @return
+	 * @throws Exception
+	 */
+	private String parseGetCaea(Node responseNode) throws Exception {
+		Document response = getXmlDocumentFromString(responseNode.getTextContent());
+		
+		String errorResult = parseCaeaErrors(response);
+		if(errorResult != null) {
+			return errorResult;
+		}
+		
+		Node caeaResponse = getNode(response, SOLICITA_CAEA_RESULT_NODE);
+		if(caeaResponse != null) {
+			String successResult = buildSolicitaCaeaSuccessResult(caeaResponse);
+			LOG.debug("Found node [" + SOLICITA_CAEA_RESULT_NODE + "]. Returning [" + successResult + "]");
+			return successResult;
+		}
+
+		LOG.warn("No node " + SOLICITA_CAEA_RESULT_NODE + " found. Returning [" + NO_STATUS_RESULT + "]");
 
 		return NO_STATUS_RESULT;
 	}
@@ -277,6 +365,87 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 		
 		return result.toString();
 	}	
+	
+	
+	/**
+	 * 
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	private String buildInformaCaeaNoUtilizadoSuccessResult(Node response) throws Exception {
+		StringBuffer result = new StringBuffer(SUCCESS_RESULT);
+		
+		if (response != null) {
+			result.append(SUCCESS_MESSAGE_SEPARATOR);
+
+			Node n;
+			
+			for(int i=0; i < INFORMA_CAEA_NO_UTILIZADO_NODES.length; i++) {
+				n = getNode(response, INFORMA_CAEA_NO_UTILIZADO_NODES[i]);
+				result.append(n != null ? n.getTextContent() : "");
+				if(i + 1 < INFORMA_CAEA_NO_UTILIZADO_NODES.length) {
+					result.append(SUCCESS_MESSAGE_SEPARATOR);
+				}
+			}
+		}
+		
+		return result.toString();
+
+	}
+
+	/**
+	 * 
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	private String buildConsultaCaeaSuccessResult(Node response) throws Exception {
+		StringBuffer result = new StringBuffer(SUCCESS_RESULT);
+		
+		if (response != null) {
+			result.append(SUCCESS_MESSAGE_SEPARATOR);
+
+			Node n;
+			
+			for(int i=0; i < CONSULTA_CAEA_SUCCESS_NODES.length; i++) {
+				n = getNode(response, CONSULTA_CAEA_SUCCESS_NODES[i]);
+				result.append(n != null ? n.getTextContent() : "");
+				if(i + 1 < CONSULTA_CAEA_SUCCESS_NODES.length) {
+					result.append(SUCCESS_MESSAGE_SEPARATOR);
+				}
+			}
+		}
+		
+		return result.toString();
+
+	}
+
+	/**
+	 * 
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	private String buildSolicitaCaeaSuccessResult(Node response) throws Exception {
+		StringBuffer result = new StringBuffer(SUCCESS_RESULT);
+		
+		if (response != null) {
+			result.append(SUCCESS_MESSAGE_SEPARATOR);
+
+			Node n;
+			
+			for(int i=0; i < SOLICITA_CAEA_SUCCESS_NODES.length; i++) {
+				n = getNode(response, SOLICITA_CAEA_SUCCESS_NODES[i]);
+				result.append(n != null ? n.getTextContent() : "");
+				if(i + 1 < SOLICITA_CAEA_SUCCESS_NODES.length) {
+					result.append(SUCCESS_MESSAGE_SEPARATOR);
+				}
+			}
+		}
+		
+		return result.toString();
+	}
 	
 	/**
 	 * 
