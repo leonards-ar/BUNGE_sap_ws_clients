@@ -11,6 +11,8 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import ar.com.bunge.util.FileUtils;
+
 /**
  *
  * @author <a href="mcapurro@gmail.com">Mariano Capurro</a>
@@ -75,7 +77,7 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 	private static final String ERROR_RESULT = "ERROR";
 	private static final String PARTIAL_SUCCESS_RESULT = "OERROR";
 	// Tokens
-	private static final String ERROR_MESSAGE_SEPARATOR = "\n";
+	private static final String ERROR_MESSAGE_SEPARATOR = FileUtils.getNewLine();
 	private static final String ERROR_MESSAGE_TOKEN = "=";
 	private static final String SUCCESS_MESSAGE_SEPARATOR = ";";
 	

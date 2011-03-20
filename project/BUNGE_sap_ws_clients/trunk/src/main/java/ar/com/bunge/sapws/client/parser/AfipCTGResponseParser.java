@@ -25,14 +25,13 @@ public class AfipCTGResponseParser extends BaseResponseParser implements Respons
 	
 	private static final String SUCCESS_RESULT = "OK";
 	private static final String ERROR_RESULT = "ERROR";
-
+	
 	private static final String SOLICITAR_CTG_NODE = "ns1:solicitarCTGResponse";
 	private static final String CONFIRMAR_CTG_NODE = "ns1:confirmarCTGResponse";
 	
 	// Tokens
 	private static final String RESULT_MESSAGE_SEPARATOR = FileUtils.getNewLine();
 	private static final String SUCCESS_MESSAGE_SEPARATOR = ";";
-	
 
 	/**
 	 * 
