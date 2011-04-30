@@ -20,8 +20,9 @@ import org.w3c.dom.Node;
  */
 public class SAPConsComResponseParser extends SAPBaseResponseParser {
 	private static final Logger LOG = Logger.getLogger(SAPConsComResponseParser.class);
-	private static final String RESULT_ROOT_TAG = "XXX";
-	private static final String RECORD_TYPE_TAG = "tiporeg";
+	private static final String RESULT_ROOT_TAG = "n0:ZaatFiComprobantesCompResponse";
+	private static final String RESULT_TYPE1_ROOT_TAG = "TSalidaOp01";
+	private static final String RESULT_TYPE2_ROOT_TAG = "TSalidaOp02";
 	/**
 	 * 
 	 */
@@ -42,24 +43,25 @@ public class SAPConsComResponseParser extends SAPBaseResponseParser {
 		
 		if (resp != null && resp.getChildNodes() != null) {
 			StringBuilder sb = new StringBuilder();
-			Node n;
-			String recType;
 			sb.append(buildSuccessLine());
-			
-			for (int i = 0; i < resp.getChildNodes().getLength(); i++) {
-				n = resp.getChildNodes().item(i);
-				recType = getNodeText(n, RECORD_TYPE_TAG);
-				if("01".equals(recType)) {
-					sb.append(buildRecordType1Line(recType, n));
-				} else if("02".equals(recType)) {
-					sb.append(buildRecordType2Line(recType, n));
-				} else {
-					String unknownRecordTypeLine = handleUnknownRecordType(recType, n);
-					if(unknownRecordTypeLine != null) {
-						sb.append(unknownRecordTypeLine);
-					}
+
+			Node n;
+			Node type1 = getNode(resp, RESULT_TYPE1_ROOT_TAG);
+			if(type1 != null) {
+				for (int i = 0; i < type1.getChildNodes().getLength(); i++) {
+					n = resp.getChildNodes().item(i);
+					sb.append(buildRecordType1Line(n));
 				}
 			}
+
+			Node type2 = getNode(resp, RESULT_TYPE2_ROOT_TAG);
+			if(type2 != null) {
+				for (int i = 0; i < type2.getChildNodes().getLength(); i++) {
+					n = resp.getChildNodes().item(i);
+					sb.append(buildRecordType2Line(n));
+				}
+			}
+
 			
 			return sb.toString();
 		} else {
@@ -70,27 +72,28 @@ public class SAPConsComResponseParser extends SAPBaseResponseParser {
 
 	/**
 	 * 
-	 * @param recordType
 	 * @param type1
 	 * @return
 	 * @throws Exception
 	 */
-	private String buildRecordType1Line(String recordType, Node type1) throws Exception {
-		StringBuilder line = new StringBuilder(recordType + LINE_TOKEN);
-		
-		line.append(getNodeText(type1, "status") + LINE_TOKEN);
-		line.append(getNodeText(type1, "descripcion-error") + LINE_TOKEN);
-		line.append(getNodeText(type1, "status-anu") + LINE_TOKEN);
-		line.append(getNodeText(type1, "saldo-monloc") + LINE_TOKEN);
-		line.append(getNodeText(type1, "saldo-monfue") + LINE_TOKEN);
-		line.append(getNodeText(type1, "cancel-monloc") + LINE_TOKEN);
-		line.append(getNodeText(type1, "cancel-monfue") + LINE_TOKEN);
-		line.append(getNodeText(type1, "encanje") + LINE_TOKEN);
-		line.append(getNodeText(type1, "enpropuesta") + LINE_TOKEN);
-		line.append(getNodeText(type1, "cancel-op") + LINE_TOKEN);
+	private String buildRecordType1Line(Node type1) throws Exception {
+		StringBuilder line = new StringBuilder();
+
+		line.append(getNodeText(type1, "Tiporeg") + LINE_TOKEN);
+		line.append(getNodeText(type1, "StatusWs") + LINE_TOKEN);
+		line.append(getNodeText(type1, "Descripcion") + LINE_TOKEN);
+		line.append(getNodeText(type1, "StatusAnul") + LINE_TOKEN);
+		line.append(getNodeText(type1, "SaldoLcl") + LINE_TOKEN);
+		line.append(getNodeText(type1, "SaldoExt") + LINE_TOKEN);
+		line.append(getNodeText(type1, "ImporteCanceladoLcl") + LINE_TOKEN);
+		line.append(getNodeText(type1, "ImporteCanceladoExt") + LINE_TOKEN);
+		line.append(getNodeText(type1, "OperacionCanje") + LINE_TOKEN);
+		line.append(getNodeText(type1, "PropuestaPago") + LINE_TOKEN);
+		line.append(getNodeText(type1, "OrdenDePago") + LINE_TOKEN);
 		line.append(getNodeText(type1, "fecha-op") + LINE_TOKEN);
-		line.append(getNodeText(type1, "contrato") + LINE_TOKEN);
-		line.append(getNodeText(type1, "texto-comodin-01"));
+		line.append(getNodeText(type1, "FechaOp") + LINE_TOKEN);
+		line.append(getNodeText(type1, "NumeroContrato") + LINE_TOKEN);
+		line.append(getNodeText(type1, "Texto"));
 		
 		line.append(LINE_SEPARATOR);
 		
@@ -99,48 +102,37 @@ public class SAPConsComResponseParser extends SAPBaseResponseParser {
 	
 	/**
 	 * 
-	 * @param recordType
 	 * @param type2
 	 * @return
 	 * @throws Exception
 	 */
-	private String buildRecordType2Line(String recordType, Node type2) throws Exception {
-		StringBuilder line = new StringBuilder(recordType + LINE_TOKEN);
-		
-		line.append(getNodeText(type2, "division") + LINE_TOKEN);
-		line.append(getNodeText(type2, "fecha-mov") + LINE_TOKEN);
-		line.append(getNodeText(type2, "prefijo-mov") + LINE_TOKEN);
-		line.append(getNodeText(type2, "numero-mov") + LINE_TOKEN);
-		line.append(getNodeText(type2, "ndp-mov") + LINE_TOKEN);
-		line.append(getNodeText(type2, "contrato-mov") + LINE_TOKEN);
-		line.append(getNodeText(type2, "cveccm-mov") + LINE_TOKEN);
-		line.append(getNodeText(type2, "impccm-monloc") + LINE_TOKEN);
-		line.append(getNodeText(type2, "impccm-monfue") + LINE_TOKEN);
-		line.append(getNodeText(type2, "pcaccm-monloc") + LINE_TOKEN);
-		line.append(getNodeText(type2, "pcaccm-monfue") + LINE_TOKEN);
-		line.append(getNodeText(type2, "moneda") + LINE_TOKEN);
-		line.append(getNodeText(type2, "fecha-vencimiento") + LINE_TOKEN);
-		line.append(getNodeText(type2, "impapl-monloc") + LINE_TOKEN);
-		line.append(getNodeText(type2, "impapl-monfue") + LINE_TOKEN);
-		line.append(getNodeText(type2, "fecapl") + LINE_TOKEN);
-		line.append(getNodeText(type2, "tipdgi") + LINE_TOKEN);
-		line.append(getNodeText(type2, "cladoc") + LINE_TOKEN);
-		line.append(getNodeText(type2, "texto-comodin-02"));
+	private String buildRecordType2Line(Node type2) throws Exception {
+		StringBuilder line = new StringBuilder();
+	
+		line.append(getNodeText(type2, "Tiporeg") + LINE_TOKEN);
+		line.append(getNodeText(type2, "Division") + LINE_TOKEN);
+		line.append(getNodeText(type2, "FechaMv") + LINE_TOKEN);
+		line.append(getNodeText(type2, "PrefijoComprobante") + LINE_TOKEN);
+		line.append(getNodeText(type2, "NumeroComprobante") + LINE_TOKEN);
+		line.append(getNodeText(type2, "NotaPedido") + LINE_TOKEN);
+		line.append(getNodeText(type2, "ContratoGrano") + LINE_TOKEN);
+		line.append(getNodeText(type2, "ClaveCobol") + LINE_TOKEN);
+		line.append(getNodeText(type2, "ImporteLcl") + LINE_TOKEN);
+		line.append(getNodeText(type2, "ImporteExt") + LINE_TOKEN);
+		line.append(getNodeText(type2, "ImporteCanceladoLcl") + LINE_TOKEN);
+		line.append(getNodeText(type2, "ImporteCanceladoExt") + LINE_TOKEN);
+		line.append(getNodeText(type2, "MonedaDocumento") + LINE_TOKEN);
+		line.append(getNodeText(type2, "FechaVencimiento") + LINE_TOKEN);
+		line.append(getNodeText(type2, "ImporteAplicadoLcl") + LINE_TOKEN);
+		line.append(getNodeText(type2, "ImporteAplicadoExt") + LINE_TOKEN);
+		line.append(getNodeText(type2, "FechaCompensacion") + LINE_TOKEN);
+		line.append(getNodeText(type2, "TipoDocumento") + LINE_TOKEN);
+		line.append(getNodeText(type2, "ClaseDocumento") + LINE_TOKEN);
+		line.append(getNodeText(type2, "Texto"));
 		
 		line.append(LINE_SEPARATOR);
 		
 		return line.toString();
 	}	
-	
-	/**
-	 * 
-	 * @param recordType
-	 * @param type2
-	 * @return
-	 * @throws Exception
-	 */
-	private String handleUnknownRecordType(String recordType, Node type2) throws Exception {
-		LOG.warn("Unexpected value " + recordType + " for " + RECORD_TYPE_TAG + ". Ignoring record.");
-		return null;
-	}
+
 }
