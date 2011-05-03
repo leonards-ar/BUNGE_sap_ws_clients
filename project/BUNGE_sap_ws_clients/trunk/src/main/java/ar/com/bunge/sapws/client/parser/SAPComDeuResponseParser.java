@@ -11,8 +11,6 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import ar.com.bunge.util.FileUtils;
-
 /**
  *
  * @author <a href="mcapurro@gmail.com">Mariano Capurro</a>
