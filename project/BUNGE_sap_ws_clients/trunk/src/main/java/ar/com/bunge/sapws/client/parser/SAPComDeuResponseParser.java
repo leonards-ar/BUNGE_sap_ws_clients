@@ -25,6 +25,7 @@ public class SAPComDeuResponseParser extends SAPBaseResponseParser {
 	private static final String RESULT_ROOT_TAG = "n0:ZaatFiWsSaldosProvCliResponse";
 	private static final String RESULT_TYPE1_ROOT_TAG = "TDetalle_01";
 	private static final String RESULT_TYPE2_ROOT_TAG = "TDetalle_02";
+	private static final String RESULT_ITEM_TAG = "item";
 	
 	/**
 	 * 
@@ -41,7 +42,7 @@ public class SAPComDeuResponseParser extends SAPBaseResponseParser {
 	 */
 	public String parseResponse(String rawResponse, Map<String, Object> context) throws Exception {
 		Document doc = getXmlDocumentFromString(rawResponse);
-		Document resp = getXmlDocumentFromString(getNodeText(doc, RESULT_ROOT_TAG));
+		Node resp = getNode(doc, RESULT_ROOT_TAG);
 		
 		
 		if (resp != null && resp.getChildNodes() != null) {
@@ -52,16 +53,20 @@ public class SAPComDeuResponseParser extends SAPBaseResponseParser {
 			Node type1 = getNode(resp, RESULT_TYPE1_ROOT_TAG);
 			if(type1 != null) {
 				for (int i = 0; i < type1.getChildNodes().getLength(); i++) {
-					n = resp.getChildNodes().item(i);
-					sb.append(buildRecordType1Line(n));
+					n = type1.getChildNodes().item(i);
+					if(RESULT_ITEM_TAG.equals(n.getNodeName())) {
+						sb.append(buildRecordType1Line(n));
+					}
 				}
 			}
 
 			Node type2 = getNode(resp, RESULT_TYPE2_ROOT_TAG);
 			if(type2 != null) {
 				for (int i = 0; i < type2.getChildNodes().getLength(); i++) {
-					n = resp.getChildNodes().item(i);
-					sb.append(buildRecordType2Line(n));
+					n = type2.getChildNodes().item(i);
+					if(RESULT_ITEM_TAG.equals(n.getNodeName())) {
+						sb.append(buildRecordType2Line(n));
+					}
 				}
 			}
 			
@@ -133,14 +138,5 @@ public class SAPComDeuResponseParser extends SAPBaseResponseParser {
 		line.append(LINE_SEPARATOR);
 		
 		return line.toString();
-	}	
-	
-	public static void main(String a[]) {
-		try {
-			SAPComDeuResponseParser r = new SAPComDeuResponseParser();
-			System.out.println(r.parseResponse(FileUtils.readFile("C:\\file.txt"), null));
-		} catch(Exception ex) {
-			ex.printStackTrace();
-		}
 	}	
 }
