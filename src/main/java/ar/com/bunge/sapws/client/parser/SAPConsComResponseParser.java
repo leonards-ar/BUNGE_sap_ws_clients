@@ -11,6 +11,8 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import ar.com.bunge.util.FileUtils;
+
 /**
  *
  * @author <a href="mcapurro@gmail.com">Mariano Capurro</a>
@@ -23,6 +25,8 @@ public class SAPConsComResponseParser extends SAPBaseResponseParser {
 	private static final String RESULT_ROOT_TAG = "n0:ZaatFiComprobantesCompResponse";
 	private static final String RESULT_TYPE1_ROOT_TAG = "TSalidaOp01";
 	private static final String RESULT_TYPE2_ROOT_TAG = "TSalidaOp02";
+	private static final String RESULT_ITEM_TAG = "item";
+	
 	/**
 	 * 
 	 */
@@ -38,8 +42,7 @@ public class SAPConsComResponseParser extends SAPBaseResponseParser {
 	 */
 	public String parseResponse(String rawResponse, Map<String, Object> context) throws Exception {
 		Document doc = getXmlDocumentFromString(rawResponse);
-		Document resp = getXmlDocumentFromString(getNodeText(doc, RESULT_ROOT_TAG));
-		
+		Node resp = getNode(doc, RESULT_ROOT_TAG);		
 		
 		if (resp != null && resp.getChildNodes() != null) {
 			StringBuilder sb = new StringBuilder();
@@ -49,20 +52,22 @@ public class SAPConsComResponseParser extends SAPBaseResponseParser {
 			Node type1 = getNode(resp, RESULT_TYPE1_ROOT_TAG);
 			if(type1 != null) {
 				for (int i = 0; i < type1.getChildNodes().getLength(); i++) {
-					n = resp.getChildNodes().item(i);
-					sb.append(buildRecordType1Line(n));
+					n = type1.getChildNodes().item(i);
+					if(RESULT_ITEM_TAG.equals(n.getNodeName())) {
+						sb.append(buildRecordType1Line(n));
+					}
 				}
 			}
 
 			Node type2 = getNode(resp, RESULT_TYPE2_ROOT_TAG);
 			if(type2 != null) {
 				for (int i = 0; i < type2.getChildNodes().getLength(); i++) {
-					n = resp.getChildNodes().item(i);
-					sb.append(buildRecordType2Line(n));
+					n = type2.getChildNodes().item(i);
+					if(RESULT_ITEM_TAG.equals(n.getNodeName())) {
+						sb.append(buildRecordType2Line(n));
+					}
 				}
 			}
-
-			
 			return sb.toString();
 		} else {
 			LOG.warn("No node " + RESULT_ROOT_TAG + " found or node has no children. Returning [" + ERROR_STATUS + "]");
@@ -135,4 +140,12 @@ public class SAPConsComResponseParser extends SAPBaseResponseParser {
 		return line.toString();
 	}	
 
+	public static void main(String a[]) {
+		try {
+			SAPConsComResponseParser r = new SAPConsComResponseParser();
+			System.out.println(r.parseResponse(FileUtils.readFile("C:\\file.txt"), null));
+		} catch(Exception ex) {
+			ex.printStackTrace();
+		}
+	}	
 }
