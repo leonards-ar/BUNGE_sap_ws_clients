@@ -72,7 +72,7 @@ public class AfipCTG10ResponseParser extends BaseResponseParser implements Respo
 	
 	private static final String CONSULTAR_DETALLE_CTG_NODE = "ns1:consultarDetalleCTGResponse";
 	private static final String CONSULTAR_DETALLE_CTG_RESPONSE_CONTAINER_NODE = "consultarDetalleCTGDatos";
-	private static final String CONSULTAR_DETALLE_CTG_RESPONSE_NODES[] = {"ctg", "solicitante", "cartaPorte", "estado", "fechaEmision", "fechaVigenciaDesde", "fechaVigenciaHasta", "cuitCanjeador", "cuitDestino", "cuitDestinatario", "establecimiento", "localidadOrigen", "localidadDestino", "cosecha", "cuitTransportista", "cantidadHoras", "patenteVehiculo", "pesoNetoCarga"};
+	private static final String CONSULTAR_DETALLE_CTG_RESPONSE_NODES[] = {"ctg", "solicitante", "cartaPorte", "estado", "fechaEmision", "fechaVigenciaDesde", "fechaVigenciaHasta", "especie", "cuitCanjeador", "cuitDestino", "cuitDestinatario", "establecimiento", "localidadOrigen", "localidadDestino", "cosecha", "cuitTransportista", "cantidadHoras", "patenteVehiculo", "pesoNetoCarga"};
 
 	private static final String DESVIAR_CTG_OTRO_ESTABLECIMIENTO_NODE = "ns1:desviarCTGAOtroEstablecimientoResponse";
 	private static final String DESVIAR_CTG_OTRO_ESTABLECIMIENTO_RESPONSE_CONTAINER_NODE = "datosResponse";
@@ -328,7 +328,8 @@ public class AfipCTG10ResponseParser extends BaseResponseParser implements Respo
 			if(value != null) {
 				response.append(value);
 			}
-			if(i + 1 < valueNodeNames.length) {
+			// Jose wants a ; at the end of each row
+			if(i < valueNodeNames.length) {
 				response.append(SUCCESS_MESSAGE_SEPARATOR);
 			}
 		}
