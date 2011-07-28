@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -23,7 +24,8 @@ import org.w3c.dom.Node;
  *
  */
 public abstract class BaseResponseParser implements ResponseParser {
-
+	private static final Logger LOG = Logger.getLogger(BaseResponseParser.class);
+	
 	/**
 	 * 
 	 */
@@ -81,7 +83,12 @@ public abstract class BaseResponseParser implements ResponseParser {
      */
     protected String getNodeText(Node node, String nodeName) throws Exception {
     	Node childNode = getNode(node, nodeName);
-    	return childNode != null ? childNode.getTextContent() : null;
+    	if(childNode != null) {
+    		return childNode.getTextContent();
+    	} else {
+    		LOG.warn("No such child node [" + nodeName + "] in node [" + (node != null ? node.getNodeName() : "null") + "]");
+    		return "";
+    	}
     }
     
 	/**
