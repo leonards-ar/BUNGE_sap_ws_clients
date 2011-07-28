@@ -95,7 +95,6 @@ public class SAPConsComResponseParser extends SAPBaseResponseParser {
 		line.append(getNodeText(type1, "OperacionCanje") + LINE_TOKEN);
 		line.append(getNodeText(type1, "PropuestaPago") + LINE_TOKEN);
 		line.append(getNodeText(type1, "OrdenDePago") + LINE_TOKEN);
-		line.append(getNodeText(type1, "fecha-op") + LINE_TOKEN);
 		line.append(getNodeText(type1, "FechaOp") + LINE_TOKEN);
 		line.append(getNodeText(type1, "NumeroContrato") + LINE_TOKEN);
 		line.append(getNodeText(type1, "Texto"));
