@@ -5,6 +5,7 @@
  */
 package ar.com.bunge.sapws.client.parser;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -12,6 +13,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import ar.com.bunge.util.FileUtils;
+import ar.com.ib.cfe.render.GenerarComprobanteFacade;
 
 /**
  *
@@ -22,6 +24,14 @@ import ar.com.bunge.util.FileUtils;
  */
 public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 	private static final Logger LOG = Logger.getLogger(InterfacturaWSFacturaResponseParser.class);
+	
+	// Print PDF
+	private static final String SAVE_PDF_PARAMETER = "pdf";
+	private static final String PDF_TYPE = "tipo_ejemplar";
+	private static final String PDF_FILE_PREFIX = "prefijo_pdf";
+	private static final String DEFAULT_PDF_TYPE = "ORIGINAL";
+	private static final String LOTE_COMPROBANTES_NODE = "lote_comprobantes";
+	private static final String COMPROBANTE_NODE = "comprobante";
 	
 	// Receive Factura keys
 	private static final String RECEIVE_FACTURAS_NODE = "m:receiveFacturasOutput";
@@ -107,6 +117,9 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 		responseNode = getNode(doc, GET_LOTES_FACTURAS_NODE);
 		if(responseNode != null) {
 			LOG.debug("Parsing " + GET_LOTES_FACTURAS_NODE + " response");
+			if(isGeneratePdf(context)) {
+				generatePdf(responseNode, context);
+			}
 			return parseGetLotesFacturas(responseNode);
 		}
 
@@ -131,6 +144,47 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 		return rawResponse;
 	}
 
+	private boolean isGeneratePdf(Map<String, Object> context) {
+		if(context != null && context.containsKey(SAVE_PDF_PARAMETER)) {
+			String value = context.get(SAVE_PDF_PARAMETER) != null ? String.valueOf(context.get(SAVE_PDF_PARAMETER)) : null;
+			return ("yes".equalsIgnoreCase(value) || "si".equalsIgnoreCase(value) || "true".equalsIgnoreCase(value) || "x".equalsIgnoreCase(value));
+		}
+		return false;
+	}
+
+	private void generatePdf(Node responseNode, Map<String, Object> context) {
+		String type =  context.containsKey(PDF_TYPE) && context.get(PDF_TYPE) != null ? String.valueOf(context.get(PDF_TYPE)) : DEFAULT_PDF_TYPE;
+		String filePrefix = context.containsKey(PDF_FILE_PREFIX) && context.get(PDF_FILE_PREFIX) != null ? String.valueOf(context.get(PDF_FILE_PREFIX)) : "";
+		try {
+			Document response = getXmlDocumentFromString(responseNode.getTextContent());
+			
+			Node docs = getNode(response, LOTE_COMPROBANTES_NODE);
+			
+			if (docs != null && docs.getChildNodes() != null) {
+				Node n;
+				String file;
+				String xml;
+				GenerarComprobanteFacade pdfFacade = new GenerarComprobanteFacade();
+				int j = 0;
+				for (int i = 0; i < docs.getChildNodes().getLength(); i++) {
+					n = docs.getChildNodes().item(i);
+					if(COMPROBANTE_NODE.equalsIgnoreCase(n.getNodeName())) {
+						file = (j == 0) ? filePrefix + ".pdf" : filePrefix + "_" + j + ".pdf";
+						xml = nodeToXmlString(n);
+						if(LOG.isDebugEnabled()) {
+							LOG.debug("About to convert to PDF [" + file + "]: " + xml);
+						}
+						FileUtils.writeFile(file, pdfFacade.generatePdf(xml, type));
+						j++;
+					}
+				}
+			}			
+		} catch(Exception ex) {
+			LOG.error("Could not generate PDF files type [" + type + "] for prefix [" + filePrefix + "]", ex);
+		}
+		
+	}
+	
 	/**
 	 * 
 	 * @param responseNode
@@ -476,5 +530,16 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 		}
 		
 		return result.toString();
+	}
+	
+	public static void main(String args[]) throws Exception {
+		Map<String, Object> context = new HashMap<String, Object>();
+		context.put(SAVE_PDF_PARAMETER, "x");
+		context.put(PDF_TYPE, "ORIGINAL");
+		context.put(PDF_FILE_PREFIX, "D:\\salida");
+		
+		InterfacturaWSFacturaResponseParser p = new InterfacturaWSFacturaResponseParser();
+		System.out.println(p.parseResponse(FileUtils.readFile("D:\\Development\\Projects\\bunge\\Interfactura\\Bunge\\trace\\lote-x_20100614.192431_resp.xml"), context));
+		
 	}
 }
