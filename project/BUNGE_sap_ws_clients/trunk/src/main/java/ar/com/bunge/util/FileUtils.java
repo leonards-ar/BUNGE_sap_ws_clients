@@ -8,6 +8,7 @@ package ar.com.bunge.util;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -115,6 +116,25 @@ public class FileUtils {
 				writer.close();
 			}
 		}
+	}
+	
+	/**
+	 * 
+	 * @param file
+	 * @param contents
+	 * @throws IOException
+	 */
+	public static void writeFile(String file, byte[] contents) throws IOException {
+		FileOutputStream os = null;
+		try {
+			os = new FileOutputStream(file);
+			os.write(contents);
+			os.flush();
+		} finally {
+			if (os != null) {
+				os.close();
+			}
+		}		
 	}
 	
 	/**

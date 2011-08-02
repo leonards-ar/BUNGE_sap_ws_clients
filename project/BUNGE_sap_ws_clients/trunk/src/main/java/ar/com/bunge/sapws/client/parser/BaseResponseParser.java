@@ -5,10 +5,16 @@
  */
 package ar.com.bunge.sapws.client.parser;
 
+import java.io.StringWriter;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
@@ -74,6 +80,14 @@ public abstract class BaseResponseParser implements ResponseParser {
     	}
     }	
     
+    protected String nodeToXmlString(Node node) throws Exception {
+        Transformer t = TransformerFactory.newInstance().newTransformer();
+        t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        StringWriter sw = new StringWriter();
+        t.transform(new DOMSource(node), new StreamResult(sw));
+        return sw.toString();
+    }
+	
     /**
      * 
      * @param node
