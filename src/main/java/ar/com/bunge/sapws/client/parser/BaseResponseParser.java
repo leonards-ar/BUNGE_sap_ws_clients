@@ -16,6 +16,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
 import org.w3c.dom.Document;
@@ -31,6 +32,10 @@ import org.w3c.dom.Node;
  */
 public abstract class BaseResponseParser implements ResponseParser {
 	private static final Logger LOG = Logger.getLogger(BaseResponseParser.class);
+
+	protected static final String LINE_TOKEN = ";";
+	protected static final String SUCCESS_MESSAGE_SEPARATOR = LINE_TOKEN;
+	protected static final String REPLACEMENT_VALUE_TOKEN = ",";
 	
 	/**
 	 * 
@@ -98,7 +103,7 @@ public abstract class BaseResponseParser implements ResponseParser {
     protected String getNodeText(Node node, String nodeName) throws Exception {
     	Node childNode = getNode(node, nodeName);
     	if(childNode != null) {
-    		return childNode.getTextContent();
+    		return StringUtils.replace(childNode.getTextContent(), SUCCESS_MESSAGE_SEPARATOR, REPLACEMENT_VALUE_TOKEN);
     	} else {
     		LOG.warn("No such child node [" + nodeName + "] in node [" + (node != null ? node.getNodeName() : "null") + "]");
     		return "";

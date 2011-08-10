@@ -89,7 +89,6 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 	// Tokens
 	private static final String ERROR_MESSAGE_SEPARATOR = FileUtils.getNewLine();
 	private static final String ERROR_MESSAGE_TOKEN = "=";
-	private static final String SUCCESS_MESSAGE_SEPARATOR = ";";
 	
 	/**
 	 * 

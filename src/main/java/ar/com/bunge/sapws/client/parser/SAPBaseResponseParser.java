@@ -16,7 +16,6 @@ package ar.com.bunge.sapws.client.parser;
 public abstract class SAPBaseResponseParser extends BaseResponseParser {
 	// Tokens
 	protected static final String LINE_SEPARATOR = System.getProperty("line.separator") != null ? System.getProperty("line.separator") : "\n";
-	protected static final String LINE_TOKEN = ";";
 	protected static final String ERROR_STATUS = "ERROR";
 	protected static final String SUCCESS_STATUS = "OK";
 	
