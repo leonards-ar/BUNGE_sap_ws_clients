@@ -106,7 +106,6 @@ public class AfipCTG10ResponseParser extends BaseResponseParser implements Respo
 	
 	// Tokens
 	private static final String RESULT_MESSAGE_SEPARATOR = FileUtils.getNewLine();
-	private static final String SUCCESS_MESSAGE_SEPARATOR = ";";
 
 
 	/**

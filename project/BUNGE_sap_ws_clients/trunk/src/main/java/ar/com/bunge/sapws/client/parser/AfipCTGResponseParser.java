@@ -31,7 +31,6 @@ public class AfipCTGResponseParser extends BaseResponseParser implements Respons
 	
 	// Tokens
 	private static final String RESULT_MESSAGE_SEPARATOR = FileUtils.getNewLine();
-	private static final String SUCCESS_MESSAGE_SEPARATOR = ";";
 
 	/**
 	 * 
