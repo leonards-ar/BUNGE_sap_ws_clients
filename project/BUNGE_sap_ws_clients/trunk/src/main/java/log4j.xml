@@ -21,17 +21,12 @@
 
 	<appender name="email_log" class="org.apache.log4j.net.SMTPAppender">
 		<param name="BufferSize" value="1" />
-		<param name="SMTPHost" value="smtp_servidor.com" />
-		<param name="SMTPUsername" value="tu_usuario" />
-		<param name="SMTPPassword" value="tu_password_usuario" />
-		<param name="From" value="noreply@tu_servidor.com" />
-		<param name="To" value="cuenta_soporte@tu_servidor.com" />
+		<param name="SMTPHost" value="mail.bunge.com" />
+		<param name="SMTPUsername" value="mailuser" />
+		<param name="SMTPPassword" value="1234" />
+		<param name="From" value="noreply@bunge.com.ar" />
+		<param name="To" value="dist@bunge.com.ar" />
 		<param name="Subject" value="NOTIFICACIONE Certificado Cliente WebService" />
-
-		<filter class="org.apache.log4j.varia.LevelRangeFilter">
-			<param name="LevelMin" value="WARN" />
-			<param name="LevelMax" value="FATAL" />
-		</filter>
 
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%n%d{dd-MM-yyyy HH:mm:ss} %n%m%n" />

@@ -122,7 +122,8 @@ public class CertificateUtils {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-
+		validateCertificateExpiration("D:\\Development\\Projects\\bunge\\Certificados\\Afip\\bunge_afip.p12", "bunge", "bunge", "pkcs12");
+		validateCertificateExpiration("D:\\Development\\Projects\\bunge\\Certificados\\Prod\\30700869918.ks", "bunge", null, "jks");
 	}
 
 }
