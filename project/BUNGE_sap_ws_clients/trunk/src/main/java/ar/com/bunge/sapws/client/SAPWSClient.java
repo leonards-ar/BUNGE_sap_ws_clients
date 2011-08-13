@@ -31,6 +31,7 @@ import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.transport.http.CommonsHttpMessageSender;
 
 import ar.com.bunge.sapws.client.parser.ResponseParser;
+import ar.com.bunge.util.CertificateUtils;
 import ar.com.bunge.util.FileUtils;
 import ar.com.bunge.util.ValidationException;
 
@@ -477,6 +478,8 @@ public class SAPWSClient {
 	 * @throws Exception
 	 */
 	protected void sslProtocolInit() throws Exception {
+		CertificateUtils.validateCertificateExpiration(getKeyStore(), getKeyStorePassword(), null, "pkcs12");
+		
 		HttpSecureProtocol protocolSocketFactory;
 		protocolSocketFactory = new HttpSecureProtocol();
 		File jksTrustStore = new File(getKeyStore());

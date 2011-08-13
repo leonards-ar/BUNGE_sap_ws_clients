@@ -76,7 +76,11 @@
       <artifactId>saxon-dom</artifactId>
       <version>9.0</version>
     </dependency>
-
+    <dependency>
+      <groupId>cfe-factura-render</groupId>
+      <artifactId>cfe-factura-render</artifactId>
+      <version>2.36-SNAPSHOT-ext</version>
+    </dependency>    
   </dependencies>
 	<build>
 		<plugins>
