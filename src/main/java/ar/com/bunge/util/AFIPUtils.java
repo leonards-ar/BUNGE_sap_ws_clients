@@ -263,6 +263,10 @@ public class AFIPUtils {
 		String keyStorePath = getMapValue(config, WSAA_KEYSTORE_PATH_PARAM);
 		String keyStorePass = getMapValue(config, WSAA_KEYSTORE_PASSWORD_PARAM, "");
 		String signer = getMapValue(config, WSAA_KEYSTORE_SIGNER_PARAM);
+		
+		// For this to work you need to have the email appender enabled for CertificateUtils class
+		CertificateUtils.validateCertificateExpiration(keyStorePath, keyStorePass, signer, "pkcs12");
+		
 		//
 		// Manage Keys & Certificates
 		//
@@ -276,7 +280,7 @@ public class AFIPUtils {
 			privateKey = (PrivateKey) ks.getKey(signer, keyStorePass.toCharArray());
 			privateCert = (X509Certificate) ks.getCertificate(signer);
 			signerDN = privateCert.getSubjectDN().toString();
-	
+			
 			// Create a list of Certificates to include in the final CMS
 			List<X509Certificate> certList = new ArrayList<X509Certificate>();
 			certList.add(privateCert);
