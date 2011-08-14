@@ -24,7 +24,7 @@ import org.apache.log4j.Logger;
 public class CertificateUtils {
 	private static final Logger LOG = Logger.getLogger(CertificateUtils.class);
 	private static final Logger EMAIL_NOTIFIER = Logger.getLogger("email-notifier");
-
+	private static final String KEYSTORE_TYPES[] = {"pkcs12", "jks"};
 	/**
 	 * 
 	 */
@@ -38,25 +38,27 @@ public class CertificateUtils {
 	 * @param signer
 	 * @param type
 	 */
-	public static void validateCertificateExpiration(String keyStorePath, String keyStorePass, String signer, String type) {
+	public static void validateCertificateExpiration(String keyStorePath, String keyStorePass, String signer) {
 		if(LOG.isInfoEnabled()) {
 			FileInputStream ksFile = null;
 			Certificate cert = null;
 
 			try {
-				KeyStore ks = KeyStore.getInstance(type);
-				ksFile = new FileInputStream(keyStorePath) ;
-				ks.load(ksFile, keyStorePass.toCharArray());
+				KeyStore ks = loadKeyStore(keyStorePath, keyStorePass);
 				
-				for(Enumeration<String> e = ks.aliases(); e.hasMoreElements(); ) {
-					String alias = e.nextElement();
-					if((signer != null && signer.equalsIgnoreCase(alias)) || signer == null) {
-						if(LOG.isDebugEnabled()) {
-							LOG.debug("About to validate certificate [" + alias + "]");
+				if(ks != null) {
+					for(Enumeration<String> e = ks.aliases(); e.hasMoreElements(); ) {
+						String alias = e.nextElement();
+						if((signer != null && signer.equalsIgnoreCase(alias)) || signer == null) {
+							if(LOG.isDebugEnabled()) {
+								LOG.debug("About to validate certificate [" + alias + "]");
+							}
+							cert = (Certificate) ks.getCertificate(alias);
+							validateExpiration(cert, alias, keyStorePath);
 						}
-						cert = (Certificate) ks.getCertificate(alias);
-						validateExpiration(cert, alias, keyStorePath);
 					}
+				} else {
+					LOG.error("Could not validate certificate" + (signer != null ? " [" + signer + "]" : "/s") + " in keyStore [" + keyStorePath + "]");
 				}
 			} catch(Exception ex) {
 				LOG.error("Could not validate certificate" + (signer != null ? " [" + signer + "]" : "/s") + " in keyStore [" + keyStorePath + "]" , ex);
@@ -70,6 +72,39 @@ public class CertificateUtils {
 				}
 			}
 		}
+	}
+	
+	private static KeyStore createKeyStore(String keyStorePath, String keyStorePass, String type) throws Exception {
+		FileInputStream ksFile = null;
+
+		try {
+			KeyStore ks = KeyStore.getInstance(type);
+			ksFile = new FileInputStream(keyStorePath);
+			ks.load(ksFile, keyStorePass.toCharArray());
+			
+			return ks;
+		} finally {
+			if(ksFile != null) {
+				try {
+					ksFile.close();
+				} catch(Exception ex) {
+					LOG.error("Could not close keyStore file [" + keyStorePath + "]", ex);
+				}
+			}
+		}
+	}
+	
+	private static KeyStore loadKeyStore(String keyStorePath, String keyStorePass) {
+		for(int i = 0; i < KEYSTORE_TYPES.length; i++) {
+			try {
+				LOG.debug("About to load keyStore [" + keyStorePath + "] as type [" + KEYSTORE_TYPES[i] + "]");
+				return createKeyStore(keyStorePath, keyStorePass, KEYSTORE_TYPES[i]);
+			} catch(Exception ex) {
+				LOG.debug("KeyStore [" + keyStorePath + "] is not of type [" + KEYSTORE_TYPES[i] + "]", ex);
+			}
+		}
+		LOG.error("KeyStore [" + keyStorePath + "] type is not supported");
+		return null;
 	}
 	
 	private static void validateExpiration(Certificate cert, String alias, String keyStorePath) {
@@ -122,8 +157,8 @@ public class CertificateUtils {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		validateCertificateExpiration("D:\\Development\\Projects\\bunge\\Certificados\\Afip\\bunge_afip.p12", "bunge", "bunge", "pkcs12");
-		validateCertificateExpiration("D:\\Development\\Projects\\bunge\\Certificados\\Prod\\30700869918.ks", "bunge", null, "jks");
+		validateCertificateExpiration("D:\\Development\\Projects\\bunge\\Certificados\\Afip\\bunge_afip.p12", "bunge", "bunge");
+		validateCertificateExpiration("D:\\Development\\Projects\\bunge\\Certificados\\Prod\\30700869918.ks", "bunge", null);
 	}
 
 }
