@@ -265,7 +265,7 @@ public class AFIPUtils {
 		String signer = getMapValue(config, WSAA_KEYSTORE_SIGNER_PARAM);
 		
 		// For this to work you need to have the email appender enabled for CertificateUtils class
-		CertificateUtils.validateCertificateExpiration(keyStorePath, keyStorePass, signer, "pkcs12");
+		CertificateUtils.validateCertificateExpiration(keyStorePath, keyStorePass, signer);
 		
 		//
 		// Manage Keys & Certificates
