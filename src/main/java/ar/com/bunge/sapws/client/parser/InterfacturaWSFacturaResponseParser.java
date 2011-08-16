@@ -8,6 +8,7 @@ package ar.com.bunge.sapws.client.parser;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -331,11 +332,11 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 		Node status = getNode(response, RECEIVE_FACTURAS_STATUS_NODE);
 		if(status != null) {
 			String statusText = status.getTextContent();
-			LOG.debug("Status node " + RECEIVE_FACTURAS_STATUS_NODE + " found. Value is: [" + statusText + "]");
-			
+			LOG.debug("Status node [" + RECEIVE_FACTURAS_STATUS_NODE + "] found. Value is: [" + statusText + "]");
+
 			if(SUCCESS_STATUS.equalsIgnoreCase(statusText)) {
 				String result = getNodeText(response, RECEIVE_FACTURAS_RESULT_NODE);
-				if(result == null || RECEIVE_FACTURAS_SUCCESS_RESULT.equalsIgnoreCase(result)) {
+				if(StringUtils.isBlank(result) || RECEIVE_FACTURAS_SUCCESS_RESULT.equalsIgnoreCase(result)) {
 					LOG.debug("Result status [" + statusText + "] matches success text [" + SUCCESS_STATUS + "] and result node [" + RECEIVE_FACTURAS_RESULT_NODE + "] has value [" + result + "]. Returning [" + SUCCESS_RESULT + "]");
 					return SUCCESS_RESULT;
 				} else {
