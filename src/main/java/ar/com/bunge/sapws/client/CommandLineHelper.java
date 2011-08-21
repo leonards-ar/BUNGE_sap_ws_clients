@@ -30,6 +30,7 @@ public class CommandLineHelper {
 	
 	private static final Map<String, String> PARAMS = new HashMap<String, String>();
 	private static final Map<String, List<String>> REQUIRED_PARAMS = new HashMap<String, List<String>>();
+	private static final List<String> UTIL_PARAMS = new ArrayList<String>();
 	
 	private Map<String, Object> variables = new HashMap<String, Object>();
 	private Map<String, String> parameters = new HashMap<String, String>();
@@ -56,6 +57,7 @@ public class CommandLineHelper {
 		PARAMS.put("dc", "default_config.help");
 		PARAMS.put("td", "trace_path.help");
 		PARAMS.put("tp", "trace_prefix.help");
+		PARAMS.put("cvc", "cert_config.help");
 		
 		List<String> global = new ArrayList<String>();
 		global.add("i");
@@ -73,6 +75,7 @@ public class CommandLineHelper {
 		REQUIRED_PARAMS.put("b", otherAuth);
 		REQUIRED_PARAMS.put("w", otherAuth);
 		
+		UTIL_PARAMS.add("cvc");
 	}
 
 	/**
@@ -131,15 +134,26 @@ public class CommandLineHelper {
 				
 			}
 		}
-		
-		// Validate required parameters
-		for(String param : requiredParams) {
-			if(!getParameters().containsKey(param)) {
-				getErrors().add(getErrorMessage("error.missing_arg_value.message", param, null));
+
+		if(!isUtility()) {
+			// Validate required parameters
+			for(String param : requiredParams) {
+				if(!getParameters().containsKey(param)) {
+					getErrors().add(getErrorMessage("error.missing_arg_value.message", param, null));
+				}
 			}
 		}
 	}
 
+	public boolean isUtility() {
+		for(String utilParam : UTIL_PARAMS) {
+			if(getParameters().containsKey(utilParam)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * 
 	 * @param configurationFile

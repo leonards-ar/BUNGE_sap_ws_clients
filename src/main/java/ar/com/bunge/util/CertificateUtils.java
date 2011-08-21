@@ -11,6 +11,7 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -108,7 +109,7 @@ public class CertificateUtils {
 	}
 	
 	private static void validateExpiration(Certificate cert, String alias, String keyStorePath) {
-		final int DAYS_TO_NOTIFY_IN_HS = 5 * 24; 
+		final int DAYS_TO_NOTIFY_IN_HS = 10 * 24; 
 
 		if(cert instanceof X509Certificate) {
 			X509Certificate x509Cert = (X509Certificate) cert; 
@@ -153,10 +154,32 @@ public class CertificateUtils {
 		return (t1 - t2) / ONE_HOUR_MS;
 	}	
 	
+	public static void validateCertificates(String certConfigFile) throws Exception {
+		LOG.debug("Certificate validation configuration file: [" + certConfigFile + "]");
+		Map<String, Object> conf = FileUtils.parseKeyValueFile(certConfigFile);
+		if(LOG.isDebugEnabled()) {
+			LOG.debug("Configuration: " + conf);
+		}
+		if(conf.containsKey("total")) {
+			int totalCerts = Integer.parseInt(conf.get("total").toString());
+			LOG.debug("About to validate [" + totalCerts + "] certificates");
+			for(int i = 1; i <= totalCerts; i++) {
+				String cert = conf.containsKey("cert.path." + i) ? conf.get("cert.path." + i).toString() : null;
+				String pass = conf.containsKey("cert.password." + i) ? conf.get("cert.password." + i).toString() : null;
+				String alias = conf.containsKey("cert.alias." + i) ? conf.get("cert.alias." + i).toString() : null;
+				LOG.debug("About to validate certificate [" + (alias != null ? alias : "--all--") + "] in certificate store [" + cert + "] with password [" + pass + "]");
+				validateCertificateExpiration(cert, pass, alias);
+			}
+		} else {
+			throw new Exception("Missing configuration parameter [total]");
+		}
+	}
+	
 	/**
 	 * @param args
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
+		validateCertificates("D:\\Development\\Projects\\bunge\\client\\conf\\cert-validation.config");
 		validateCertificateExpiration("D:\\Development\\Projects\\bunge\\Certificados\\Afip\\bunge_afip.p12", "bunge", "bunge");
 		validateCertificateExpiration("D:\\Development\\Projects\\bunge\\Certificados\\Prod\\30700869918.ks", "bunge", null);
 	}
