@@ -497,7 +497,7 @@ public class SAPWSClient {
 	 * @throws Exception
 	 */
 	protected void sslProtocolInit() throws Exception {
-		CertificateUtils.validateCertificateExpiration(getKeyStore(), getKeyStorePassword(), null);
+		//CertificateUtils.validateCertificateExpiration(getKeyStore(), getKeyStorePassword(), null);
 		
 		HttpSecureProtocol protocolSocketFactory;
 		protocolSocketFactory = new HttpSecureProtocol();
