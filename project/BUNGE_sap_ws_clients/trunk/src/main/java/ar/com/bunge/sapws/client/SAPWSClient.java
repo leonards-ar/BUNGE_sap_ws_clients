@@ -161,33 +161,36 @@ public class SAPWSClient {
 				System.exit(1);
 			}
 
-			client.setUsername(cmdLine.getParameter("u"));
-			client.setUrl(cmdLine.getParameter("url"));
-			client.setPassword(cmdLine.getParameter("p"));
-			client.setVariablesFile(cmdLine.getParameter("v"));
-			client.setRequestTemplateFile(cmdLine.getParameter("i"));
-			client.setResponseFile(cmdLine.getParameter("o"));
-			String auth = cmdLine.getParameter("b");
-			client.setBasicAuthentication(auth != null ? "true".equalsIgnoreCase(auth) || "yes".equalsIgnoreCase(auth) : true);
-			auth = cmdLine.getParameter("w");
-			client.setWssAuthentication(auth != null ? "true".equalsIgnoreCase(auth) || "yes".equalsIgnoreCase(auth) : false);
-			auth = cmdLine.getParameter("ssl");
-			client.setSslAuthentication(auth != null ? "true".equalsIgnoreCase(auth) || "yes".equalsIgnoreCase(auth) : false);
-			client.setKeyStore(cmdLine.getParameter("ks"));
-			client.setKeyStorePassword(cmdLine.getParameter("ksp"));
-			client.setProxyServer(cmdLine.getParameter("px"));
-			client.setProxyPort(cmdLine.getParameter("pxp") != null ? Integer.parseInt(cmdLine.getParameter("pxp")) : 8080);
-			client.setResponseParser(client.getResponseParserInstance(cmdLine.getParameter("rp")));
-			client.setTracePath(cmdLine.getParameter("td"));
-			client.setTracePrefix(cmdLine.getParameter("tp"));
-			
-			Map<String, Object> context = client.parseVariablesFile();
-			context.putAll(cmdLine.getVariables());
+			if(cmdLine.isUtility()) {
+				processUtility(cmdLine);
+			} else {
+				client.setUsername(cmdLine.getParameter("u"));
+				client.setUrl(cmdLine.getParameter("url"));
+				client.setPassword(cmdLine.getParameter("p"));
+				client.setVariablesFile(cmdLine.getParameter("v"));
+				client.setRequestTemplateFile(cmdLine.getParameter("i"));
+				client.setResponseFile(cmdLine.getParameter("o"));
+				String auth = cmdLine.getParameter("b");
+				client.setBasicAuthentication(auth != null ? "true".equalsIgnoreCase(auth) || "yes".equalsIgnoreCase(auth) : true);
+				auth = cmdLine.getParameter("w");
+				client.setWssAuthentication(auth != null ? "true".equalsIgnoreCase(auth) || "yes".equalsIgnoreCase(auth) : false);
+				auth = cmdLine.getParameter("ssl");
+				client.setSslAuthentication(auth != null ? "true".equalsIgnoreCase(auth) || "yes".equalsIgnoreCase(auth) : false);
+				client.setKeyStore(cmdLine.getParameter("ks"));
+				client.setKeyStorePassword(cmdLine.getParameter("ksp"));
+				client.setProxyServer(cmdLine.getParameter("px"));
+				client.setProxyPort(cmdLine.getParameter("pxp") != null ? Integer.parseInt(cmdLine.getParameter("pxp")) : 8080);
+				client.setResponseParser(client.getResponseParserInstance(cmdLine.getParameter("rp")));
+				client.setTracePath(cmdLine.getParameter("td"));
+				client.setTracePrefix(cmdLine.getParameter("tp"));
+				
+				Map<String, Object> context = client.parseVariablesFile();
+				context.putAll(cmdLine.getVariables());
 
-			client.replaceParameterVariables(context);
-			
-			client.executeCommandLine(context);
-			
+				client.replaceParameterVariables(context);
+				
+				client.executeCommandLine(context);
+			}
 			System.exit(0);
 		} catch(Throwable ex) {
 			System.err.println(ex.getLocalizedMessage());
@@ -197,6 +200,22 @@ public class SAPWSClient {
 		}
 	}
 
+	private static void processUtility(CommandLineHelper cmdLine) {
+		String utilName = null;
+		try {
+			String value = cmdLine.getParameter("cvc");
+			if(StringUtils.isNotEmpty(value)) {
+				utilName = "Certificate Validation";
+				CertificateUtils.validateCertificates(value);
+			}
+		} catch(Throwable ex) {
+			System.err.println(ex.getLocalizedMessage());
+			LOG.error("Fail to execute utility: " + utilName);
+			LOG.error(ex.getLocalizedMessage(), ex);
+			System.exit(2);
+		}
+	}
+	
 	/**
 	 * 
 	 * @param responseParserClass

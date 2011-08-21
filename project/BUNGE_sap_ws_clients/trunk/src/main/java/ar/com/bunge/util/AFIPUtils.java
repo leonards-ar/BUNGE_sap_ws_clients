@@ -324,7 +324,14 @@ public class AFIPUtils {
 		CMSSignedData signed = gen.generate(data, true, "BC");	
 
 		Base64 b64 = new Base64();
-		return new String(b64.encode(signed.getEncoded()));
+		String request = new String(b64.encode(signed.getEncoded()));
+
+		if(LOG.isDebugEnabled()) {
+			LOG.debug("WSAA encoded request: [" + request + "]");
+		}
+		
+		
+		return request;
 	}
 	
 	/**

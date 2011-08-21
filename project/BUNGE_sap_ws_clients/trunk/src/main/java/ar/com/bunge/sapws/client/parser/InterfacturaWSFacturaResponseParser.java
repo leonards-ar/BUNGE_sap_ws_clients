@@ -27,7 +27,6 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 	private static final Logger LOG = Logger.getLogger(InterfacturaWSFacturaResponseParser.class);
 	
 	// Print PDF
-	private static final String SAVE_PDF_PARAMETER = "pdf";
 	private static final String PDF_TYPE = "tipo_ejemplar";
 	private static final String PDF_FILE_PREFIX = "prefijo_pdf";
 	private static final String DEFAULT_PDF_TYPE = "ORIGINAL";
@@ -145,9 +144,9 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 	}
 
 	private boolean isGeneratePdf(Map<String, Object> context) {
-		if(context != null && context.containsKey(SAVE_PDF_PARAMETER)) {
-			String value = context.get(SAVE_PDF_PARAMETER) != null ? String.valueOf(context.get(SAVE_PDF_PARAMETER)) : null;
-			return ("yes".equalsIgnoreCase(value) || "si".equalsIgnoreCase(value) || "true".equalsIgnoreCase(value) || "x".equalsIgnoreCase(value));
+		if(context != null && context.containsKey(PDF_FILE_PREFIX)) {
+			String value = context.get(PDF_FILE_PREFIX) != null ? String.valueOf(context.get(PDF_FILE_PREFIX)) : null;
+			return StringUtils.isNotBlank(value);
 		}
 		return false;
 	}
@@ -534,7 +533,6 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 	
 	public static void main(String args[]) throws Exception {
 		Map<String, Object> context = new HashMap<String, Object>();
-		context.put(SAVE_PDF_PARAMETER, "x");
 		context.put(PDF_TYPE, "ORIGINAL");
 		context.put(PDF_FILE_PREFIX, "D:\\salida");
 		

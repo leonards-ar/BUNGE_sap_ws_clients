@@ -307,7 +307,7 @@ public class FileUtils {
 	 * @return
 	 */
 	public static String[] parseParameter(String paramValuePair) {
-		if(paramValuePair != null && paramValuePair.trim().length() > 0) {
+		if(paramValuePair != null && paramValuePair.trim().length() > 0 && !paramValuePair.startsWith("#")) {
 			String[] parsed = new String[2];
 			
 			int i = paramValuePair.indexOf('=');
