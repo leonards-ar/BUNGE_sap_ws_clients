@@ -279,23 +279,29 @@ public class AFIPUtils {
 			// Get Certificate & Private key from KeyStore
 			privateKey = (PrivateKey) ks.getKey(signer, keyStorePass.toCharArray());
 			privateCert = (X509Certificate) ks.getCertificate(signer);
-			signerDN = privateCert.getSubjectDN().toString();
-			
-			// Create a list of Certificates to include in the final CMS
-			List<X509Certificate> certList = new ArrayList<X509Certificate>();
-			certList.add(privateCert);
-	
-			if(Security.getProvider("BC") == null) {
-				Security.addProvider(new BouncyCastleProvider());
+			if(privateCert != null) {
+				signerDN = privateCert.getSubjectDN().toString();
+				
+				// Create a list of Certificates to include in the final CMS
+				List<X509Certificate> certList = new ArrayList<X509Certificate>();
+				certList.add(privateCert);
+		
+				if(Security.getProvider("BC") == null) {
+					Security.addProvider(new BouncyCastleProvider());
+				}
+		
+				certStore = CertStore.getInstance("Collection", new CollectionCertStoreParameters(certList), "BC");
+			} else {
+				LOG.error("Invalid certificate or configuration. No certificate found in [" + keyStorePath + "] with alias [" + signer + "]");
+				throw new Exception("Invalid certificate or configuration. No certificate found in [" + keyStorePath + "] with alias [" + signer + "]");
 			}
-	
-			certStore = CertStore.getInstance("Collection", new CollectionCertStoreParameters(certList), "BC");
+			
 		} finally {
 			if(ksFile != null) {
 				try {
 					ksFile.close();
 				} catch(Exception ex) {
-					//
+					LOG.warn("Could not close keyStore file", ex);
 				}
 			}
 		}
