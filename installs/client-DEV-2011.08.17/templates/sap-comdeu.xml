@@ -1,0 +1,15 @@
+<urn:ZaatFiWsSaldosProvCli xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:sap-com:document:sap:soap:functions:mc-style">
+   <IBukrs>${#sociedad#}</IBukrs>
+   <IDetalle>${#detalle#}</IDetalle>
+   <IFecha>${#fecha#}</IFecha>
+   <IGsberCli>${#div_cliente#}</IGsberCli>
+   <IGsberProv>${#div_proveedor#}</IGsberProv>
+   <ISaldoCli>${#busca_saldo_cliente#}</ISaldoCli>
+   <ISaldoProv>${#busca_saldo_proveedor#}</ISaldoProv>
+   <IStcd1>${#cuit#}</IStcd1>
+   <IStcd4>${#num_benef_ext#}</IStcd4>
+   <IStcdt>${#tipo_nif#}</IStcdt>
+   <ITipoReg>${#tipo_reg#}</ITipoReg>
+   <TDetalle_01/>
+   <TDetalle_02/>
+</urn:ZaatFiWsSaldosProvCli>

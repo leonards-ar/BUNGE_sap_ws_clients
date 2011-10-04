@@ -1,0 +1,21 @@
+<ctg:solicitarCTG xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ctg="http://impl.service.wsctg.afip.gov.ar/CTGService/"> 
+   <auth>
+      <token>${AFIPUtils.getWSAAToken(Utils.objectOrDefault(#afip_conf#, "/x/lib/webservices/client/conf/wsaa.config"))}</token>
+      <sign>${AFIPUtils.getWSAASign(Utils.objectOrDefault(#afip_conf#, "/x/lib/webservices/client/conf/wsaa.config"))}</sign>
+      <cuitRepresentado>${Utils.objectOrDefault(#cuit_representado#, "30700869918")}</cuitRepresentado>
+   </auth>
+   <solicitarCTGRequest>
+      <numeroCartaDePorte>${#nro_carta_porte#}</numeroCartaDePorte>
+      <codigoEspecie>${#codigo_especie#}</codigoEspecie>
+      <cuitRemitenteComercial>${#cuit_remitente_comercial#}</cuitRemitenteComercial>
+      <cuitDestino>${#cuit_destino#}</cuitDestino>
+      <cuitDestinatario>${#cuit_destinatario#}</cuitDestinatario>
+      <codigoLocalidadOrigen>${#codigo_localidad_origen#}</codigoLocalidadOrigen>
+      <codigoLocalidadDestino>${#codigo_localidad_destino#}</codigoLocalidadDestino>
+      <codigoCosecha>${#codigo_cosecha#}</codigoCosecha>
+      <pesoNetoCarga>${#peso_neto_carga#}</pesoNetoCarga>
+      <cantHoras>${#cant_horas#}</cantHoras>
+      <patenteVehiculo>${#patente_vehiculo#}</patenteVehiculo>
+      <cuitTransportista>${#cuit_transportista#}</cuitTransportista>
+   </solicitarCTGRequest>
+</ctg:solicitarCTG>

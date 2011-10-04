@@ -1,0 +1,35 @@
+<urn:ZtrRfcConsultaDatosTransp xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:sap-com:document:sap:soap:functions:mc-style">
+         <Escenario>${#escenario#}</Escenario>
+         <TChapa>
+	 ${loop(poschapas)}
+            <item>
+               <Chapa>${#chapa#}</Chapa>
+               <TipMensaje>${#tipmensaje#}</TipMensaje>
+               <Mensaje>${#mensaje#}</Mensaje>
+               <CuitEmf>${#cuitemf#}</CuitEmf>
+               <CuitEmt>${#cuitemt#}</CuitEmt>
+               <Canmax>${#canmax#}</Canmax>
+               <Tracc>${#tracc#}</Tracc>
+               <Tipcar>${#tipcar#}</Tipcar>
+            </item>
+         {end loop}
+         </TChapa>
+         <TChofer>
+	 ${loop(poscuiles)}
+            <item>
+               <Cuil>${#cuil#}</Cuil>
+               <TipMensaje>${#tipmensaje#}</TipMensaje>
+               <Mensaje>${#mensaje#}</Mensaje>
+               <Name1>${#name1#}</Name1>
+            </item>
+         {end loop}
+         </TChofer>
+	 <TMatnr>
+	 ${loop(posmaterial)}
+            <item>
+               <Material>${#matcobol#}</Material>
+               <Matnr>${#matsap#}</Matnr>
+            </item>
+         {end loop}
+         </TMatnr>
+      </urn:ZtrRfcConsultaDatosTransp>

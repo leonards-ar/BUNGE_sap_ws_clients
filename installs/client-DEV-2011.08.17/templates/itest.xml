@@ -1,0 +1,149 @@
+<ser:receiveFacturas xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://ar/com/ib/cfe/ejb/services">
+	<ser:receiveFacturasInput>
+	<![CDATA[
+<lote_comprobantes xmlns="http://lote.schemas.cfe.ib.com.ar/">
+        <cabecera_lote>
+                <id_lote>3</id_lote>
+                <cuit_canal>30690783521</cuit_canal>
+                <cuit_vendedor>30700869918</cuit_vendedor>
+                <cantidad_reg>1</cantidad_reg>
+                <punto_de_venta>4372</punto_de_venta>
+        </cabecera_lote>
+        <comprobante>
+                <cabecera>
+                        <informacion_comprobante>
+                                <tipo_de_comprobante>19</tipo_de_comprobante>
+                                <numero_comprobante>3</numero_comprobante>
+                                <punto_de_venta>4372</punto_de_venta>
+                        <fecha_emision>20100608</fecha_emision>
+                        <fecha_vencimiento>20110316</fecha_vencimiento>
+                        <fecha_serv_desde>20000204</fecha_serv_desde>
+                        <fecha_serv_hasta>20121115</fecha_serv_hasta>
+                                <condicion_de_pago>Cheque a 15 dias</condicion_de_pago>
+                                <es_detalle_encriptado>N</es_detalle_encriptado>
+                                <informacion_exportacion>
+                                        <destino_comprobante>161</destino_comprobante>
+                                        <tipo_exportacion>1</tipo_exportacion>
+                                        <id_impositivo>A99IK000765HK</id_impositivo>
+                                        <incoterms>FOB</incoterms>
+                                        <descripcion_incoterms>Incoterms</descripcion_incoterms>
+                                        <permiso_existente>N</permiso_existente>
+                                </informacion_exportacion>
+                        </informacion_comprobante>
+                        <informacion_vendedor>
+                                <GLN>0000000000001</GLN>
+                                <codigo_interno>465454654</codigo_interno>
+                                <razon_social>DEMO</razon_social>
+                                <cuit>30700869918</cuit>
+                                <condicion_IVA>1</condicion_IVA>
+                                <condicion_ingresos_brutos>1</condicion_ingresos_brutos>
+                                <nro_ingresos_brutos>1234567-89</nro_ingresos_brutos>
+                                <inicio_de_actividades>20050102</inicio_de_actividades>
+                                <contacto>Carlos</contacto>
+                                <domicilio_calle>Riobamba</domicilio_calle>
+                                <localidad>Capital Federal</localidad>
+                                <provincia>1</provincia>
+                                <cp>C1084ABE</cp>
+                                <telefono>123456789</telefono>
+                        </informacion_vendedor>
+                        <informacion_comprador>
+                                <GLN>7799000000006</GLN>
+                                <codigo_interno>465454654</codigo_interno>
+                                <codigo_doc_identificatorio>70</codigo_doc_identificatorio>
+                                <nro_doc_identificatorio>50000001144</nro_doc_identificatorio>
+                                <denominacion>Etiopia</denominacion>
+                                <condicion_IVA>09</condicion_IVA>
+                                <inicio_de_actividades>19970101</inicio_de_actividades>
+                                <contacto>Mariana</contacto>
+                                <domicilio_calle>Martin</domicilio_calle>
+                                <domicilio_numero>55</domicilio_numero>
+                                <domicilio_piso>1111</domicilio_piso>
+                                <domicilio_depto>1</domicilio_depto>
+                                <domicilio_sector>Sector</domicilio_sector>
+                                <localidad>Hong Kong</localidad>
+                                <cp>3061</cp>
+                        </informacion_comprador>
+                </cabecera>
+                <detalle>
+
+                                        <linea numeroLinea="1">
+
+                                                <descripcion>25.000%20unidades%3Cbr%3EBolsas%20de%20polietileno</descripcion>
+                                                <cantidad>0.5</cantidad>
+                                                <unidad>29</unidad>
+                                                <importe_total_articulo>250</importe_total_articulo>
+                                                <importes_moneda_origen>
+                                                        <precio_unitario>100</precio_unitario>
+                                                        <importe_total_articulo>50</importe_total_articulo>
+                                                        <importe_total_descuentos>0</importe_total_descuentos>
+                                                </importes_moneda_origen>
+                                        </linea>
+                                <linea numeroLinea="2">
+
+                                                <descripcion>Fletes</descripcion>
+                                                <importe_total_articulo>500</importe_total_articulo>
+
+                                                <importes_moneda_origen>
+                                                        <importe_total_articulo>100</importe_total_articulo>
+
+                                                </importes_moneda_origen>
+                                        </linea>
+                                        <linea numeroLinea="3">
+
+                                                <descripcion>Seguros</descripcion>
+                                                <importe_total_articulo>500</importe_total_articulo>
+
+                                                <importes_moneda_origen>
+                                                        <importe_total_articulo>100</importe_total_articulo>
+
+                                                </importes_moneda_origen>
+                                        </linea>
+                                        <linea numeroLinea="4">
+
+                                                <descripcion>Otros Gastos</descripcion>
+                                                <importe_total_articulo>1000</importe_total_articulo>
+
+                                                <importes_moneda_origen>
+
+                                                        <importe_total_articulo>200</importe_total_articulo>
+                                                        <importe_total_descuentos>0</importe_total_descuentos>
+                                                </importes_moneda_origen>
+                                        </linea>
+                                        <comentarios>25.000 unidades Bolsas &#x0D; de  polietileno</comentarios>
+                </detalle>
+                <resumen>
+
+                        <importe_total_neto_gravado>0</importe_total_neto_gravado>
+                        <importe_total_concepto_no_gravado>0</importe_total_concepto_no_gravado>
+                        <importe_operaciones_exentas>0</importe_operaciones_exentas>
+                        <impuesto_liq>0</impuesto_liq>
+                        <impuesto_liq_rni>0</impuesto_liq_rni>
+                        <importe_total_factura>2250</importe_total_factura>
+                        <tipo_de_cambio>5.00</tipo_de_cambio>
+                        <codigo_moneda>60</codigo_moneda>
+                                                <importes_moneda_origen>
+                                <importe_total_neto_gravado>0</importe_total_neto_gravado>
+                                <importe_total_concepto_no_gravado>0</importe_total_concepto_no_gravado>
+                                <importe_operaciones_exentas>0</importe_operaciones_exentas>
+                                <impuesto_liq>0</impuesto_liq>
+                                <impuesto_liq_rni>0</impuesto_liq_rni>
+                                <importe_total_factura>450</importe_total_factura>
+                        </importes_moneda_origen>
+
+                </resumen>
+                <extensiones>
+                        <extensiones_camara_facturas>
+                                <clave_de_vinculacion>4f6bbdc5a23293f924b96ec86722eef8</clave_de_vinculacion>
+                                <id_idioma>1</id_idioma>
+                        </extensiones_camara_facturas>
+
+                        <extensiones_destinatarios>
+                                <email>notificaciones_qa@interbanking.com.ar</email>
+                        </extensiones_destinatarios>
+                </extensiones>
+        </comprobante>
+</lote_comprobantes>
+
+	]]>
+	</ser:receiveFacturasInput>
+</ser:receiveFacturas>

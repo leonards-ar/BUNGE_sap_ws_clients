@@ -212,6 +212,9 @@ public class AFIPUtils {
 		Map<String, Object> context = new HashMap<String, Object>();
 		context.put("request", buildWSAARequestParameter(config));
 		
+		if(LOG.isDebugEnabled()) {
+			LOG.debug("About to execute WSAALogin with context: " + context);
+		}
 		ClientXmlResponse response = client.execute(context);
 
 		return FileUtils.parseKeyValueString(client.getResponseParser().parseResponse(response.getResponse(), context));

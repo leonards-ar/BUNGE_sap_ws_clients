@@ -1,0 +1,46 @@
+<urn:ZtrRfcConsultaOrdCarga xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:sap-com:document:sap:soap:functions:mc-style">
+         <!--Optional:-->
+         <Accion>C</Accion>
+         <CabOrdCarga>
+            <Zzescenario>MEIN</Zzescenario>
+            <ZzchapaChasis>CQA587</ZzchapaChasis>
+            <ZzchapaAcoplado>CQA589</ZzchapaAcoplado>
+            <Zzoperativo></Zzoperativo>
+            <ZzpaisOrigen>0200</ZzpaisOrigen>
+            <Zzorigen>5933</Zzorigen>
+            <ZzsubOrigen>0</ZzsubOrigen>
+            <Material>001214</Material>
+         </CabOrdCarga>
+         <!--Optional:-->
+         <OrdCarga></OrdCarga>
+         <PosOrdCarga>
+            <!--Zero or more repetitions:-->
+            <item>
+               <Vbeln></Vbeln>
+               <Posnr></Posnr>
+               <Zznegocio></Zznegocio>
+               <Vgpos></Vgpos>
+               <Material></Material>
+               <Cliente></Cliente>
+               <Zzescenario></Zzescenario>
+               <ZzpaisDestino></ZzpaisDestino>
+               <Zzdestino></Zzdestino>
+               <ZzsubDestino></ZzsubDestino>
+               <Transport></Transport>
+               <ZzpedidoFfcc></ZzpedidoFfcc>
+               <ZzguiaFfcc></ZzguiaFfcc>
+               <Zzmaquinista></Zzmaquinista>
+               <ZzcuilMaquinis></ZzcuilMaquinis>
+               <Netpr></Netpr>
+               <Waerk></Waerk>
+            </item>
+         </PosOrdCarga>
+         <TabVagones>
+            <!--Zero or more repetitions:-->
+            <item>
+               <Vbeln></Vbeln>
+               <Zzoperativo></Zzoperativo>
+               <Zzvagon></Zzvagon>
+            </item>
+         </TabVagones>
+      </urn:ZtrRfcConsultaOrdCarga>

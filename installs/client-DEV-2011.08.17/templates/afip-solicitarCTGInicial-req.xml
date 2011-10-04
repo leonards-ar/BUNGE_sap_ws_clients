@@ -1,0 +1,25 @@
+<ctg:solicitarCTGInicial xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ctg="http://impl.service.wsctg.afip.gov.ar/CTGService_v1.0/">
+   <request>
+      <auth>
+	      <token>${AFIPUtils.getWSAAToken(Utils.objectOrDefault(#afip_conf#, "/x/lib/webservices/client/conf/wsaa.config"))}</token>
+	      <sign>${AFIPUtils.getWSAASign(Utils.objectOrDefault(#afip_conf#, "/x/lib/webservices/client/conf/wsaa.config"))}</sign>
+	      <cuitRepresentado>${Utils.objectOrDefault(#cuit_representado#, "30700869918")}</cuitRepresentado>
+      </auth>
+      <datosSolicitarCTGInicial>
+         <cartaPorte>${#cartaPorte#}</cartaPorte>
+         <codigoEspecie>${#codigoEspecie#}</codigoEspecie>
+         ${if value(#cuitCanjeador#)}
+         <cuitCanjeador>${#cuitCanjeador#}</cuitCanjeador>
+         {end if value}
+         <cuitDestino>${#cuitDestino#}</cuitDestino>
+         <cuitDestinatario>${#cuitDestinatario#}</cuitDestinatario>
+         <codigoLocalidadOrigen>${#codigoLocalidadOrigen#}</codigoLocalidadOrigen>
+         <codigoLocalidadDestino>${#codigoLocalidadDestino#}</codigoLocalidadDestino>
+         <codigoCosecha>${#codigoCosecha#}</codigoCosecha>
+         <pesoNeto>${#pesoNeto#}</pesoNeto>
+         <cuitTransportista>${#cuitTransportista#}</cuitTransportista>
+         <cantHoras>${#cantHoras#}</cantHoras>
+         <patente>${#patente#}</patente>
+      </datosSolicitarCTGInicial>
+   </request>
+</ctg:solicitarCTGInicial>

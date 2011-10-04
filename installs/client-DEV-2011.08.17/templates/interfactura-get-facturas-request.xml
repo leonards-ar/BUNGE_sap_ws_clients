@@ -1,0 +1,14 @@
+      <ser:getLoteFacturas xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://ar/com/ib/cfe/ejb/services">
+         <ser:getLoteFacturasInput>
+<![CDATA[
+         <consulta_lote_comprobantes xmlns="http://lote.schemas.cfe.ib.com.ar/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <id_lote>${#id_lote#}</id_lote>
+            <cuit_canal>${Utils.objectOrDefault(#cuit_canal#, "30690783521")}</cuit_canal>
+            <cuit_vendedor>${Utils.objectOrDefault(#cuit_vendedor#, "30700869918")}</cuit_vendedor>
+            ${if value(#punto_de_venta#)}
+            <punto_de_venta>${#punto_de_venta#}</punto_de_venta>
+            {end if value}  
+         </consulta_lote_comprobantes>
+]]>
+	 </ser:getLoteFacturasInput>
+      </ser:getLoteFacturas>

@@ -1,0 +1,18 @@
+<ctg:consultarCTG xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ctg="http://impl.service.wsctg.afip.gov.ar/CTGService_v1.0/">
+   <request>
+      <auth>
+	      <token>${AFIPUtils.getWSAAToken(Utils.objectOrDefault(#afip_conf#, "/x/lib/webservices/client/conf/wsaa.config"))}</token>
+	      <sign>${AFIPUtils.getWSAASign(Utils.objectOrDefault(#afip_conf#, "/x/lib/webservices/client/conf/wsaa.config"))}</sign>
+	      <cuitRepresentado>${Utils.objectOrDefault(#cuit_representado#, "30700869918")}</cuitRepresentado>
+      </auth>
+      <consultarCTGDatos>
+         <ctg>${#ctg#}</ctg>
+         <cartaPorte>${#cartaPorte#}</cartaPorte>
+         <patente>${#patente#}</patente>
+         <fechaEmisionDesde>${#fechaEmisionDesde#}</fechaEmisionDesde>
+         <fechaEmisionHasta>${#fechaEmisionHasta#}</fechaEmisionHasta>
+         <cuitSolicitante>${#cuitSolicitante#}</cuitSolicitante>
+         <cuitDestino>${#cuitDestino#}</cuitDestino>
+      </consultarCTGDatos>
+   </request>
+</ctg:consultarCTG>

@@ -1,0 +1,35 @@
+<urn:ZtrRfcConsultaPedidoFlete xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:sap-com:document:sap:soap:functions:mc-style">
+         <ChAcoplado>${#chacoplado#}</ChAcoplado>
+         <ChCamion>${#chacamion#}</ChCamion>
+         <Matnr>${#matnr#}</Matnr>
+         <TPedFlete>
+            <item>
+               <Vbeln></Vbeln>
+               <Zznegocio></Zznegocio>
+               <Posnr></Posnr>
+               <Matnr></Matnr>
+               <Kunnr></Kunnr>
+               <Zzescenario></Zzescenario>
+               <ZzpaisDestino></ZzpaisDestino>
+               <Zzdestino></Zzdestino>
+               <ZzsubDestino></ZzsubDestino>
+               <Zztransportista></Zztransportista>
+	       <Netpr></Netpr>
+               <Waerk></Waerk>
+               <ZzpaisOrigen></ZzpaisOrigen>
+               <Zzorigen></Zzorigen>
+               <ZzsubOrigen></ZzsubOrigen>
+               <ZztipoTrans></ZztipoTrans>
+               <ZztonPend></ZztonPend>
+            </item>
+         </TPedFlete>
+	<TTransp>
+            <item>
+               <Stcd1></Stcd1>
+            </item>
+         </TTransp>
+         <Vbeln>${#vbeln#}</Vbeln>
+         <Zzorigen>${#origen#}</Zzorigen>
+         <ZzpaisOrigen>${#paisorigen#}</ZzpaisOrigen>
+         <ZzsubOrigen>${#suborigen#}</ZzsubOrigen>
+</urn:ZtrRfcConsultaPedidoFlete>

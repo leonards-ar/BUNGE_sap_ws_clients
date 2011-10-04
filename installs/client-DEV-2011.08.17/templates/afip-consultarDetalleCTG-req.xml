@@ -1,0 +1,10 @@
+<ctg:consultarDetalleCTG xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ctg="http://impl.service.wsctg.afip.gov.ar/CTGService_v1.0/">
+   <request>
+      <auth>
+	      <token>${AFIPUtils.getWSAAToken(Utils.objectOrDefault(#afip_conf#, "/x/lib/webservices/client/conf/wsaa.config"))}</token>
+	      <sign>${AFIPUtils.getWSAASign(Utils.objectOrDefault(#afip_conf#, "/x/lib/webservices/client/conf/wsaa.config"))}</sign>
+	      <cuitRepresentado>${Utils.objectOrDefault(#cuit_representado#, "30700869918")}</cuitRepresentado>
+      </auth>
+      <ctg>${#ctg#}</ctg>
+   </request>
+</ctg:consultarDetalleCTG>

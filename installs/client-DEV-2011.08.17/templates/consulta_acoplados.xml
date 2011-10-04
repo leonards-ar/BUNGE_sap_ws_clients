@@ -1,0 +1,12 @@
+<urn:ZtrRfcConsultaAcoplados xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:sap-com:document:sap:soap:functions:mc-style">
+         <Chapa>${#chapa#}</Chapa>
+         <TAcoplados>
+            <item>
+               <Matric>${#matric#}</Matric>
+               <Nrotra>${#nrotra#}</Nrotra>
+               <Name1>${#name1#}</Name1>
+               <Stcd1>${#stcd1#}</Stcd1>
+               <Tipcar>${#tipcar#}</Tipcar>
+            </item>
+         </TAcoplados>
+      </urn:ZtrRfcConsultaAcoplados>
