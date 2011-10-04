@@ -1,0 +1,14 @@
+<urn:ZaatFiComprobantesComp xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:sap-com:document:sap:soap:functions:mc-style">
+   <ApAr>${#ap_ar#}</ApAr>
+   <Belnr>${#belnr#}</Belnr>
+   <ClaveCompr>${#clave_cobol#}</ClaveCompr>
+   <DetalleApli>${#detalle_aplic#}</DetalleApli>
+   <Fecha>${#fecha#}</Fecha>
+   <Gjahr>${#gjahr#}</Gjahr>
+   <Observ>${#observ#}</Observ>
+   <Operacion>${#tipo_operacion#}</Operacion>
+   <Sociedad>${#sociedad#}</Sociedad>
+   <TSalidaOp01/>
+   <TSalidaOp02/>
+   <Tiporeg>${#tipo_reg#}</Tiporeg>
+</urn:ZaatFiComprobantesComp>

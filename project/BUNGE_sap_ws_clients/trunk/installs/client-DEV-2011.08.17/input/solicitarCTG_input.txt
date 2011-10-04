@@ -1,0 +1,14 @@
+afip_conf=/x/lib/webservices/client/conf/wsaa.config
+cuit_representado=20259675473
+nro_carta_porte=512345678
+codigo_especie=1
+cuit_remitente_comercial=30700869918
+cuit_destino=27274803814
+cuit_destinatario=27274803814
+codigo_localidad_origen=6
+codigo_localidad_destino=6
+codigo_cosecha=0910
+peso_neto_carga=10
+cant_horas=1
+patente_vehiculo=aaa111
+cuit_transportista=20259675473

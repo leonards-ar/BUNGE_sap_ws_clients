@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{ISO8601}]%10p %C{1} - %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="file_log" class="org.apache.log4j.RollingFileAppender">
+		<param name="file" value="/var/log/ws-client.log" />
+		<param name="append" value="true" />
+		<param name="bufferedIO" value="false" />
+		<param name="maxFileSize" value="500MB" />
+		<param name="maxBackupIndex" value="5" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%d{ISO8601}]%10p %C{1} - %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="email_log" class="org.apache.log4j.net.SMTPAppender">
+		<param name="BufferSize" value="1" />
+		<param name="SMTPHost" value="10.1.6.24" />
+		<param name="From" value="envios.unix@bunge.com.ar" />
+		<param name="To" value="bar.it.cobol@bunge.com.ar" />
+		<param name="Subject" value="NOTIFICACIONES Certificado Cliente WebService" />
+
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%n%d{dd-MM-yyyy HH:mm:ss} %n%m%n" />
+		</layout>
+	</appender>
+	
+	<logger name="ar.com.bunge" additivity="false">
+		<level value="DEBUG"/>
+		<appender-ref ref="file_log"/>
+	</logger>
+	
+	<logger name="org.springframework" additivity="false">
+		<level value="ERROR"/>
+		<appender-ref ref="STDOUT"/>
+	</logger> 		
+
+	<logger name="email-notifier" additivity="false">
+		<level value="WARN"/>
+		<appender-ref ref="email_log"/>
+	</logger> 		
+	
+	<root>
+		<priority value="WARN" />
+		<appender-ref ref="STDOUT"/>	
+	</root>
+</log4j:configuration>

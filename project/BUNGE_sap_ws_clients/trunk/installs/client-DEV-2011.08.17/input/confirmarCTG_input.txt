@@ -1,0 +1,6 @@
+afip_conf=/x/lib/webservices/client/conf/wsaa.config
+cuit_representado=20259675473
+nro_carta_porte=512345678
+numero_ctg=
+cuit_transportista=20259675473
+peso_neto_carga=10

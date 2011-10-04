@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<loginTicketRequest version="1.0">
+	<header>
+		<source>${#wsaa_source_dn#}</source>
+		<destination>${#wsaa_destination_dn#}</destination>
+		<uniqueId>${#wsaa_unique_id#}</uniqueId>
+		<generationTime>${#wsaa_ticket_generation_time#}</generationTime>
+		<expirationTime>${#wsaa_ticket_expiration_time#}</expirationTime>
+	</header>
+	<service>${#wsaa_service#}</service>
+</loginTicketRequest>

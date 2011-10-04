@@ -1,0 +1,4 @@
+<urn:ProjectDefinitionExistenceCheck xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:sap-com:document:sap:soap:functions:mc-style">
+   <CurrentExternalProje>${#pid#}</CurrentExternalProje>
+   <CurrentInternalProje></CurrentInternalProje>
+</urn:ProjectDefinitionExistenceCheck>

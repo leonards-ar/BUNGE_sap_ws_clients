@@ -1,0 +1,18 @@
+<ser:consultaDetalleCaea xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://ar/com/ib/cfe/ejb/services">
+   <ser:consulta_detalle_caea>
+      <![CDATA[
+         <consulta_detalle_caea xmlns="http://lote.schemas.cfe.ib.com.ar/">
+            <cuit_canal>${Utils.objectOrDefault(#cuit_canal#, "30690783521")}</cuit_canal>
+            ${if value(#cod_interno_canal#)}
+            <cod_interno_canal>${#cod_interno_canal#}</cod_interno_canal>
+            {end if value}
+            ${if value(#cuit_vendedor#)}
+            <cuit_vendedor>${#cuit_vendedor#}</cuit_vendedor>
+            {end if value}
+            ${if value(#caea#)}
+            <caea>${#caea#}</caea>
+            {end if value}
+         </consulta_detalle_caea>
+      ]]>   
+   </ser:consulta_detalle_caea>
+</ser:consultaDetalleCaea>

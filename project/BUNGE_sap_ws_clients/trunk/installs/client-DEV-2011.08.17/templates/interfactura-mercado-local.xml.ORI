@@ -1,0 +1,510 @@
+<ser:receiveFacturas xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://ar/com/ib/cfe/ejb/services">
+	<ser:receiveFacturasInput>
+	<![CDATA[
+		<lote_comprobantes xmlns="http://lote.schemas.cfe.ib.com.ar/">
+			<cabecera_lote>
+				<id_lote>${#id_lote#}</id_lote>
+				<cuit_canal>${Utils.objectOrDefault(#cuit_canal#, "30690783521")}</cuit_canal>
+				${if value(#cod_interno_canal#)}
+				<cod_interno_canal>${#cod_interno_canal#}</cod_interno_canal>
+				{end if value}
+				<cuit_vendedor>${#cuit_vendedor#}</cuit_vendedor>
+				<cantidad_reg>${Utils.objectOrDefault(#cantidad_reg#, 1)}</cantidad_reg>
+				${if value(#presta_serv#)}
+				<presta_serv>${#presta_serv#}</presta_serv>
+				{end if value}
+				${if value(#fecha_envio_lote#)}
+				<fecha_envio_lote>${#fecha_envio_lote#}</fecha_envio_lote>
+				{end if value}
+				<punto_de_venta>${#punto_de_venta#}</punto_de_venta>
+				${if value(#resultado#)}
+				<resultado>${#resultado#}</resultado>
+				{end if value}
+				${if value(#motivo#)}
+				<motivo>${#motivo#}</motivo>
+				{end if value}
+				<no_disponible>${Utils.objectOrDefault(#no_disponible#, "N")}</no_disponible>
+				${if value(#gestionar_afip#)}
+				<gestionar_afip>${#gestionar_afip#}</gestionar_afip>
+				{end if value}
+			</cabecera_lote>
+			<comprobante>
+				<cabecera>
+					<informacion_comprobante>
+						<tipo_de_comprobante>${#tipo_de_comprobante#}</tipo_de_comprobante>
+						<numero_comprobante>${#numero_comprobante#}</numero_comprobante>
+						<punto_de_venta>${#punto_de_venta#}</punto_de_venta>
+						${if value(#fecha_emision#)}
+						<fecha_emision>${#fecha_emision#}</fecha_emision>
+						{end if value}
+						${if value(#fecha_vencimiento#)}
+						<fecha_vencimiento>${#fecha_vencimiento#}</fecha_vencimiento>
+						{end if value}
+						${if value(#fecha_serv_desde#)}
+						<fecha_serv_desde>${#fecha_serv_desde#}</fecha_serv_desde>
+						{end if value}
+						${if value(#fecha_serv_hasta#)}
+						<fecha_serv_hasta>${#fecha_serv_hasta#}</fecha_serv_hasta>
+						{end if value}
+						${if value(#condicion_de_pago#)}
+						<condicion_de_pago>${#condicion_de_pago#}</condicion_de_pago>
+						{end if value}
+						${if value(#iva_computable#)}
+						<iva_computable>${#iva_computable#}</iva_computable>
+						{end if value}
+						${if value(#codigo_operacion#)}
+						<codigo_operacion>${#codigo_operacion#}</codigo_operacion>
+						{end if value}
+						${if value(#cae#)}
+						<cae>${#cae#}</cae>
+						{end if value}
+						${if value(#fecha_vencimiento_cae#)}
+						<fecha_vencimiento_cae>${#fecha_vencimiento_cae#}</fecha_vencimiento_cae>
+						{end if value}
+						${if value(#fecha_obtencion_cae#)}
+						<fecha_obtencion_cae>${#fecha_obtencion_cae#}</fecha_obtencion_cae>
+						{end if value}
+						${if value(#motivo_comprobante#)}
+						<motivo>${#motivo_comprobante#}</motivo>
+						{end if value}
+						${if value(#es_detalle_encriptado#)}
+						<es_detalle_encriptado>${Utils.objectOrDefault(#es_detalle_encriptado#, "N")}</es_detalle_encriptado>
+						{end if value}
+						${loopn(cantidad_referencias)}
+						<referencias>
+								${if value(#tipo_comprobante_afip#)}
+								<tipo_comprobante_afip>${#tipo_comprobante_afip#}</tipo_comprobante_afip>
+								{end if value}
+								${if value(#codigo_de_referencia#)}
+								<codigo_de_referencia>${#codigo_de_referencia#}</codigo_de_referencia>
+								{end if value}
+								${if value(#dato_de_referencia#)}
+								<dato_de_referencia>${#dato_de_referencia#}</dato_de_referencia>
+								{end if value}						
+						</referencias>
+						{end loopn}
+						${if value(#codigo_concepto#)}
+						<codigo_concepto>${Utils.objectOrDefault(#codigo_concepto#, "1")}</codigo_concepto>
+						{end if value}
+					</informacion_comprobante>
+					<informacion_vendedor>
+						${if value(#gln_vendedor#)}
+						<GLN>${#gln_vendedor#}</GLN>
+						{end if value}						  
+						${if value(#codigo_interno_vendedor#)}
+						<codigo_interno>${#codigo_interno_vendedor#}</codigo_interno>
+						{end if value}						  
+						${if value(#razon_social_vendedor#)}
+						<razon_social>${#razon_social_vendedor#}</razon_social>
+						{end if value}						  
+						${if value(#cuit_vendedor#)}
+						<cuit>${#cuit_vendedor#}</cuit>
+						{end if value}						  
+						${if value(#condicion_IVA_vendedor#)}
+						<condicion_IVA>${#condicion_IVA_vendedor#}</condicion_IVA>
+						{end if value}						  
+						${if value(#condicion_ingresos_brutos_vendedor#)}
+						<condicion_ingresos_brutos>${#condicion_ingresos_brutos_vendedor#}</condicion_ingresos_brutos>
+						{end if value}						  
+						${if value(#nro_ingresos_brutos_vendedor#)}
+						<nro_ingresos_brutos>${#nro_ingresos_brutos_vendedor#}</nro_ingresos_brutos>
+						{end if value}						  
+						${if value(#inicio_de_actividades_vendedor#)}
+						<inicio_de_actividades>${#inicio_de_actividades_vendedor#}</inicio_de_actividades>
+						{end if value}						  
+						${if value(#contacto_vendedor#)}
+						<contacto>${#contacto_vendedor#}</contacto>
+						{end if value}						  
+						${if value(#domicilio_calle_vendedor#)}
+						<domicilio_calle>${#domicilio_calle_vendedor#}</domicilio_calle>
+						{end if value}						  
+						${if value(#domicilio_numero_vendedor#)}
+						<domicilio_numero>${#domicilio_numero_vendedor#}</domicilio_numero>
+						{end if value}						  
+						${if value(#domicilio_piso_vendedor#)}
+						<domicilio_piso>${#domicilio_piso_vendedor#}</domicilio_piso>
+						{end if value}						  
+						${if value(#domicilio_depto_vendedor#)}
+						<domicilio_depto>${#domicilio_depto_vendedor#}</domicilio_depto>
+						{end if value}						  
+						${if value(#domicilio_sector_vendedor#)}
+						<domicilio_sector>${#domicilio_sector_vendedor#}</domicilio_sector>
+						{end if value}						  
+						${if value(#domicilio_torre_vendedor#)}
+						<domicilio_torre>${#domicilio_torre_vendedor#}</domicilio_torre>
+						{end if value}						  
+						${if value(#domicilio_manzana_vendedor#)}
+						<domicilio_manzana>${#domicilio_manzana_vendedor#}</domicilio_manzana>
+						{end if value}						  
+						${if value(#localidad_vendedor#)}
+						<localidad>${#localidad_vendedor#}</localidad>
+						{end if value}						  
+						${if value(#provincia_vendedor#)}
+						<provincia>${#provincia_vendedor#}</provincia>
+						{end if value}						  
+						${if value(#cp_vendedor#)}
+						<cp>${#cp_vendedor#}</cp>
+						{end if value}						  
+						${if value(#email_vendedor#)}
+						<email>${#email_vendedor#}</email>
+						{end if value}	
+						${if value(#telefono_vendedor#)}
+						<telefono>${#telefono_vendedor#}</telefono>
+						{end if value}						  
+					</informacion_vendedor>
+					<informacion_comprador>
+						${if value(#gln_comprador#)}
+						<GLN>${#gln_comprador#}</GLN>
+						{end if value}						  
+						${if value(#codigo_interno_comprador#)}
+						<codigo_interno>${#codigo_interno_comprador#}</codigo_interno>
+						{end if value}						  
+						${if value(#codigo_doc_identificatorio#)}
+						<codigo_doc_identificatorio>${#codigo_doc_identificatorio#}</codigo_doc_identificatorio>
+						{end if value}						  
+						${if value(#nro_doc_identificatorio#)}
+						<nro_doc_identificatorio>${#nro_doc_identificatorio#}</nro_doc_identificatorio>
+						{end if value}						  
+						${if value(#denominacion_comprador#)}
+						<denominacion>${#denominacion_comprador#}</denominacion>
+						{end if value}						  
+						${if value(#condicion_IVA_comprador#)}
+						<condicion_IVA>${#condicion_IVA_comprador#}</condicion_IVA>
+						{end if value}		
+						${if value(#condicion_ingresos_brutos_comprador#)}
+						<condicion_ingresos_brutos>${#condicion_ingresos_brutos_comprador#}</condicion_ingresos_brutos>
+						{end if value}						  
+						${if value(#nro_ingresos_brutos_comprador#)}
+						<nro_ingresos_brutos>${#nro_ingresos_brutos_comprador#}</nro_ingresos_brutos>
+						{end if value}						  
+						${if value(#inicio_de_actividades_comprador#)}
+						<inicio_de_actividades>${#inicio_de_actividades_comprador#}</inicio_de_actividades>
+						{end if value}						  
+						${if value(#contacto_comprador#)}
+						<contacto>${#contacto_comprador#}</contacto>
+						{end if value}						  
+						${if value(#domicilio_calle_comprador#)}
+						<domicilio_calle>${#domicilio_calle_comprador#}</domicilio_calle>
+						{end if value}						  
+						${if value(#domicilio_numero_comprador#)}
+						<domicilio_numero>${#domicilio_numero_comprador#}</domicilio_numero>
+						{end if value}						  
+						${if value(#domicilio_piso_comprador#)}
+						<domicilio_piso>${#domicilio_piso_comprador#}</domicilio_piso>
+						{end if value}						  
+						${if value(#domicilio_depto_comprador#)}
+						<domicilio_depto>${#domicilio_depto_comprador#}</domicilio_depto>
+						{end if value}						  
+						${if value(#domicilio_sector_comprador#)}
+						<domicilio_sector>${#domicilio_sector_comprador#}</domicilio_sector>
+						{end if value}						  
+						${if value(#localidad_comprador#)}
+						<localidad>${#localidad_comprador#}</localidad>
+						{end if value}				
+						${if value(#provincia_comprador#)}
+						<provincia>${#provincia_comprador#}</provincia>
+						{end if value}								  
+						${if value(#cp_comprador#)}
+						<cp>${#cp_comprador#}</cp>
+						{end if value}					  
+						${if value(#email_comprador#)}
+						<email>${#email_comprador#}</email>
+						{end if value}	
+						${if value(#telefono_comprador#)}
+						<telefono>${#telefono_comprador#}</telefono>
+						{end if value}												  
+					</informacion_comprador>
+				</cabecera>
+				<detalle>
+					${loopn(cantidad_lineas)}
+					<linea numeroLinea="${#nro_linea#}">
+						${if value(#gtin#)}
+						<GTIN>${#gtin#}</GTIN>
+						{end if value}		
+						${if value(#codigo_producto_vendedor#)}
+						<codigo_producto_vendedor>${#codigo_producto_vendedor#}</codigo_producto_vendedor>
+						{end if value}
+						${if value(#codigo_producto_comprador#)}
+						<codigo_producto_comprador>${#codigo_producto_comprador#}</codigo_producto_comprador>
+						{end if value}
+						${if value(#descripcion#)}
+						<descripcion>${#descripcion#}</descripcion>
+						{end if value}						  
+						${if value(#cantidad#)}
+						<cantidad>${#cantidad#}</cantidad>
+						{end if value}
+						${if value(#unidad#)}
+						<unidad>${#unidad#}</unidad>
+						{end if value}
+						${if value(#precio_unitario#)}
+						<precio_unitario>${#precio_unitario#}</precio_unitario>
+						{end if value}												  
+						${if value(#importe_total_articulo#)}
+						<importe_total_articulo>${#importe_total_articulo#}</importe_total_articulo>
+						{end if value}
+						${if value(#alicuota_iva#)}
+						<alicuota_iva>${#alicuota_iva#}</alicuota_iva>
+						{end if value}
+						${if value(#importe_iva#)}
+						<importe_iva>${#importe_iva#}</importe_iva>
+						{end if value}
+						${if value(#indicacion_exento_gravado#)}
+						<indicacion_exento_gravado>${#indicacion_exento_gravado#}</indicacion_exento_gravado>
+						{end if value}
+						${if value(#descripcion_descuento#)}
+						<descuentos>
+						{end if value}
+							${if value(#descripcion_descuento#)}
+						  <descripcion_descuento>${#descripcion_descuento#}</descripcion_descuento>
+						  {end if value}
+							${if value(#porcentaje_descuento#)}
+						  <porcentaje_descuento>${#porcentaje_descuento#}</porcentaje_descuento>
+						  {end if value}
+							${if value(#importe_descuento#)}
+						  <importe_descuento>${#importe_descuento#}</importe_descuento>
+						  {end if value}
+							${if value(#importe_descuento_moneda_origen#)}
+						  <importe_descuento_moneda_origen>${#importe_descuento_moneda_origen#}</importe_descuento_moneda_origen>
+						  {end if value}
+						${if value(#descripcion_descuento#)}
+						</descuentos>
+						{end if value}
+						${if value(#importe_total_descuentos#)}
+						<importe_total_descuentos>${#importe_total_descuentos#}</importe_total_descuentos>
+						{end if value}
+						${if value(#codigo_impuesto#)}
+						<impuestos>
+						{end if value}
+							${if value(#codigo_impuesto#)}
+						  <codigo_impuesto>${#codigo_impuesto#}</codigo_impuesto>
+						  {end if value}
+							${if value(#descripcion_impuesto#)}
+						  <descripcion_impuesto>${#descripcion_impuesto#}</descripcion_impuesto>
+						  {end if value}
+							${if value(#porcentaje_impuesto#)}
+						  <porcentaje_impuesto>${#porcentaje_impuesto#}</porcentaje_impuesto>
+						  {end if value}
+							${if value(#importe_impuesto#)}
+						  <importe_impuesto>${#importe_impuesto#}</importe_impuesto>
+						  {end if value}
+							${if value(#importe_impuesto_moneda_origen#)}
+						  <importe_impuesto_moneda_origen>${#importe_impuesto_moneda_origen#}</importe_impuesto_moneda_origen>
+						  {end if value}
+						${if value(#codigo_impuesto#)}
+						</impuestos>
+						{end if value}
+						${if value(#importe_total_impuestos#)}
+						<importe_total_impuestos>${#importe_total_impuestos#}</importe_total_impuestos>
+						{end if value}
+						<importes_moneda_origen>
+							${if value(#precio_unitario_mo#)}
+							<precio_unitario>${#precio_unitario_mo#}</precio_unitario>
+							{end if value}
+							${if value(#importe_total_articulo_mo#)}
+							<importe_total_articulo>${#importe_total_articulo_mo#}</importe_total_articulo>
+							{end if value}
+							${if value(#importe_iva_mo#)}
+							<importe_iva>${#importe_iva_mo#}</importe_iva>
+							{end if value}
+							${if value(#importe_total_descuentos_mo#)}
+							<importe_total_descuentos>${#importe_total_descuentos_mo#}</importe_total_descuentos>
+							{end if value}
+							${if value(#importe_total_impuestos_mo#)}
+							<importe_total_impuestos>${#importe_total_impuestos_mo#}</importe_total_impuestos>
+							{end if value}
+						</importes_moneda_origen>
+						${if value(#tipo_ia#)}
+						<informacion_adicional>
+						{end if value}
+							${if value(#tipo_ia#)}
+							<tipo>${#tipo_ia#}</tipo>
+							{end if value}						  
+							${if value(#valor_ia#)}
+							<valor>${#valor_ia#}</valor>
+							{end if value}							  
+						${if value(#tipo_ia#)}
+						</informacion_adicional>
+						{end if value}
+					</linea>
+					{end loopn}
+					${if value(#comentarios#)}
+					<comentarios>${#comentarios#}</comentarios>
+					{end if value}
+				</detalle>
+				<resumen>
+						${loopn(cantidad_descuentos)}
+						<descuentos>
+							${if value(#descripcion_descuento_r#)}
+						  <descripcion_descuento>${#descripcion_descuento_r#}</descripcion_descuento>
+						  {end if value}
+							${if value(#porcentaje_descuento_r#)}
+						  <porcentaje_descuento>${#porcentaje_descuento_r#}</porcentaje_descuento>
+						  {end if value}
+							${if value(#importe_descuento_r#)}
+						  <importe_descuento>${#importe_descuento_r#}</importe_descuento>
+						  {end if value}
+							${if value(#importe_descuento_moneda_origen_r#)}
+						  <importe_descuento_moneda_origen>${#importe_descuento_moneda_origen_r#}</importe_descuento_moneda_origen>
+						  {end if value}
+							${if value(#alicuota_iva_descuento_r#)}
+						  <alicuota_iva_descuento>${#alicuota_iva_descuento_r#}</alicuota_iva_descuento>
+						  {end if value}
+							${if value(#importe_iva_descuento_r#)}
+						  <importe_iva_descuento>${#importe_iva_descuento_r#}</importe_iva_descuento>
+						  {end if value}
+							${if value(#importe_iva_descuento_moneda_origen_r#)}
+						  <importe_iva_descuento_moneda_origen>${#importe_iva_descuento_moneda_origen_r#}</importe_iva_descuento_moneda_origen>
+						  {end if value}
+						</descuentos>
+						{end loopn}				
+						${if value(#importe_total_neto_gravado#)}
+						<importe_total_neto_gravado>${#importe_total_neto_gravado#}</importe_total_neto_gravado>
+						{end if value}
+						${if value(#importe_total_concepto_no_gravado#)}
+						<importe_total_concepto_no_gravado>${#importe_total_concepto_no_gravado#}</importe_total_concepto_no_gravado>
+						{end if value}
+						${if value(#importe_operaciones_exentas#)}
+						<importe_operaciones_exentas>${#importe_operaciones_exentas#}</importe_operaciones_exentas>
+						{end if value}
+						${if value(#impuesto_liq#)}
+						<impuesto_liq>${#impuesto_liq#}</impuesto_liq>
+						{end if value}
+						${if value(#impuesto_liq_rni#)}
+						<impuesto_liq_rni>${#impuesto_liq_rni#}</impuesto_liq_rni>
+						{end if value}
+						${loopn(cantidad_impuestos)}
+						<impuestos>
+							${if value(#codigo_impuesto_r#)}
+						  <codigo_impuesto>${#codigo_impuesto_r#}</codigo_impuesto>
+						  {end if value}
+							${if value(#descripcion_impuesto_r#)}
+						  <descripcion>${#descripcion_impuesto_r#}</descripcion>
+						  {end if value}
+							${if value(#codigo_jurisdiccion_r#)}
+							<codigo_jurisdiccion>${#codigo_jurisdiccion_r#}</codigo_jurisdiccion>
+						  {end if value}
+							${if value(#jurisdiccion_municipal_r#)}
+							<jurisdiccion_municipal>${#jurisdiccion_municipal_r#}</jurisdiccion_municipal>
+						  {end if value}
+							${if value(#porcentaje_impuesto_r#)}
+						  <porcentaje_impuesto>${#porcentaje_impuesto_r#}</porcentaje_impuesto>
+						  {end if value}
+							${if value(#importe_impuesto_r#)}
+						  <importe_impuesto>${#importe_impuesto_r#}</importe_impuesto>
+						  {end if value}
+							${if value(#importe_impuesto_moneda_origen_r#)}
+						  <importe_impuesto_moneda_origen>${#importe_impuesto_moneda_origen_r#}</importe_impuesto_moneda_origen>
+						  {end if value}
+						</impuestos>					
+						{end loopn}
+						${if value(#importe_total_impuestos_nacionales#)}
+						<importe_total_impuestos_nacionales>${#importe_total_impuestos_nacionales#}</importe_total_impuestos_nacionales>
+						{end if value}
+						${if value(#importe_total_ingresos_brutos#)}						
+						<importe_total_ingresos_brutos>${#importe_total_ingresos_brutos#}</importe_total_ingresos_brutos>
+						{end if value}
+						${if value(#importe_total_impuestos_municipales#)}
+						<importe_total_impuestos_municipales>${#importe_total_impuestos_municipales#}</importe_total_impuestos_municipales>
+						{end if value}
+						${if value(#importe_total_impuestos_internos#)}
+						<importe_total_impuestos_internos>${#importe_total_impuestos_internos#}</importe_total_impuestos_internos>
+						{end if value}
+						${if value(#importe_total_impuestos_provinciales#)}
+						<importe_total_impuestos_provinciales>${#importe_total_impuestos_provinciales#}</importe_total_impuestos_provinciales>
+						{end if value}
+						${if value(#importe_total_factura#)}
+						<importe_total_factura>${#importe_total_factura#}</importe_total_factura>
+						{end if value}
+						${if value(#tipo_de_cambio#)}
+						<tipo_de_cambio>${#tipo_de_cambio#}</tipo_de_cambio>
+						{end if value}
+						${if value(#codigo_moneda#)}
+						<codigo_moneda>${#codigo_moneda#}</codigo_moneda>
+						{end if value}
+						${if value(#observaciones#)}
+						<observaciones>${#observaciones#}</observaciones>
+						{end if value}
+						${if value(#cant_alicuotas_iva#)}
+						<cant_alicuotas_iva>${#cant_alicuotas_iva#}</cant_alicuotas_iva>
+						{end if value}
+						<importes_moneda_origen>
+							${if value(#importe_total_neto_gravado_mo#)}
+							<importe_total_neto_gravado>${#importe_total_neto_gravado_mo#}</importe_total_neto_gravado>
+							{end if value}
+							${if value(#importe_total_concepto_no_gravado_mo#)}
+							<importe_total_concepto_no_gravado>${#importe_total_concepto_no_gravado_mo#}</importe_total_concepto_no_gravado>
+							{end if value}
+							${if value(#importe_operaciones_exentas_mo#)}
+							<importe_operaciones_exentas>${#importe_operaciones_exentas_mo#}</importe_operaciones_exentas>
+							{end if value}
+							${if value(#impuesto_liq_mo#)}
+							<impuesto_liq>${#impuesto_liq_mo#}</impuesto_liq>
+							{end if value}
+							${if value(#impuesto_liq_rni_mo#)}
+							<impuesto_liq_rni>${#impuesto_liq_rni_mo#}</impuesto_liq_rni>
+							{end if value}
+							${if value(#importe_total_impuestos_nacionales_mo#)}
+							<importe_total_impuestos_nacionales>${#importe_total_impuestos_nacionales_mo#}</importe_total_impuestos_nacionales>
+							{end if value}
+							${if value(#importe_total_ingresos_brutos_mo#)}
+							<importe_total_ingresos_brutos>${#importe_total_ingresos_brutos_mo#}</importe_total_ingresos_brutos>
+							{end if value}
+							${if value(#importe_total_impuestos_municipales_mo#)}
+							<importe_total_impuestos_municipales>${#importe_total_impuestos_municipales_mo#}</importe_total_impuestos_municipales>
+							{end if value}
+							${if value(#importe_total_impuestos_internos_mo#)}
+							<importe_total_impuestos_internos>${#importe_total_impuestos_internos_mo#}</importe_total_impuestos_internos>
+							{end if value}
+							${if value(#importe_total_impuestos_provinciales_mo#)}
+							<importe_total_impuestos_provinciales>${#importe_total_impuestos_provinciales_mo#}</importe_total_impuestos_provinciales>
+							{end if value}
+							${if value(#importe_total_factura_mo#)}
+							<importe_total_factura>${#importe_total_factura_mo#}</importe_total_factura>
+							{end if value}
+						</importes_moneda_origen>
+				</resumen>
+				<extensiones>
+					<extensiones_camara_facturas>
+						${if value(#clave_de_vinculacion#)}
+						<clave_de_vinculacion>${#clave_de_vinculacion#}</clave_de_vinculacion>
+						{end if value}
+						${if value(#id_template#)}
+						<id_template>${#id_template#}</id_template>
+						{end if value}
+						${if value(#id_logo#)}
+						<id_logo>${#id_logo#}</id_logo>
+						{end if value}
+						${if value(#id_idioma#)}
+						<id_idioma>${#id_idioma#}</id_idioma>
+						{end if value}
+						${if value(#no_disponible#)}
+						<no_disponible>${#no_disponible#}</no_disponible>
+						{end if value}						
+					</extensiones_camara_facturas>
+					${if value(#extensiones_datos_comerciales#)}
+          <extensiones_datos_comerciales>${#extensiones_datos_comerciales#}</extensiones_datos_comerciales>
+					{end if value}
+					${if value(#extensiones_datos_marketing#)}
+          <extensiones_datos_marketing>${#extensiones_datos_marketing#}</extensiones_datos_marketing>
+					{end if value}
+					${if value(#extensiones_signatures#)}
+          <extensiones_signatures>${#extensiones_signatures#}</extensiones_signatures>
+					{end if value}
+					${if value(#email#)}
+					<extensiones_destinatarios>
+						${loopn(cantidad_cuit_destinatarios)}
+						${if value(#cuit_destinatario#)}
+						<destinatario>
+							<cuit>${#cuit_destinatario#}</cuit>
+						</destinatario>
+						{end if value}
+						{end loopn}
+						<email>${#email#}</email>
+					</extensiones_destinatarios>
+					{end if value}
+				</extensiones>
+			</comprobante>
+		</lote_comprobantes>
+	]]>
+	</ser:receiveFacturasInput>
+</ser:receiveFacturas>

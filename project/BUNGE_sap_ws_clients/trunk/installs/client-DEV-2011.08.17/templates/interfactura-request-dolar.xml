@@ -1,0 +1,79 @@
+<ser:receiveFacturas xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ser="http://ar/com/ib/cfe/ejb/services">
+	<ser:receiveFacturasInput>
+	<![CDATA[
+		<lote_comprobantes xmlns="http://lote.schemas.cfe.ib.com.ar/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+			<cabecera_lote>
+				<id_lote>${#id_lote#}</id_lote>
+				<cuit_canal>30690783521</cuit_canal>
+				<cuit_vendedor>30700869918</cuit_vendedor>
+				<cantidad_reg>${Utils.objectOrDefault(#cantidad_reg#, 1)}</cantidad_reg>
+				<punto_de_venta>${#punto_de_venta#}</punto_de_venta>
+			</cabecera_lote>
+			<comprobante>
+				<cabecera>
+					<informacion_comprobante>
+						<tipo_de_comprobante>${#tipo_de_comprobante#}</tipo_de_comprobante>
+						<numero_comprobante>${#numero_comprobante#}</numero_comprobante>
+						<punto_de_venta>${#punto_de_venta_linea#}</punto_de_venta>
+						<fecha_emision>${#fecha_emision#}</fecha_emision>
+						<fecha_vencimiento>${#fecha_vencimiento#}</fecha_vencimiento>
+						<condicion_de_pago>${#condicion_de_pago#}</condicion_de_pago>
+						<es_detalle_encriptado>N</es_detalle_encriptado>
+						<informacion_exportacion>
+							<destino_comprobante>${#destino_comprobante#}</destino_comprobante>
+							<tipo_exportacion>${#tipo_exportacion#}</tipo_exportacion>
+							<incoterms>${#incoterms#}</incoterms>
+							<permiso_existente>${#permiso_existente#}</permiso_existente>
+							${loop(cantidad_permisos)}
+							<permisos>
+								<id_permiso>${#id_permiso#}</id_permiso>
+								<destino_mercaderia>${#destino_mercaderia#}</destino_mercaderia>
+							</permisos>	
+							{end loop}	  
+						</informacion_exportacion>
+					</informacion_comprobante>
+					<informacion_vendedor>
+						<razon_social>${#razon_social_vendedor#}</razon_social>
+						<cuit>${#cuit_vendedor#}</cuit>
+						<condicion_IVA>${#condicion_IVA_vendedor#}</condicion_IVA>
+					</informacion_vendedor>
+					<informacion_comprador>
+						<codigo_doc_identificatorio>${#codigo_doc_identificatorio#}</codigo_doc_identificatorio>
+						<nro_doc_identificatorio>${#nro_doc_identificatorio#}</nro_doc_identificatorio>
+						<denominacion>${#denominacion_comprador#}</denominacion>
+						<condicion_IVA>${#condicion_IVA_comprador#}</condicion_IVA>
+						<domicilio_calle>${#domicilio_calle_comprador#}</domicilio_calle>
+						<domicilio_numero>${#domicilio_numero_comprador#}</domicilio_numero>
+					</informacion_comprador>
+				</cabecera>
+				<detalle>
+				${loop(cantidad_lineas)}
+				<linea numeroLinea="${#nro_linea#}">
+					<codigo_producto_comprador>${#codigo_producto_comprador#}</codigo_producto_comprador>
+					<descripcion>${#descripcion#}</descripcion>
+					<importe_total_articulo>${#importe_total_articulo#}</importe_total_articulo>
+           <importes_moneda_origen>
+              <precio_unitario>${#precio_unitario#}</precio_unitario>
+              <importe_total_articulo>${#importe_total_articulo#}</importe_total_articulo>
+              <importe_iva>${#importe_iva#}</importe_iva>
+              <importe_total_descuentos>${#importe_total_descuentos#}</importe_total_descuentos>
+              <importe_total_impuestos>${#importe_total_impuestos#}</importe_total_impuestos>
+           </importes_moneda_origen>
+				</linea>
+				{end loop}
+				</detalle>
+				<resumen>
+					<importe_total_neto_gravado>0.00</importe_total_neto_gravado>
+					<importe_total_concepto_no_gravado>0.00</importe_total_concepto_no_gravado>
+					<importe_operaciones_exentas>0.00</importe_operaciones_exentas>
+					<impuesto_liq>0.00</impuesto_liq>
+					<impuesto_liq_rni>0.00</impuesto_liq_rni>
+					<importe_total_factura>${#importe_total_factura#}</importe_total_factura>
+					<tipo_de_cambio>${#tipo_de_cambio#}</tipo_de_cambio>
+					<codigo_moneda>${#codigo_moneda#}</codigo_moneda>
+				</resumen>
+			</comprobante>
+		</lote_comprobantes>
+	]]>
+	</ser:receiveFacturasInput>
+</ser:receiveFacturas>

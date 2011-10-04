@@ -1,0 +1,13 @@
+<ctg:confirmarCTG xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ctg="http://impl.service.wsctg.afip.gov.ar/CTGService/">
+   <auth>
+      <token>${AFIPUtils.getWSAAToken(Utils.objectOrDefault(#afip_conf#, "/x/lib/webservices/client/conf/wsaa.config"))}</token>
+      <sign>${AFIPUtils.getWSAASign(Utils.objectOrDefault(#afip_conf#, "/x/lib/webservices/client/conf/wsaa.config"))}</sign>
+      <cuitRepresentado>${Utils.objectOrDefault(#cuit_representado#, "30700869918")}</cuitRepresentado>
+   </auth>
+   <confirmarCTGRequest>
+      <numeroCartaDePorte>${#nro_carta_porte#}</numeroCartaDePorte>
+      <numeroCTG>${#numero_ctg#}</numeroCTG>
+      <cuitTransportista>${#cuit_transportista#}</cuitTransportista>
+      <pesoNetoCarga>${#peso_neto_carga#}</pesoNetoCarga>
+   </confirmarCTGRequest>
+</ctg:confirmarCTG>
