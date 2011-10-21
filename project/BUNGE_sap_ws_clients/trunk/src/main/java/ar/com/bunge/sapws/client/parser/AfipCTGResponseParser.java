@@ -75,13 +75,13 @@ public class AfipCTGResponseParser extends BaseResponseParser implements Respons
 		
 		String value = getNodeText(responseNode, "numeroCTG");
 		if(value != null) {
-			response.append(value);
+			response.append(value.trim());
 		}
 		response.append(SUCCESS_MESSAGE_SEPARATOR);
 		
 		value = getNodeText(responseNode, "numeroCartaDePorte");
 		if(value != null) {
-			response.append(value);
+			response.append(value.trim());
 		}
 		
 		return response.toString();
@@ -98,13 +98,13 @@ public class AfipCTGResponseParser extends BaseResponseParser implements Respons
 		
 		String value = getNodeText(responseNode, "codigoTransaccion");
 		if(value != null) {
-			response.append(value);
+			response.append(value.trim());
 		}
 		response.append(SUCCESS_MESSAGE_SEPARATOR);
 		
 		value = getNodeText(responseNode, "observaciones");
 		if(value != null) {
-			response.append(value);
+			response.append(value.trim());
 		}
 		
 		return response.toString();

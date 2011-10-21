@@ -215,7 +215,7 @@ public class AFIPUtils {
 		if(LOG.isDebugEnabled()) {
 			LOG.debug("About to execute WSAALogin with context: " + context);
 		}
-		ClientXmlResponse response = client.execute(context);
+		ClientXmlResponse response = client.execute(context, true);
 
 		return FileUtils.parseKeyValueString(client.getResponseParser().parseResponse(response.getResponse(), context));
 	}
