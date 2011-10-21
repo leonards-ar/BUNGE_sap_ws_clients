@@ -325,7 +325,7 @@ public class AfipCTG10ResponseParser extends BaseResponseParser implements Respo
 		for(int i=0; i < valueNodeNames.length; i++) {
 			value = getNodeText(responseNode, valueNodeNames[i]);
 			if(value != null) {
-				response.append(value);
+				response.append(value.trim());
 			}
 			// Jose wants a ; at the end of each row
 			if(i < valueNodeNames.length) {

@@ -260,7 +260,7 @@ public class SAPWSClient {
 		if(LOG.isDebugEnabled()) {
 			LOG.debug(this);
 		}
-		ClientXmlResponse response = execute(context);
+		ClientXmlResponse response = execute(context, false);
 
 		if(LOG.isDebugEnabled()) {
 			LOG.debug(response);
@@ -311,21 +311,52 @@ public class SAPWSClient {
 	 * @return
 	 * @throws Exception
 	 */
-	public ClientXmlResponse execute(Map<String, Object> context) throws Exception {
-		ClientXmlRequest request = new ClientXmlRequest();
+	public ClientXmlResponse execute(Map<String, Object> context, boolean throwException) throws Exception {
+		try {
+			ClientXmlRequest request = new ClientXmlRequest();
 
-		if(LOG.isDebugEnabled()) {
-			LOG.debug("About to read Request Template from file [" + getRequestTemplateFile() + "]");
+			if(LOG.isDebugEnabled()) {
+				LOG.debug("About to read Request Template from file [" + getRequestTemplateFile() + "]");
+			}
+			
+			request.setRequestTemplate(FileUtils.readFile(getRequestTemplateFile()));
+			
+			if(LOG.isDebugEnabled()) {
+				LOG.debug("Read file contents from [" + getRequestTemplateFile() + "]");
+				LOG.debug(request);
+			}
+			
+			return execute(request, context);		
+		} catch(Exception ex) {
+			if(throwException) {
+				throw ex;
+			} else {
+				return createErrorResponse(new Long(-4), ex);
+			}
 		}
-		
-		request.setRequestTemplate(FileUtils.readFile(getRequestTemplateFile()));
-		
-		if(LOG.isDebugEnabled()) {
-			LOG.debug("Read file contents from [" + getRequestTemplateFile() + "]");
-			LOG.debug(request);
-		}
-		
-		return execute(request, context);		
+	}
+	
+	/**
+	 * 
+	 * @param number
+	 * @param ex
+	 * @return
+	 */
+	private ClientXmlResponse createErrorResponse(Long number, Throwable ex) {
+		ClientXmlResponse response = new ClientXmlResponse();
+		setErrorResponse(response, number, ex);
+		return response;
+	}
+	
+	/**
+	 * 
+	 * @param response
+	 * @param number
+	 * @param ex
+	 */
+	private void setErrorResponse(ClientXmlResponse response, Long number, Throwable ex) {
+		response.setNumber(number);
+		response.setMessage(ex.getMessage() + (ex.getCause() != null ? " -> Caused by: " + ex.getCause().getMessage() : ""));
 	}
 	
 	/**
@@ -373,12 +404,10 @@ public class SAPWSClient {
 				response.parseResponse();
 			} catch(SoapFaultClientException ex) {
 				LOG.error(ex.getMessage(), ex);
-				response.setNumber(new Long(-2));
-				response.setMessage(ex.getMessage());
+				setErrorResponse(response, new Long(-2), ex);
 			} catch(ValidationException ex) {
 				LOG.error(ex.getMessage(), ex);
-				response.setNumber(new Long(-3));
-				response.setMessage(ex.getMessage());
+				setErrorResponse(response, new Long(-3), ex);
 			} catch(Throwable ex) {
 				LOG.error(ex.getMessage(), ex);
 				throw new Exception(ex.getMessage(), ex.getCause());
