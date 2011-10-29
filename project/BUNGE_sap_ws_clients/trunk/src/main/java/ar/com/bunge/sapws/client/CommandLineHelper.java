@@ -31,6 +31,8 @@ public class CommandLineHelper {
 	private static final Map<String, String> PARAMS = new HashMap<String, String>();
 	private static final Map<String, List<String>> REQUIRED_PARAMS = new HashMap<String, List<String>>();
 	private static final List<String> UTIL_PARAMS = new ArrayList<String>();
+
+	private static final List<String> OFFLINE_PARAMS = new ArrayList<String>();
 	
 	private Map<String, Object> variables = new HashMap<String, Object>();
 	private Map<String, String> parameters = new HashMap<String, String>();
@@ -58,6 +60,7 @@ public class CommandLineHelper {
 		PARAMS.put("td", "trace_path.help");
 		PARAMS.put("tp", "trace_prefix.help");
 		PARAMS.put("cvc", "cert_config.help");
+		PARAMS.put("ol", "offline.help");
 		
 		List<String> global = new ArrayList<String>();
 		global.add("i");
@@ -76,6 +79,8 @@ public class CommandLineHelper {
 		REQUIRED_PARAMS.put("w", otherAuth);
 		
 		UTIL_PARAMS.add("cvc");
+
+		OFFLINE_PARAMS.add("ol");
 	}
 
 	/**
@@ -124,10 +129,19 @@ public class CommandLineHelper {
 			Map<String, Object> defaultConfiguration = parseDefaultConfigurationFile(getParameter("dc"));
 			if(defaultConfiguration != null) {
 				for(String key : defaultConfiguration.keySet()) {
-					if(!getParameters().containsKey(key)) {
-						Object value = defaultConfiguration.get(key);
-						if(value != null) {
-							getParameters().put(key, value.toString());
+					if(PARAMS.containsKey(key)) {
+						if(!getParameters().containsKey(key)) {
+							Object value = defaultConfiguration.get(key);
+							if(value != null) {
+								getParameters().put(key, value.toString());
+							}
+						}
+					} else {
+						if(!getVariables().containsKey(key)) {
+							Object value = defaultConfiguration.get(key);
+							if(value != null) {
+								getVariables().put(key, value.toString());
+							}
 						}
 					}
 				}
@@ -135,7 +149,7 @@ public class CommandLineHelper {
 			}
 		}
 
-		if(!isUtility()) {
+		if(!isUtility() && !isOffline()) {
 			// Validate required parameters
 			for(String param : requiredParams) {
 				if(!getParameters().containsKey(param)) {
@@ -145,6 +159,15 @@ public class CommandLineHelper {
 		}
 	}
 
+	public boolean isOffline() {
+		for(String utilParam : OFFLINE_PARAMS) {
+			if(getParameters().containsKey(utilParam)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public boolean isUtility() {
 		for(String utilParam : UTIL_PARAMS) {
 			if(getParameters().containsKey(utilParam)) {

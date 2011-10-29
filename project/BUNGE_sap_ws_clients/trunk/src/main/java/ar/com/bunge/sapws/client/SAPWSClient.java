@@ -30,6 +30,7 @@ import org.springframework.ws.soap.client.SoapFaultClientException;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.transport.http.CommonsHttpMessageSender;
 
+import ar.com.bunge.sapws.client.offline.OfflineInputRetriever;
 import ar.com.bunge.sapws.client.parser.ResponseParser;
 import ar.com.bunge.util.CertificateUtils;
 import ar.com.bunge.util.FileUtils;
@@ -62,6 +63,7 @@ public class SAPWSClient {
 	private String proxyServer;
 	private int proxyPort;
 	private ResponseParser responseParser = null;
+	private OfflineInputRetriever inputRetriever = null;
 	private String tracePath;
 	private String tracePrefix = null;
 	
@@ -183,6 +185,7 @@ public class SAPWSClient {
 				client.setResponseParser(client.getResponseParserInstance(cmdLine.getParameter("rp")));
 				client.setTracePath(cmdLine.getParameter("td"));
 				client.setTracePrefix(cmdLine.getParameter("tp"));
+				client.setInputRetriever(client.getInputRetrieverInstance(cmdLine.getParameter("ol")));
 				
 				Map<String, Object> context = client.parseVariablesFile();
 				context.putAll(cmdLine.getVariables());
@@ -241,6 +244,26 @@ public class SAPWSClient {
 		}
 	}
 	
+	public OfflineInputRetriever getInputRetrieverInstance(String inputReceiverClass) throws Exception {
+		if(inputReceiverClass != null) {
+			try {
+				if(LOG.isDebugEnabled()) {
+					LOG.debug("About to read create instance for offline inpute receiver for class [" + inputReceiverClass + "]");
+				}				
+				return (OfflineInputRetriever)Class.forName(inputReceiverClass).newInstance();
+			} catch(Exception ex) {
+				LOG.error("Could not create offline inpute receiver instance for class [" + inputReceiverClass + "]. " + ex.getMessage(), ex);
+				throw ex;
+			}
+		} else {
+			if(LOG.isDebugEnabled()) {
+				LOG.debug("No offline inpute receiver configured. Returning null");
+			}					
+			return null;
+		}
+	}
+	
+	
 	/**
 	 * 
 	 * @return
@@ -260,7 +283,21 @@ public class SAPWSClient {
 		if(LOG.isDebugEnabled()) {
 			LOG.debug(this);
 		}
-		ClientXmlResponse response = execute(context, false);
+		
+		ClientXmlResponse response = null;
+		
+		if(getInputRetriever() != null) {
+			LOG.debug("Retrieving offline response with class [" + getInputRetriever().getClass().getName() + "]");
+			response = getInputRetriever().retrieveInput(context);
+			
+			if(getInputRetriever().changeResponseFile()) {
+				String newResponseFile = getInputRetriever().getResponseFile(getResponseFile(), context);
+				LOG.debug("Changing command line response file [" + getResponseFile() + "] to [" + newResponseFile + "]");
+				setResponseFile(newResponseFile);
+			}
+		} else {
+			response = execute(context, false);
+		}
 
 		if(LOG.isDebugEnabled()) {
 			LOG.debug(response);
@@ -611,6 +648,7 @@ public class SAPWSClient {
 	   	.append("responseParser", getResponseParser() != null ? getResponseParser().getClass().getName() : null)
 	   	.append("tracePath", getTracePath())
 	   	.append("tracePrefix", getTracePrefix())
+	   	.append("offlineInputRetriever", getInputRetriever() != null ? getInputRetriever().getClass().getName() : null)
 	   	.toString();		
 	}
 
@@ -776,6 +814,24 @@ public class SAPWSClient {
 	 * @return
 	 */
 	public String getClientDescription() {
-		return "Url: [" + getUrl() + "] - Template: [" + getRequestTemplateFile() + "]" + (getVariablesFile() != null ? " - Variables File [" + getVariablesFile() + "]" : "");
+		if(getInputRetriever() != null) {
+			return "Offline input retriever: [" + getInputRetriever().getClass().getName() + "]";
+		} else {
+			return "Url: [" + getUrl() + "] - Template: [" + getRequestTemplateFile() + "]" + (getVariablesFile() != null ? " - Variables File [" + getVariablesFile() + "]" : "");
+		}
+	}
+
+	/**
+	 * @return the inputRetriever
+	 */
+	public OfflineInputRetriever getInputRetriever() {
+		return inputRetriever;
+	}
+
+	/**
+	 * @param inputRetriever the inputRetriever to set
+	 */
+	public void setInputRetriever(OfflineInputRetriever inputRetriever) {
+		this.inputRetriever = inputRetriever;
 	}
 }
