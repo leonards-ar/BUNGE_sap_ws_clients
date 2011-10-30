@@ -197,7 +197,7 @@ public class TransporteBienesResponseParser extends BaseResponseParser {
 	
 	private boolean isBR(Document doc, Map<String, Object> context) throws Exception {
 		Node responseNode = getNode(doc, AR_BR_RESPONSE_NODE); 
-		Node errors = getNode(responseNode, BR_ERRORES_NODE);
+		Node errors = responseNode != null ? getNode(responseNode, BR_ERRORES_NODE) : null;
 		
 		return responseNode != null && errors != null;
 	}
