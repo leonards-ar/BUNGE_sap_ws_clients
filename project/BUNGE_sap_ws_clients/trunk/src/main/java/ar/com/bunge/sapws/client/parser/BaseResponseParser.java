@@ -68,7 +68,7 @@ public abstract class BaseResponseParser implements ResponseParser {
 	 * @throws Exception
 	 */
 	protected Node getNode(Node node, String nodeName) throws Exception {
-    	if(nodeName == null) {
+    	if(nodeName == null || node == null) {
     		return null;
     	} else if(nodeName.equalsIgnoreCase(node.getNodeName())) {
     		return node;
