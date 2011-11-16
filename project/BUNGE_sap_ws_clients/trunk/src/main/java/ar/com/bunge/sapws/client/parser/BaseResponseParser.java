@@ -23,6 +23,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import ar.com.bunge.util.FileUtils;
+
 /**
  *
  * @author <a href="mcapurro@gmail.com">Mariano Capurro</a>
@@ -36,6 +38,8 @@ public abstract class BaseResponseParser implements ResponseParser {
 	protected static final String LINE_TOKEN = ";";
 	protected static final String SUCCESS_MESSAGE_SEPARATOR = LINE_TOKEN;
 	protected static final String REPLACEMENT_VALUE_TOKEN = ",";
+	private static final String ERROR_RESULT = "ERROR";
+	private static final String ERROR_MESSAGE_SEPARATOR = FileUtils.getNewLine();
 	
 	/**
 	 * 
@@ -120,7 +124,13 @@ public abstract class BaseResponseParser implements ResponseParser {
 	 * @see ar.com.bunge.sapws.client.parser.ResponseParser#parseError(java.lang.Long, java.lang.String, java.util.Map)
 	 */
 	public String parseError(Long errorNumber, String message, Map<String, Object> context) throws Exception {
-		// Default implementation. Return null and so just an Exception will be thrown
-		return null;
+		StringBuffer errorResult = new StringBuffer(ERROR_RESULT);
+
+		errorResult.append(ERROR_MESSAGE_SEPARATOR);
+		errorResult.append(errorNumber);
+		errorResult.append(LINE_TOKEN);
+		errorResult.append(message);
+		
+		return errorResult.toString();
 	}    
 }
