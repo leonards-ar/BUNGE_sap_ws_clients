@@ -98,7 +98,8 @@ public class SAPComDeuResponseParser extends SAPBaseResponseParser {
 		line.append(getNodeText(type1, "Contrato") + LINE_TOKEN);
 		line.append(getNodeText(type1, "ImporteLimCre") + LINE_TOKEN);
 		line.append(getNodeText(type1, "Moneda") + LINE_TOKEN);
-		line.append(getNodeText(type1, "Texto"));
+		line.append(getNodeText(type1, "Texto") + LINE_TOKEN);
+		line.append(getNodeText(type1, "Gsber"));
 		
 		line.append(LINE_SEPARATOR);
 		
@@ -131,7 +132,8 @@ public class SAPComDeuResponseParser extends SAPBaseResponseParser {
 		line.append(getNodeText(type2, "FechaVenc") + LINE_TOKEN);
 		line.append(getNodeText(type2, "Tipdgi") + LINE_TOKEN);
 		line.append(getNodeText(type2, "Blart") + LINE_TOKEN);
-		line.append(getNodeText(type2, "Texto"));
+		line.append(getNodeText(type2, "Texto") + LINE_TOKEN);
+		line.append(getNodeText(type2, "Belnr"));
 		
 		line.append(LINE_SEPARATOR);
 		
