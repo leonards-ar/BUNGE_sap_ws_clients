@@ -178,7 +178,7 @@ public class InterfacturaWSFacturaResponseParser extends BaseResponseParser {
 					}
 				}
 			}			
-		} catch(Exception ex) {
+		} catch(Throwable ex) {
 			LOG.error("Could not generate PDF files type [" + type + "] for prefix [" + filePrefix + "]", ex);
 		}
 		
