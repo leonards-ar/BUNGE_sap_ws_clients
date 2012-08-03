@@ -322,8 +322,10 @@ public class ClientXmlRequest {
 		} catch(EvalError e) {
 			if(e.getCause() instanceof ValidationException) {
 				throw new ValidationException(e.getCause().getMessage(), e);
+			} else if (e.getCause() instanceof Exception) {
+				throw (Exception) e.getCause();
 			} else {
-				throw e;
+				throw new Exception(e.getCause() != null ? e.getCause().getMessage() : e.getMessage(), e.getCause());
 			}
 		}
 	}
