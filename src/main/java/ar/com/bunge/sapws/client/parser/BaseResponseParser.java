@@ -109,7 +109,7 @@ public abstract class BaseResponseParser implements ResponseParser {
     	if(childNode != null) {
     		return StringUtils.replace(childNode.getTextContent(), SUCCESS_MESSAGE_SEPARATOR, REPLACEMENT_VALUE_TOKEN);
     	} else {
-    		LOG.warn("No such child node [" + nodeName + "] in node [" + (node != null ? node.getNodeName() : "null") + "]");
+    		LOG.debug("No such child node [" + nodeName + "] in node [" + (node != null ? node.getNodeName() : "null") + "]");
     		return "";
     	}
     }
