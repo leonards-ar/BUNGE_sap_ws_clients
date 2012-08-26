@@ -31,15 +31,15 @@ public class CommandLineHelper {
 	private static final Map<String, String> PARAMS = new HashMap<String, String>();
 	private static final Map<String, List<String>> REQUIRED_PARAMS = new HashMap<String, List<String>>();
 	private static final List<String> UTIL_PARAMS = new ArrayList<String>();
-
+	private static final String CONVERTER_PARAM = "c";
+	private static final Map<String, String> CONVERTER_PARAMS = new HashMap<String, String>();
+	
 	private static final List<String> OFFLINE_PARAMS = new ArrayList<String>();
 	
 	private Map<String, Object> variables = new HashMap<String, Object>();
 	private Map<String, String> parameters = new HashMap<String, String>();
 	
 	private List<String> errors = new ArrayList<String>();
-	
-	
 	
 	static {
 		PARAMS.put("b", "basic_auth.help");
@@ -61,6 +61,7 @@ public class CommandLineHelper {
 		PARAMS.put("tp", "trace_prefix.help");
 		PARAMS.put("cvc", "cert_config.help");
 		PARAMS.put("ol", "offline.help");
+		PARAMS.put("c", "converter.help");
 		
 		List<String> global = new ArrayList<String>();
 		global.add("i");
@@ -81,6 +82,10 @@ public class CommandLineHelper {
 		UTIL_PARAMS.add("cvc");
 
 		OFFLINE_PARAMS.add("ol");
+		
+		CONVERTER_PARAMS.put(CONVERTER_PARAM, "converter.help");
+		CONVERTER_PARAMS.put("i", "converter.input_file.help");
+		CONVERTER_PARAMS.put("o", "converter.output_file.help");
 	}
 
 	/**
@@ -149,7 +154,7 @@ public class CommandLineHelper {
 			}
 		}
 
-		if(!isUtility() && !isOffline()) {
+		if(!isUtility() && !isOffline() && !isConverter()) {
 			// Validate required parameters
 			for(String param : requiredParams) {
 				if(!getParameters().containsKey(param)) {
@@ -157,8 +162,21 @@ public class CommandLineHelper {
 				}
 			}
 		}
+		
+		if(isConverter())
+		{
+			for(String param : new String[] {CONVERTER_PARAM, "i"}) {
+				if(!getParameters().containsKey(param)) {
+					getErrors().add(getErrorMessage("error.missing_arg_value.message", param, null));
+				}
+			}
+		}
 	}
 
+	public boolean isConverter() {
+		return getParameters().containsKey(CONVERTER_PARAM);
+	}
+	
 	public boolean isOffline() {
 		for(String utilParam : OFFLINE_PARAMS) {
 			if(getParameters().containsKey(utilParam)) {
@@ -291,6 +309,44 @@ public class CommandLineHelper {
 			
 		}
 		return true;
+	}
+	
+	public String getConverterUsage() {
+		StringBuffer sb = new StringBuffer( getBundleText("command.label") + " ");
+
+		// Required first
+		for(Iterator<String> it = CONVERTER_PARAMS.keySet().iterator(); it.hasNext(); ) {
+			String param = it.next();
+			sb.append(param + "=" + getBundleText("value.label") + " ");
+		}
+		
+		// Errors
+		if(!isValid()) {
+			sb.append("\n" + getBundleText("errors.title"));
+			sb.append("\n");
+			for(Iterator<String> it = getErrors().iterator(); it.hasNext(); ) {
+				String error = it.next();
+				sb.append("\t\t- " + error);
+				if(it.hasNext()) {
+					sb.append("\n");
+				}
+			}
+		}		
+		
+		// Parameters Help
+		sb.append("\n" + getBundleText("parameters.title"));
+		sb.append("\n");
+		
+		for(Iterator<String> it = CONVERTER_PARAMS.keySet().iterator(); it.hasNext(); ) {
+			String paramName = it.next();
+			sb.append("\t\t- " + paramName + ": " + getBundleText(CONVERTER_PARAMS.get(paramName.toLowerCase())));
+			if(it.hasNext()) {
+				sb.append("\n");
+			}
+		}
+		
+		return sb.toString();
+		
 	}
 	
 	/**
