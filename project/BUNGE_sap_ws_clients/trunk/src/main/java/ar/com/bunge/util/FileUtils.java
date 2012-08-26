@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 /**
  *
@@ -31,6 +32,8 @@ import org.apache.commons.lang.StringUtils;
  *
  */
 public class FileUtils {
+	private static final Logger LOG = Logger.getLogger(FileUtils.class);
+
 	private static final String FILE_PATH_SEPARATOR = System.getProperty("file.separator") != null ? System.getProperty("file.separator") : "/";
 	private static final String TRACE_FILE_SEPARATOR = "_";
 
@@ -97,6 +100,55 @@ public class FileUtils {
 		}
 		
 		return lines;		
+	}
+	
+	private static int addLengths(int[] lengths)
+	{
+		if(lengths != null && lengths.length > 0) {
+			int total = 0;
+			for(int i = 0; i < lengths.length; i++)
+			{
+				total += lengths[i];
+			}
+			return total;
+		} else {
+			return 0;
+		}
+	}
+	
+	public static List<String> parseFixedLengthLine(String line, int[] lengths)
+	{
+		if(line != null && lengths != null && lengths.length > 0) {
+			List<String> records = new ArrayList<String>(lengths.length);
+
+			if(line.length() != addLengths(lengths)) {
+				LOG.warn("The line (length: " + line.length() + ") is not of the expected length: " + addLengths(lengths));
+			}
+
+			String record;
+			for(int i=0, j=0; i < lengths.length && j < line.length(); i++) {
+				if(j + lengths[i] < line.length()) {
+					record = line.substring(j, j + lengths[i]);
+				} else {
+					record = line.substring(j);
+				}
+				records.add(record);
+				j += lengths[i];
+			}
+			
+			return records;
+		} else if(line != null) {
+			List<String> records = new ArrayList<String>(1);
+			records.add(line);
+			return records;
+		} else {
+			return null;
+		}
+	}
+
+	public static void main(String a[]) {
+		List<String> l = parseFixedLengthLine("0000327734  35960      ", new int[] {10, 7, 6});
+		System.out.println(l);
 	}
 	
 	/**

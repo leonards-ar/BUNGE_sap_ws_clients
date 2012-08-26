@@ -32,6 +32,7 @@ import org.springframework.ws.transport.http.CommonsHttpMessageSender;
 
 import ar.com.bunge.sapws.client.offline.OfflineInputRetriever;
 import ar.com.bunge.sapws.client.parser.ResponseParser;
+import ar.com.bunge.sapws.converter.FileConverter;
 import ar.com.bunge.util.CertificateUtils;
 import ar.com.bunge.util.FileUtils;
 import ar.com.bunge.util.ValidationException;
@@ -159,12 +160,14 @@ public class SAPWSClient {
 			CommandLineHelper cmdLine = new CommandLineHelper(args);
 
 			if(!cmdLine.isValid()) {
-				System.err.println(cmdLine.getUsage());
+				System.err.println(cmdLine.isConverter() ? cmdLine.getConverterUsage() : cmdLine.getUsage());
 				System.exit(1);
 			}
 
 			if(cmdLine.isUtility()) {
 				processUtility(cmdLine);
+			} else if(cmdLine.isConverter()) {
+				processConverter(cmdLine);
 			} else {
 				client.setUsername(cmdLine.getParameter("u"));
 				client.setUrl(cmdLine.getParameter("url"));
@@ -218,6 +221,54 @@ public class SAPWSClient {
 			System.exit(2);
 		}
 	}
+
+	private static void processConverter(CommandLineHelper cmdLine) {
+		String converterClass = cmdLine.getParameter("c");
+		String input = cmdLine.getParameter("i");
+		String output = cmdLine.getParameter("o");
+		
+		LOG.info("About to convert input file " + input + " to " + (output != null ? output : "console (stdo)") + " using converter " + converterClass);
+
+		try {
+			FileConverter converter = getFileConverterInstance(converterClass);
+			if(converter != null) {
+				String result = converter.convert(input, cmdLine.getVariables());
+				if(output != null) {
+					FileUtils.writeFile(output, result);
+				} else {
+					System.out.println(result);
+				}
+			}
+			LOG.info("Successfully converted input file " + input + " to " + (output != null ? output : "console (stdo)") + " using converter " + converterClass);
+
+			System.exit(0);
+		} catch(Throwable ex) {
+			System.err.println(ex.getLocalizedMessage());
+			LOG.error("Fail to convert file: " + input + " using converter " + converterClass);
+			LOG.error(ex.getLocalizedMessage(), ex);
+			System.exit(2);
+		}
+		
+	}
+	
+	private static FileConverter getFileConverterInstance(String converterClass) throws Exception {
+		if(converterClass != null) {
+			try {
+				if(LOG.isDebugEnabled()) {
+					LOG.debug("About to create instance for file converter for class [" + converterClass + "]");
+				}				
+				return (FileConverter)Class.forName(converterClass).newInstance();
+			} catch(Exception ex) {
+				LOG.error("Could not create file converter instance for class [" + converterClass + "]. " + ex.getMessage(), ex);
+				throw ex;
+			}
+		} else {
+			if(LOG.isDebugEnabled()) {
+				LOG.debug("No file converter configured. Returning null");
+			}					
+			return null;
+		}
+	}
 	
 	/**
 	 * 
@@ -229,7 +280,7 @@ public class SAPWSClient {
 		if(responseParserClass != null) {
 			try {
 				if(LOG.isDebugEnabled()) {
-					LOG.debug("About to read create instance for response parser for class [" + responseParserClass + "]");
+					LOG.debug("About to create instance for response parser for class [" + responseParserClass + "]");
 				}				
 				return (ResponseParser)Class.forName(responseParserClass).newInstance();
 			} catch(Exception ex) {
@@ -248,16 +299,16 @@ public class SAPWSClient {
 		if(inputReceiverClass != null) {
 			try {
 				if(LOG.isDebugEnabled()) {
-					LOG.debug("About to read create instance for offline inpute receiver for class [" + inputReceiverClass + "]");
+					LOG.debug("About to create instance for offline input receiver for class [" + inputReceiverClass + "]");
 				}				
 				return (OfflineInputRetriever)Class.forName(inputReceiverClass).newInstance();
 			} catch(Exception ex) {
-				LOG.error("Could not create offline inpute receiver instance for class [" + inputReceiverClass + "]. " + ex.getMessage(), ex);
+				LOG.error("Could not create offline input receiver instance for class [" + inputReceiverClass + "]. " + ex.getMessage(), ex);
 				throw ex;
 			}
 		} else {
 			if(LOG.isDebugEnabled()) {
-				LOG.debug("No offline inpute receiver configured. Returning null");
+				LOG.debug("No offline input receiver configured. Returning null");
 			}					
 			return null;
 		}
