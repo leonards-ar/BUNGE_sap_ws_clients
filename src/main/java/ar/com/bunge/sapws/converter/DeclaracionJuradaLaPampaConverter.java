@@ -22,11 +22,11 @@ import ar.com.bunge.util.FileUtils;
 public class DeclaracionJuradaLaPampaConverter implements FileConverter {
 	private static final Logger LOG = Logger.getLogger(DeclaracionJuradaLaPampaConverter.class);
 
-	private static int[] CABECERA = {1, 2, 4, 10, 11, 6, 6, 6};
+	private static int[] CABECERA = {1, 2, 10, 10, 6, 6, 2, 5};
 	private static int CABECERA_LENGTH = addRecordLengths(CABECERA);
-	private static int[] DETALLE = {10, 12, 11, 11, 11, 5, 5, 3, 7, 5, 6, 20, 8, 6, 2};
+	private static int[] DETALLE = {10, 12, 11, 11, 11, 5, 5, 3, 7, 5, 6, 20, 8, 6, 3};
 	private static int DETALLE_LENGTH = addRecordLengths(DETALLE);
-	private static int[] DETALLE_VAGON = {10, 7, 6};
+	private static int[] DETALLE_VAGON = {10, 6, 6};
 	private static int DETALLE_VAGON_LENGTH = addRecordLengths(DETALLE_VAGON);
 
 	private static String T = "  ";
@@ -55,6 +55,7 @@ public class DeclaracionJuradaLaPampaConverter implements FileConverter {
 		List<String> lines = FileUtils.readFileLines(inputFile);
 		
 		sb.append("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" + NL);
+		sb.append("<!DOCTYPE DDJJ SYSTEM \"http://www.dgr.lapampa.gov.ar/consultas/DTD_Agentes_Informacion.dtd\">" + NL);
 		sb.append("<DDJJ>" + NL);
 		
 		String line;
@@ -132,13 +133,19 @@ public class DeclaracionJuradaLaPampaConverter implements FileConverter {
 		sb.append(TTT + toStringXMLAttribute("NroGuia", records.get(13)) + NL);
 		sb.append(TTT + toIntegerXMLAttribute("NroVagones", records.get(14)) + NL);
 
-		sb.append(TTT + "<Vagones>" + NL);
-
 		String line;
+		boolean hasWagons = false;
+		boolean closeWagons = false;
+		
 		for(lineNumber += 1; lineNumber < lines.size(); lineNumber++) {
 			line = lines.get(lineNumber);
 			
 			if(isWagonDetailLine(line)) {
+				if(!hasWagons) {
+					hasWagons = true;
+					closeWagons = true;
+					sb.append(TTT + "<Vagones>" + NL);
+				}
 				lineNumber = processWagonDetail(line, lines, lineNumber, sb);
 			} else if(isDetailLine(line) || isHeaderLine(line)) {
 				lineNumber--;
@@ -150,7 +157,9 @@ public class DeclaracionJuradaLaPampaConverter implements FileConverter {
 			}			
 		}
 
-		sb.append(TTT + "</Vagones>" + NL);
+		if(closeWagons) {
+			sb.append(TTT + "</Vagones>" + NL);
+		}
 		sb.append(TT + "</Detalle>" + NL);
 		
 		return lineNumber;
@@ -171,11 +180,11 @@ public class DeclaracionJuradaLaPampaConverter implements FileConverter {
 	}
 	
 	private String toStringXMLAttribute(String attributeName, String value) {
-		return "<" + attributeName + ">" + (value != null ? value.trim() : "") + "</" + attributeName + "/>";
+		return "<" + attributeName + ">" + (value != null ? value.trim() : "") + "</" + attributeName + ">";
 	}
 
 	private String toIntegerXMLAttribute(String attributeName, String value) {
-		return "<" + attributeName + ">" + (value != null ? Long.parseLong(value) : "") + "</" + attributeName + "/>";
+		return "<" + attributeName + ">" + (value != null ? Long.parseLong(value) : "") + "</" + attributeName + ">";
 	}
 	
 	private boolean isHeaderLine(String line) {
