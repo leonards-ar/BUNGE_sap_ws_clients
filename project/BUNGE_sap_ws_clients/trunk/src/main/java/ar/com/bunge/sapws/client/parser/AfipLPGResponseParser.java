@@ -43,6 +43,14 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 	private static final String ANULACION_LPG_NODE = "wsl:anulacionResp";
 	private static final String ANULACION_LPG_RESPONSE_CONTAINER_NODE = "anulacionReturn";
 	private static final String ANULACION_LPG_HEADER_RESPONSE_NODES[] = {"coe", "resultado"};
+
+	private static final String CONSULTA_COE_LPG_NODE = "ns2:liqConsXCoeResp";
+	private static final String CONSULTA_COE_LPG_RESPONSE_CONTAINER_NODE = "liqConsReturn";
+	private static final String CONSULTA_COE_LPG_HEADER_RESPONSE_NODES[] = {};
+
+	private static final String CONSULTA_NRO_ORDEN_LPG_NODE = "wsl:liqConsXNroOrdenResp";
+	private static final String CONSULTA_NRO_ORDEN_LPG_RESPONSE_CONTAINER_NODE = "liqConsReturn";
+	private static final String CONSULTA_NRO_ORDEN_LPG_HEADER_RESPONSE_NODES[] = {};
 	
 	// Tokens
 	private static final String RESULT_MESSAGE_SEPARATOR = FileUtils.getNewLine();
