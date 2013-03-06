@@ -28,29 +28,42 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 
 	private static final String ERRORS_CONTAINER_NODE = "errores";
 	private static final String ERROR_NODE = "error";
+	
 	private static final String FORMAT_ERRORS_CONTAINER_NODE = "erroresFormato";
 	private static final String EVENTS_CONTAINER_NODE = "eventos";
 	private static final String EVENT_NODE = "evento";
-	
-	private static final String AJUSTE_LPG_NODE = "ajusteResp";
-	private static final String AJUSTE_LPG_RESPONSE_CONTAINER_NODE = "ajusteReturn";
-	private static final String AJUSTE_LPG_HEADER_RESPONSE_NODES[] = {};
 
-	private static final String LIQUIDACION_LPG_NODE = "wsl:liquidacionResp";
+	private static final String CODE_DESCRIPTION_DETAIL_RSPONSE_NODES[] = {"codigo", "descripcion"};  
+	private static final String DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES[] = {"codigoConcepto", "detalleAclaratorio", "diasAlmacenaje", "precioPKGdiario", "comisionGastosAdm", "baseCalculo", "alicuotaIva", "importeIva", "importeDeduccion"};
+	private static final String RETENCIONES_LPG_DETAIL_RESPONSE_NODES[] = {"codigoConcepto", "detalleAclaratorio", "baseCalculo", "alicuota", "nroCertificadoRetencion", "fechaCertificadoRetencion", "importeCertificadoRetencion", "importeRetencion"};
+	private static final String CERTIFICACIONES_LPG_DETAIL_RESPONSE_NODES[] = {"tipoCertificadoDeposito", "nroCertificadoDeposito", "pesoNeto", "codLocalidadProcedencia", "codProvProcedencia", "campania", "fechaCierretipoCertificadoDeposito", "nroCertificadoDeposito", "pesoNeto", "codLocalidadProcedencia", "codProvProcedencia", "campania", "fechaCierre"};
+
+	private static final String LIQUIDACION_LPG_NODE = "ns2:liquidacionResp";
 	private static final String LIQUIDACION_LPG_RESPONSE_CONTAINER_NODE = "liqReturn";
-	private static final String LIQUIDACION_LPG_HEADER_RESPONSE_NODES[] = {};
-	
-	private static final String ANULACION_LPG_NODE = "wsl:anulacionResp";
+	private static final String LIQUIDACION_LPG_HEADER_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "nroOrden", "codTipoOperacion", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto"};
+	private static final String LIQUIDACION_LPG_TOTALES_RESPONSE_NODES[] = {"totalDeduccion", "totalRetencion", "totalRetencionAfip", "totalOtrasRetenciones", "totalNetoAPagar", "totalIvaRg2300_07", "totalPagoSegunCondicion"};
+
+	private static final String AJUSTE_LPG_NODE = "ns2:liquidacionResp";
+	private static final String AJUSTE_LPG_RESPONSE_CONTAINER_NODE = "ajusteReturn";
+	private static final String AJUSTE_LPG_HEADER_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto"};
+	private static final String AJUSTE_LPG_TOTALES_RESPONSE_NODES[] = {"totalDeduccion", "totalRetencion", "totalRetencionAfip", "totalOtrasRetenciones", "totalNetoAPagar", "totalIvaRg2300_07", "totalPagoSegunCondicion"};
+
+	private static final String ANULACION_LPG_NODE = "ns2:anulacionResp";
 	private static final String ANULACION_LPG_RESPONSE_CONTAINER_NODE = "anulacionReturn";
 	private static final String ANULACION_LPG_HEADER_RESPONSE_NODES[] = {"coe", "resultado"};
 
+	private static final String CONSULTA_ULTIMO_NRO_ORDEN_LPG_NODE = "ns2:liqUltNroOrdenResp";
+	private static final String CONSULTA_ULTIMO_NRO_ORDEN_LPG_RESPONSE_CONTAINER_NODE = "liqUltNroOrdenReturn";
+	private static final String CONSULTA_ULTIMO_NRO_ORDEN_LPG_HEADER_RESPONSE_NODES[] = {"nroOrden"};
+	
+	
 	private static final String CONSULTA_COE_LPG_NODE = "ns2:liqConsXCoeResp";
-	private static final String CONSULTA_COE_LPG_RESPONSE_CONTAINER_NODE = "liqConsReturn";
-	private static final String CONSULTA_COE_LPG_HEADER_RESPONSE_NODES[] = {};
+	private static final String CONSULTA_COE_LPG_HEADER1_RESPONSE_NODES[] = {"nroOrden", "cuitComprador", "nroActComprador", "nroIngBrutoComprador", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "esLiquidacionPropia", "esCanje", "codPuerto", "desPuertoLocalidad", "codGrano", "cuitVendedor", "nroIngBrutoVendedor", "actuaCorredor", "liquidaCorredor", "cuitCorredor", "comisionCorredor", "nroIngBrutoCorredor", "fechaPrecioOperacion", "precioRefTn", "codGradoRef", "codGradoEnt", "valGradoEnt", "factorEnt", "precioFleteTn", "contProteico", "alicIvaOperacion", "campaniaPPal", "codLocalidadProcedencia", "datosAdicionales"};
+	private static final String CONSULTA_COE_LPG_HEADER2_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNetocoe", "coeAjustado", "estado", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto"};
 
-	private static final String CONSULTA_NRO_ORDEN_LPG_NODE = "wsl:liqConsXNroOrdenResp";
-	private static final String CONSULTA_NRO_ORDEN_LPG_RESPONSE_CONTAINER_NODE = "liqConsReturn";
-	private static final String CONSULTA_NRO_ORDEN_LPG_HEADER_RESPONSE_NODES[] = {};
+	private static final String CONSULTA_NRO_ORDEN_LPG_NODE = "ns2:liqConsXNroOrdenResp";
+	private static final String CONSULTA_NRO_ORDEN_LPG_HEADER1_RESPONSE_NODES[] = {"nroOrden", "cuitComprador", "nroActComprador", "nroIngBrutoComprador", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "esLiquidacionPropia", "esCanje", "codPuerto", "desPuertoLocalidad", "codGrano", "cuitVendedor", "nroIngBrutoVendedor", "actuaCorredor", "liquidaCorredor", "cuitCorredor", "comisionCorredor", "nroIngBrutoCorredor", "fechaPrecioOperacion", "precioRefTn", "codGradoRef", "codGradoEnt", "valGradoEnt", "factorEnt", "precioFleteTn", "contProteico", "alicIvaOperacion", "campaniaPPal", "codLocalidadProcedencia", "datosAdicionales"};
+	private static final String CONSULTA_NRO_ORDEN_LPG_HEADER2_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNetocoe", "coeAjustado", "estado", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto"};
 	
 	// Tokens
 	private static final String RESULT_MESSAGE_SEPARATOR = FileUtils.getNewLine();
@@ -73,106 +86,154 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 	public String parseResponse(String rawResponse, Map<String, Object> context) throws Exception {
 		Document doc = getXmlDocumentFromString(rawResponse);
 		
-		Node responseNode = getNode(doc, ANULAR_CTG_NODE);
+		Node responseNode = getNode(doc, AJUSTE_LPG_NODE);
 		if(responseNode != null) {
-			LOG.debug("Parsing [" + ANULAR_CTG_NODE + "] response");
-			return parseSimpleResponse(responseNode, ANULAR_CTG_RESPONSE_CONTAINER_NODE, ANULAR_CTG_RESPONSE_NODES);
+			LOG.debug("Parsing [" + AJUSTE_LPG_NODE + "] response");
+			StringBuilder response = new StringBuilder();
+			
+			generateStatusAndMessages(response, responseNode);
+			response.append(parseSingleRowResponse("H", responseNode, AJUSTE_LPG_RESPONSE_CONTAINER_NODE, AJUSTE_LPG_HEADER_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("D", getNode(responseNode, AJUSTE_LPG_RESPONSE_CONTAINER_NODE), "deducciones", "deduccionReturn", DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("R", getNode(responseNode, AJUSTE_LPG_RESPONSE_CONTAINER_NODE), "retenciones", "retencionReturn", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseSingleRowResponse("T", responseNode, AJUSTE_LPG_RESPONSE_CONTAINER_NODE, AJUSTE_LPG_TOTALES_RESPONSE_NODES));
+			
+			return response.toString();
 		}
 		
-		responseNode = getNode(doc, CAMBIAR_DESTINO_CTG_RECHAZADO_NODE);
+		responseNode = getNode(doc, LIQUIDACION_LPG_NODE);
 		if(responseNode != null) {
-			LOG.debug("Parsing [" + CAMBIAR_DESTINO_CTG_RECHAZADO_NODE + "] response");
-			return parseSimpleResponse(responseNode, CAMBIAR_DESTINO_CTG_RECHAZADO_RESPONSE_CONTAINER_NODE, CAMBIAR_DESTINO_CTG_RECHAZADO_RESPONSE_NODES);
+			LOG.debug("Parsing [" + LIQUIDACION_LPG_NODE + "] response");
+			StringBuilder response = new StringBuilder();
+			
+			generateStatusAndMessages(response, responseNode);
+			response.append(parseSingleRowResponse("H", responseNode, LIQUIDACION_LPG_RESPONSE_CONTAINER_NODE, LIQUIDACION_LPG_HEADER_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("D", getNode(responseNode, LIQUIDACION_LPG_RESPONSE_CONTAINER_NODE), "deducciones", "deduccionReturn", DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("R", getNode(responseNode, LIQUIDACION_LPG_RESPONSE_CONTAINER_NODE), "retenciones", "retencionReturn", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseSingleRowResponse("T", responseNode,LIQUIDACION_LPG_RESPONSE_CONTAINER_NODE, LIQUIDACION_LPG_TOTALES_RESPONSE_NODES));
+			
+			return response.toString();
 		}		
 
-		responseNode = getNode(doc, CONFIRMAR_ARRIBO_NODE);
+		responseNode = getNode(doc, ANULACION_LPG_NODE);
 		if(responseNode != null) {
-			LOG.debug("Parsing [" + CONFIRMAR_ARRIBO_NODE + "] response");
-			return parseSimpleResponse(responseNode, CONFIRMAR_ARRIBO_RESPONSE_CONTAINER_NODE, CONFIRMAR_ARRIBO_RESPONSE_NODES);
+			LOG.debug("Parsing [" + ANULACION_LPG_NODE + "] response");
+			StringBuilder response = new StringBuilder();
+			
+			generateStatusAndMessages(response, responseNode);
+			response.append(parseSingleRowResponse("H", responseNode, ANULACION_LPG_RESPONSE_CONTAINER_NODE, ANULACION_LPG_HEADER_RESPONSE_NODES));
+			
+			return response.toString();			
 		}		
 
-		responseNode = getNode(doc, CONFIRMAR_DEFINITIVO_NODE);
+		responseNode = getNode(doc, CONSULTA_COE_LPG_NODE);
 		if(responseNode != null) {
-			LOG.debug("Parsing [" + CONFIRMAR_DEFINITIVO_NODE + "] response");
-			return parseSimpleResponse(responseNode, CONFIRMAR_DEFINITIVO_RESPONSE_CONTAINER_NODE, CONFIRMAR_DEFINITIVO_RESPONSE_NODES);
+			LOG.debug("Parsing [" + CONSULTA_COE_LPG_NODE + "] response");
+			StringBuilder response = new StringBuilder();
+			
+			generateStatusAndMessages(response, responseNode);
+			response.append(parseSingleRowResponse("H", responseNode, "liquidacion", CONSULTA_COE_LPG_HEADER1_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("C", getNode(responseNode, "liquidacion"), "certificados", "certificado", CERTIFICACIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("O", getNode(responseNode, "liquidacion"), "opcionales", "opcional", CODE_DESCRIPTION_DETAIL_RSPONSE_NODES));
+			response.append(parseSingleRowResponse("H", responseNode, "autorizacion", CONSULTA_COE_LPG_HEADER2_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("D", getNode(responseNode, "autorizacion"), "deducciones", "autorizacion", DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("R", getNode(responseNode, "autorizacion"), "retenciones", "autorizacion", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseSingleRowResponse("T", responseNode, "autorizacion", LIQUIDACION_LPG_TOTALES_RESPONSE_NODES));
+			
+			return response.toString();
 		}		
 
-		responseNode = getNode(doc, CONSULTAR_CONSTANCIA_CTG_PDF_NODE);
+		responseNode = getNode(doc, CONSULTA_NRO_ORDEN_LPG_NODE);
 		if(responseNode != null) {
-			LOG.debug("Parsing [" + CONSULTAR_CONSTANCIA_CTG_PDF_NODE + "] response");
-			return parseSimpleResponse(responseNode, CONSULTAR_CONSTANCIA_CTG_PDF_RESPONSE_CONTAINER_NODE, CONSULTAR_CONSTANCIA_CTG_PDF_RESPONSE_NODES);
+			LOG.debug("Parsing [" + CONSULTA_NRO_ORDEN_LPG_NODE + "] response");
+			StringBuilder response = new StringBuilder();
+			
+			generateStatusAndMessages(response, responseNode);
+			response.append(parseSingleRowResponse("H", responseNode, "liquidacion", CONSULTA_NRO_ORDEN_LPG_HEADER1_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("C", getNode(responseNode, "liquidacion"), "certificados", "certificado", CERTIFICACIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("O", getNode(responseNode, "liquidacion"), "opcionales", "opcional", CODE_DESCRIPTION_DETAIL_RSPONSE_NODES));
+			response.append(parseSingleRowResponse("H", responseNode, "autorizacion", CONSULTA_NRO_ORDEN_LPG_HEADER2_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("D", getNode(responseNode, "autorizacion"), "deducciones", "autorizacion", DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("R", getNode(responseNode, "autorizacion"), "retenciones", "autorizacion", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseSingleRowResponse("T", responseNode, "autorizacion", LIQUIDACION_LPG_TOTALES_RESPONSE_NODES));
+			
+			return response.toString();		}		
+
+		responseNode = getNode(doc, CONSULTA_ULTIMO_NRO_ORDEN_LPG_NODE);
+		if(responseNode != null) {
+			LOG.debug("Parsing [" + CONSULTA_ULTIMO_NRO_ORDEN_LPG_NODE + "] response");
+			StringBuilder response = new StringBuilder();
+			
+			generateStatusAndMessages(response, responseNode);
+			response.append(parseSingleRowResponse("H", responseNode, CONSULTA_ULTIMO_NRO_ORDEN_LPG_RESPONSE_CONTAINER_NODE, CONSULTA_ULTIMO_NRO_ORDEN_LPG_HEADER_RESPONSE_NODES));
+			
+			return response.toString();			
 		}		
-
-		responseNode = getNode(doc, CONSULTAR_CTG_NODE);
-		if(responseNode != null) {
-			LOG.debug("Parsing [" + CONSULTAR_CTG_NODE + "] response");
-			return parseHeaderDetailsResponse(responseNode, CONSULTAR_CTG_HEADER_CONTAINER_NODE, CONSULTAR_CTG_HEADER_RESPONSE_NODES, CONSULTAR_CTG_DETAILS_CONTAINER_NODE, CONSULTAR_CTG_DETAILS_NODE, CONSULTAR_CTG_DETAILS_RESPONSE_NODES);
-		}				
-
-		responseNode = getNode(doc, CONSULTAR_CTG_ACTIVOS_PATENTE_NODE);
-		if(responseNode != null) {
-			LOG.debug("Parsing [" + CONSULTAR_CTG_ACTIVOS_PATENTE_NODE + "] response");
-			return parseMultiRowResponse(responseNode, CONSULTAR_CTG_ACTIVOS_PATENTE_ROWS_CONTAINER_NODE, CONSULTAR_CTG_ACTIVOS_PATENTE_ROW_NODE, CONSULTAR_CTG_ACTIVOS_PATENTE_ROW_RESPONSE_NODES);
-		}				
-		
-		responseNode = getNode(doc, CONSULTAR_CTG_EXCEL_NODE);
-		if(responseNode != null) {
-			LOG.debug("Parsing [" + CONSULTAR_CTG_EXCEL_NODE + "] response");
-			return parseSimpleResponse(responseNode, CONSULTAR_CTG_EXCEL_RESPONSE_CONTAINER_NODE, CONSULTAR_CTG_EXCEL_RESPONSE_NODES);
-		}		
-
-		responseNode = getNode(doc, CONSULTAR_CTG_RECHAZADOS_NODE);
-		if(responseNode != null) {
-			LOG.debug("Parsing [" + CONSULTAR_CTG_RECHAZADOS_NODE + "] response");
-			return parseMultiRowResponse(responseNode, CONSULTAR_CTG_RECHAZADOS_ROWS_CONTAINER_NODE, CONSULTAR_CTG_RECHAZADOS_ROW_NODE, CONSULTAR_CTG_RECHAZADOS_ROW_RESPONSE_NODES);
-		}				
-
-		responseNode = getNode(doc, CONSULTAR_DETALLE_CTG_NODE);
-		if(responseNode != null) {
-			LOG.debug("Parsing [" + CONSULTAR_DETALLE_CTG_NODE + "] response");
-			return parseSimpleResponse(responseNode, CONSULTAR_DETALLE_CTG_RESPONSE_CONTAINER_NODE, CONSULTAR_DETALLE_CTG_RESPONSE_NODES);
-		}		
-
-		responseNode = getNode(doc, DESVIAR_CTG_OTRO_ESTABLECIMIENTO_NODE);
-		if(responseNode != null) {
-			LOG.debug("Parsing [" + DESVIAR_CTG_OTRO_ESTABLECIMIENTO_NODE + "] response");
-			return parseSimpleResponse(responseNode, DESVIAR_CTG_OTRO_ESTABLECIMIENTO_RESPONSE_CONTAINER_NODE, DESVIAR_CTG_OTRO_ESTABLECIMIENTO_RESPONSE_NODES);
-		}		
-
-		responseNode = getNode(doc, DESVIAR_CTG_OTRO_DESTINO_NODE);
-		if(responseNode != null) {
-			LOG.debug("Parsing [" + DESVIAR_CTG_OTRO_DESTINO_NODE + "] response");
-			return parseSimpleResponse(responseNode, DESVIAR_CTG_OTRO_DESTINO_RESPONSE_CONTAINER_NODE, DESVIAR_CTG_OTRO_DESTINO_RESPONSE_NODES);
-		}		
-
-		responseNode = getNode(doc, RECHAZAR_CTG_NODE);
-		if(responseNode != null) {
-			LOG.debug("Parsing [" + RECHAZAR_CTG_NODE + "] response");
-			return parseSimpleResponse(responseNode, RECHAZAR_CTG_RESPONSE_CONTAINER_NODE, RECHAZAR_CTG_RESPONSE_NODES);
-		}		
-		
-		responseNode = getNode(doc, REGRESAR_ORIGEN_CTG_RECHAZADO_NODE);
-		if(responseNode != null) {
-			LOG.debug("Parsing [" + REGRESAR_ORIGEN_CTG_RECHAZADO_NODE + "] response");
-			return parseSimpleResponse(responseNode, REGRESAR_ORIGEN_CTG_RECHAZADO_RESPONSE_CONTAINER_NODE, REGRESAR_ORIGEN_CTG_RECHAZADO_RESPONSE_NODES);
-		}		
-
-		responseNode = getNode(doc, SOLICITAR_CTG_DATO_PENDIENTE_NODE);
-		if(responseNode != null) {
-			LOG.debug("Parsing [" + SOLICITAR_CTG_DATO_PENDIENTE_NODE + "] response");
-			return parseHeaderDetailsResponse(responseNode, SOLICITAR_CTG_DATO_PENDIENTE_HEADER_CONTAINER_NODE, SOLICITAR_CTG_DATO_PENDIENTE_HEADER_RESPONSE_NODES, SOLICITAR_CTG_DATO_PENDIENTE_DETAILS_CONTAINER_NODE, SOLICITAR_CTG_DATO_PENDIENTE_DETAILS_NODE, SOLICITAR_CTG_DATO_PENDIENTE_DETAILS_RESPONSE_NODES);
-		}	
-				
-		responseNode = getNode(doc, SOLICITAR_CTG_INICIAL_NODE);
-		if(responseNode != null) {
-			LOG.debug("Parsing [" + SOLICITAR_CTG_INICIAL_NODE + "] response");
-			return parseHeaderDetailsResponse(responseNode, SOLICITAR_CTG_INICIAL_HEADER_CONTAINER_NODE, SOLICITAR_CTG_INICIAL_HEADER_RESPONSE_NODES, SOLICITAR_CTG_INICIAL_DETAILS_CONTAINER_NODE, SOLICITAR_CTG_INICIAL_DETAILS_NODE, SOLICITAR_CTG_INICIAL_DETAILS_RESPONSE_NODES);
-		}	
-		
 		return rawResponse;
 	}
 
+	private void generateStatusAndMessages(StringBuilder response, Node responseNode) throws Exception {
+		String errors = parseErrorsResponse("E", getNode(responseNode, ERRORS_CONTAINER_NODE), ERROR_NODE, CODE_DESCRIPTION_DETAIL_RSPONSE_NODES);
+		String formatErrors = parseErrorsResponse("F", getNode(responseNode, FORMAT_ERRORS_CONTAINER_NODE), ERROR_NODE, CODE_DESCRIPTION_DETAIL_RSPONSE_NODES);
+		String events = parseEventsResponse("V", getNode(responseNode, EVENTS_CONTAINER_NODE), EVENT_NODE, CODE_DESCRIPTION_DETAIL_RSPONSE_NODES);
+		
+		if(errors != null || formatErrors != null) {
+			response.append(ERROR_RESULT);
+		} else {
+			response.append(SUCCESS_RESULT);
+		}
+		
+		if(errors != null) {
+			response.append(errors);
+		}
+		
+		if(formatErrors != null) {
+			response.append(formatErrors);
+		}
 
+		if(events != null) {
+			response.append(events);
+		}		
+	}
+	
+	private String parseErrorsResponse(String lineType, Node errorNodeContainer, String errorNodeName, String valueNodeNames[]) throws Exception {
+		StringBuffer errorResult = new StringBuffer();
+
+		boolean hasErrors = false;
+		if (errorNodeContainer != null && errorNodeContainer.getChildNodes() != null) {
+			Node n;
+			for (int i = 0; i < errorNodeContainer.getChildNodes().getLength(); i++) {
+				n = errorNodeContainer.getChildNodes().item(i);
+				if (errorNodeName.equalsIgnoreCase(n.getNodeName())) {
+					errorResult.append(RESULT_MESSAGE_SEPARATOR);
+					errorResult.append(lineType + LINE_TOKEN + buildResultRow(n, valueNodeNames));
+					hasErrors = true;
+				}
+			}
+		}
+		
+		return hasErrors ? errorResult.toString() : null;		
+	}
+
+	private String parseEventsResponse(String lineType, Node errorNodeContainer, String errorNodeName, String valueNodeNames[]) throws Exception {
+		StringBuffer eventResult = new StringBuffer();
+
+		boolean hasEvents = false;
+		if (errorNodeContainer != null && errorNodeContainer.getChildNodes() != null) {
+			Node n;
+			for (int i = 0; i < errorNodeContainer.getChildNodes().getLength(); i++) {
+				n = errorNodeContainer.getChildNodes().item(i);
+				if (errorNodeName.equalsIgnoreCase(n.getNodeName())) {
+					eventResult.append(RESULT_MESSAGE_SEPARATOR);
+					eventResult.append(lineType + LINE_TOKEN + buildResultRow(n, valueNodeNames));
+					hasEvents = true;
+				}
+			}
+		}
+		
+		return hasEvents ? eventResult.toString() : null;		
+		
+	}
+	
 	/**
 	 * 
 	 * @param responseNode
@@ -181,57 +242,18 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 	 * @return
 	 * @throws Exception
 	 */
-	private String parseSimpleResponse(Node responseNode, String responseContainerNodeName, String responseNodes[]) throws Exception {
-		String errors = buildErrorResult(getNode(responseNode, ERRORS_CONTAINER_NODE));
-
-		StringBuffer response = new StringBuffer(errors != null ? errors + RESULT_MESSAGE_SEPARATOR : "");
+	private String parseSingleRowResponse(String lineType, Node responseNode, String responseContainerNodeName, String responseNodes[]) throws Exception {
+		StringBuffer response = new StringBuffer();
 		Node responseDataNode = getNode(responseNode, responseContainerNodeName);
 
 		if(responseDataNode != null) {
-			response.append(SUCCESS_RESULT + RESULT_MESSAGE_SEPARATOR);
-			response.append(buildResultRow(responseDataNode, responseNodes));
+			response.append(RESULT_MESSAGE_SEPARATOR);
+			response.append(lineType + LINE_TOKEN + buildResultRow(responseDataNode, responseNodes));
 		}
 
 		return response.toString();
 	}
 	
-	/**
-	 * 
-	 * @param responseNode
-	 * @param headerContainerNodeName
-	 * @param headerNodes
-	 * @param detailsContainerNodeName
-	 * @param detailsNodeName
-	 * @param detailsNodes
-	 * @return
-	 * @throws Exception
-	 */
-	private String parseHeaderDetailsResponse(Node responseNode, String headerContainerNodeName, String headerNodes[], String detailsContainerNodeName, String detailsNodeName, String detailsNodes[]) throws Exception {
-		String errors = buildErrorResult(getNode(responseNode, ERRORS_CONTAINER_NODE));
-
-		StringBuffer response = new StringBuffer(errors != null ? errors + RESULT_MESSAGE_SEPARATOR : "");
-		Node responseDataNode = getNode(responseNode, headerContainerNodeName);
-
-		if(responseDataNode != null) {
-			response.append(SUCCESS_RESULT + RESULT_MESSAGE_SEPARATOR);
-			response.append(buildResultRow(responseDataNode, headerNodes));
-		}
-
-		responseDataNode = getNode(responseNode, detailsContainerNodeName);
-		if (responseDataNode != null && responseDataNode.getChildNodes() != null) {
-			Node n;
-			for (int i = 0; i < responseDataNode.getChildNodes().getLength(); i++) {
-				n = responseDataNode.getChildNodes().item(i);
-				if (detailsNodeName.equalsIgnoreCase(n.getNodeName())) {
-					response.append(RESULT_MESSAGE_SEPARATOR);
-					response.append(buildResultRow(n, detailsNodes));
-				}
-			}
-		}		
-		
-		return response.toString();
-	}	
-
 	/**
 	 * 
 	 * @param responseNode
@@ -241,10 +263,8 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 	 * @return
 	 * @throws Exception
 	 */
-	private String parseMultiRowResponse(Node responseNode, String rowsContainerNodeName, String rowNodeName, String rowNodes[]) throws Exception {
-		String errors = buildErrorResult(getNode(responseNode, ERRORS_CONTAINER_NODE));
-
-		StringBuffer response = new StringBuffer(errors != null ? errors + RESULT_MESSAGE_SEPARATOR : "");
+	private String parseMultiRowResponse(String lineType, Node responseNode, String rowsContainerNodeName, String rowNodeName, String rowNodes[]) throws Exception {
+		StringBuffer response = new StringBuffer();
 		Node responseDataNode = getNode(responseNode, rowsContainerNodeName);
 
 		if (responseDataNode != null && responseDataNode.getChildNodes() != null) {
@@ -253,7 +273,7 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 				n = responseDataNode.getChildNodes().item(i);
 				if (rowNodeName.equalsIgnoreCase(n.getNodeName())) {
 					response.append(RESULT_MESSAGE_SEPARATOR);
-					response.append(buildResultRow(n, rowNodes));
+					response.append(lineType + LINE_TOKEN + buildResultRow(n, rowNodes));
 				}
 			}
 		}		
@@ -281,30 +301,6 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 			}
 		}
 		return response.toString();
-	}
-	
-	/**
-	 * 
-	 * @param response
-	 * @return
-	 * @throws Exception
-	 */
-	private String buildErrorResult(Node errors) throws Exception {
-		StringBuffer errorResult = new StringBuffer(ERROR_RESULT);
-
-		boolean hasErrors = false;
-		if (errors != null && errors.getChildNodes() != null) {
-			Node n;
-			for (int i = 0; i < errors.getChildNodes().getLength(); i++) {
-				n = errors.getChildNodes().item(i);
-				if (ERROR_NODE.equalsIgnoreCase(n.getNodeName())) {
-					errorResult.append(RESULT_MESSAGE_SEPARATOR + getNodeText(n, ERROR_NODE));
-					hasErrors = true;
-				}
-			}
-		}
-		
-		return hasErrors ? errorResult.toString() : null;
 	}
 
 	/**
