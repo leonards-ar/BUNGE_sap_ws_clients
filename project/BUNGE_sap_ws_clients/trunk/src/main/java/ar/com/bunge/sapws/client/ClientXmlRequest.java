@@ -32,9 +32,18 @@ public class ClientXmlRequest {
 	public static final String ITERATOR_VARIABLE_CLOSE_TOKEN = ")}";
 	public static final String ITERATOR_BLOCK_END_TOKEN = "{end loop}";
 
+	public static final String NESTED_ITERATOR_VARIABLE_OPEN_TOKEN = "${xloop(";
+	public static final String NESTED_ITERATOR_VARIABLE_CLOSE_TOKEN = ")}";
+	public static final String NESTED_ITERATOR_BLOCK_END_TOKEN = "{end xloop}";
+
+	
 	public static final String ITERATOR_NULL_VARIABLE_OPEN_TOKEN = "${loopn(";
 	public static final String ITERATOR_NULL_VARIABLE_CLOSE_TOKEN = ")}";
 	public static final String ITERATOR_NULL_BLOCK_END_TOKEN = "{end loopn}";
+	
+	public static final String NESTED_ITERATOR_NULL_VARIABLE_OPEN_TOKEN = "${xloopn(";
+	public static final String NESTED_ITERATOR_NULL_VARIABLE_CLOSE_TOKEN = ")}";
+	public static final String NESTED_ITERATOR_NULL_BLOCK_END_TOKEN = "{end xloopn}";	
 	
 	public static final String IF_VALUE_VARIABLE_OPEN_TOKEN = "${if value(";
 	public static final String IF_VALUE_VARIABLE_CLOSE_TOKEN = ")}";
@@ -64,7 +73,9 @@ public class ClientXmlRequest {
 	 * @throws Exception
 	 */
 	public void compile(Map<String, Object> context) throws Exception {
-		String request = expandLoops(getRequestTemplate(), context);
+		String request = expandNestedNullLoops(getRequestTemplate(), context);
+
+		request = expandLoops(request, context);
 		
 		request = expandNullLoops(request, context);
 		
@@ -207,6 +218,41 @@ public class ClientXmlRequest {
 	
 	/**
 	 * 
+	 * @param request
+	 * @param context
+	 * @return
+	 * @throws Exception
+	 */
+	private String expandNestedNullLoops(String request, Map<String, Object> context) throws Exception {
+		String expandedRequest = new String(request);
+		
+		String prefix, suffix , loopVariable, xml;
+		String parts[];
+		while(expandedRequest.indexOf(NESTED_ITERATOR_NULL_VARIABLE_OPEN_TOKEN) > -1) {
+			parts = splitByWholeSeparators(expandedRequest, new String[] {NESTED_ITERATOR_NULL_VARIABLE_OPEN_TOKEN, NESTED_ITERATOR_NULL_VARIABLE_CLOSE_TOKEN, NESTED_ITERATOR_NULL_BLOCK_END_TOKEN});
+			
+			prefix = parts.length > 0 ? parts[0] : null;
+			loopVariable = parts.length > 1 ? parts[1] : null;
+			xml = parts.length > 2 ? parts[2] : null;
+			suffix = parts.length > 3 ? parts[3] : null;
+			
+			int repetitions = getRepetitions(loopVariable, context, 0);
+			
+			expandedRequest = prefix;
+			
+			for(int i = 0; i < repetitions; i++) {
+				expandedRequest += addIndexToVariables(addIndexToNestedLoopVariables(xml, i), i);
+			}
+			
+			expandedRequest += suffix;
+		}
+		
+		
+		return expandedRequest;
+	}
+	
+	/**
+	 * 
 	 * @param xml
 	 * @param index
 	 * @return
@@ -225,6 +271,26 @@ public class ClientXmlRequest {
 		return indexedXml;		
 	}
 
+	private String addIndexToLoopVariable(String open, String close, String xml, int index) {
+		String indexedXml = new String(xml);
+		String vars[] = StringUtils.substringsBetween(indexedXml, open, close);
+		
+		if(vars != null) {
+			for(int i=0; i < vars.length; i++) {
+				indexedXml = StringUtils.replace(indexedXml, open + vars[i] + close, open + vars[i] + "(" + (index + 1) + ")" + close);
+			}
+		}
+		
+		
+		return indexedXml;		
+	}	
+	
+	private String addIndexToNestedLoopVariables(String xml, int index) {
+		String indexedXml = addIndexToLoopVariable(ITERATOR_VARIABLE_OPEN_TOKEN, ITERATOR_VARIABLE_CLOSE_TOKEN, xml, index);
+		indexedXml = addIndexToLoopVariable(ITERATOR_NULL_VARIABLE_OPEN_TOKEN, ITERATOR_NULL_VARIABLE_CLOSE_TOKEN, xml, index);
+		return indexedXml;
+	}
+	
 	/**
 	 * 
 	 * @param loopVariable
