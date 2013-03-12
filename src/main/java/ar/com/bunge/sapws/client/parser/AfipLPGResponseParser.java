@@ -59,11 +59,11 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 	
 	private static final String CONSULTA_COE_LPG_NODE = "ns2:liqConsXCoeResp";
 	private static final String CONSULTA_COE_LPG_HEADER1_RESPONSE_NODES[] = {"nroOrden", "cuitComprador", "nroActComprador", "nroIngBrutoComprador", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "esLiquidacionPropia", "esCanje", "codPuerto", "desPuertoLocalidad", "codGrano", "cuitVendedor", "nroIngBrutoVendedor", "actuaCorredor", "liquidaCorredor", "cuitCorredor", "comisionCorredor", "nroIngBrutoCorredor", "fechaPrecioOperacion", "precioRefTn", "codGradoRef", "codGradoEnt", "valGradoEnt", "factorEnt", "precioFleteTn", "contProteico", "alicIvaOperacion", "campaniaPPal", "codLocalidadProcedencia", "datosAdicionales"};
-	private static final String CONSULTA_COE_LPG_HEADER2_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNetocoe", "coeAjustado", "estado", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto"};
+	private static final String CONSULTA_COE_LPG_HEADER2_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto"};
 
 	private static final String CONSULTA_NRO_ORDEN_LPG_NODE = "ns2:liqConsXNroOrdenResp";
 	private static final String CONSULTA_NRO_ORDEN_LPG_HEADER1_RESPONSE_NODES[] = {"nroOrden", "cuitComprador", "nroActComprador", "nroIngBrutoComprador", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "esLiquidacionPropia", "esCanje", "codPuerto", "desPuertoLocalidad", "codGrano", "cuitVendedor", "nroIngBrutoVendedor", "actuaCorredor", "liquidaCorredor", "cuitCorredor", "comisionCorredor", "nroIngBrutoCorredor", "fechaPrecioOperacion", "precioRefTn", "codGradoRef", "codGradoEnt", "valGradoEnt", "factorEnt", "precioFleteTn", "contProteico", "alicIvaOperacion", "campaniaPPal", "codLocalidadProcedencia", "datosAdicionales"};
-	private static final String CONSULTA_NRO_ORDEN_LPG_HEADER2_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNetocoe", "coeAjustado", "estado", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto"};
+	private static final String CONSULTA_NRO_ORDEN_LPG_HEADER2_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto"};
 	
 	private static final String CAMPANIA_LPG_NODE = "ns2:campaniaResp";
 	private static final String TIPO_GRANO_LPG_NODE = "ns2:tipoGranoResp";
@@ -150,8 +150,8 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 			response.append(parseMultiRowResponse("C", getNode(responseNode, "liquidacion"), "certificados", "certificado", CERTIFICACIONES_LPG_DETAIL_RESPONSE_NODES));
 			response.append(parseMultiRowResponse("O", getNode(responseNode, "liquidacion"), "opcionales", "opcional", CODE_DESCRIPTION_DETAIL_RESPONSE_NODES));
 			response.append(parseSingleRowResponse("H", responseNode, "autorizacion", CONSULTA_COE_LPG_HEADER2_RESPONSE_NODES));
-			response.append(parseMultiRowResponse("D", getNode(responseNode, "autorizacion"), "deducciones", "autorizacion", DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES));
-			response.append(parseMultiRowResponse("R", getNode(responseNode, "autorizacion"), "retenciones", "autorizacion", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("D", getNode(responseNode, "autorizacion"), "deducciones", "deduccionReturn", DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("R", getNode(responseNode, "autorizacion"), "retenciones", "retencionReturn", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
 			response.append(parseSingleRowResponse("T", responseNode, "autorizacion", LIQUIDACION_LPG_TOTALES_RESPONSE_NODES));
 			
 			return response.toString();
@@ -167,8 +167,8 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 			response.append(parseMultiRowResponse("C", getNode(responseNode, "liquidacion"), "certificados", "certificado", CERTIFICACIONES_LPG_DETAIL_RESPONSE_NODES));
 			response.append(parseMultiRowResponse("O", getNode(responseNode, "liquidacion"), "opcionales", "opcional", CODE_DESCRIPTION_DETAIL_RESPONSE_NODES));
 			response.append(parseSingleRowResponse("H", responseNode, "autorizacion", CONSULTA_NRO_ORDEN_LPG_HEADER2_RESPONSE_NODES));
-			response.append(parseMultiRowResponse("D", getNode(responseNode, "autorizacion"), "deducciones", "autorizacion", DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES));
-			response.append(parseMultiRowResponse("R", getNode(responseNode, "autorizacion"), "retenciones", "autorizacion", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("D", getNode(responseNode, "autorizacion"), "deducciones", "deduccionReturn", DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("R", getNode(responseNode, "autorizacion"), "retenciones", "retencionReturn", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
 			response.append(parseSingleRowResponse("T", responseNode, "autorizacion", LIQUIDACION_LPG_TOTALES_RESPONSE_NODES));
 			
 			return response.toString();		}		
