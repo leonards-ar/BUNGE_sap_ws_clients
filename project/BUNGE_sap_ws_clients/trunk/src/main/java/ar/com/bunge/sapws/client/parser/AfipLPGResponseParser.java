@@ -40,12 +40,12 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 
 	private static final String LIQUIDACION_LPG_NODE = "ns2:liquidacionResp";
 	private static final String LIQUIDACION_LPG_RESPONSE_CONTAINER_NODE = "liqReturn";
-	private static final String LIQUIDACION_LPG_HEADER_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "nroOrden", "codTipoOperacion", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto"};
+	private static final String LIQUIDACION_LPG_HEADER_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "ptoEmision", "nroOrden", "codTipoOperacion", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto"};
 	private static final String LIQUIDACION_LPG_TOTALES_RESPONSE_NODES[] = {"totalDeduccion", "totalRetencion", "totalRetencionAfip", "totalOtrasRetenciones", "totalNetoAPagar", "totalIvaRg2300_07", "totalPagoSegunCondicion"};
 
 	private static final String AJUSTE_LPG_NODE = "ns2:ajusteResp";
 	private static final String AJUSTE_LPG_RESPONSE_CONTAINER_NODE = "ajusteReturn";
-	private static final String AJUSTE_LPG_HEADER_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto"};
+	private static final String AJUSTE_LPG_HEADER_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "ptoEmision", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto"};
 	private static final String AJUSTE_LPG_TOTALES_RESPONSE_NODES[] = {"totalDeduccion", "totalRetencion", "totalRetencionAfip", "totalOtrasRetenciones", "totalNetoAPagar", "totalIvaRg2300_07", "totalPagoSegunCondicion"};
 
 	private static final String ANULACION_LPG_NODE = "ns2:anulacionResp";
@@ -59,11 +59,11 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 	
 	private static final String CONSULTA_COE_LPG_NODE = "ns2:liqConsXCoeResp";
 	private static final String CONSULTA_COE_LPG_HEADER1_RESPONSE_NODES[] = {"nroOrden", "cuitComprador", "nroActComprador", "nroIngBrutoComprador", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "esLiquidacionPropia", "esCanje", "codPuerto", "desPuertoLocalidad", "codGrano", "cuitVendedor", "nroIngBrutoVendedor", "actuaCorredor", "liquidaCorredor", "cuitCorredor", "comisionCorredor", "nroIngBrutoCorredor", "fechaPrecioOperacion", "precioRefTn", "codGradoRef", "codGradoEnt", "valGradoEnt", "factorEnt", "precioFleteTn", "contProteico", "alicIvaOperacion", "campaniaPPal", "codLocalidadProcedencia", "datosAdicionales"};
-	private static final String CONSULTA_COE_LPG_HEADER2_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto"};
+	private static final String CONSULTA_COE_LPG_HEADER2_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "ptoEmision", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto"};
 
 	private static final String CONSULTA_NRO_ORDEN_LPG_NODE = "ns2:liqConsXNroOrdenResp";
 	private static final String CONSULTA_NRO_ORDEN_LPG_HEADER1_RESPONSE_NODES[] = {"nroOrden", "cuitComprador", "nroActComprador", "nroIngBrutoComprador", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "esLiquidacionPropia", "esCanje", "codPuerto", "desPuertoLocalidad", "codGrano", "cuitVendedor", "nroIngBrutoVendedor", "actuaCorredor", "liquidaCorredor", "cuitCorredor", "comisionCorredor", "nroIngBrutoCorredor", "fechaPrecioOperacion", "precioRefTn", "codGradoRef", "codGradoEnt", "valGradoEnt", "factorEnt", "precioFleteTn", "contProteico", "alicIvaOperacion", "campaniaPPal", "codLocalidadProcedencia", "datosAdicionales"};
-	private static final String CONSULTA_NRO_ORDEN_LPG_HEADER2_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto"};
+	private static final String CONSULTA_NRO_ORDEN_LPG_HEADER2_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "ptoEmision", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto"};
 	
 	private static final String CAMPANIA_LPG_NODE = "ns2:campaniaResp";
 	private static final String TIPO_GRANO_LPG_NODE = "ns2:tipoGranoResp";
