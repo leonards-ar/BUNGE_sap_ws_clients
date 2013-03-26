@@ -295,8 +295,8 @@ public class AFIPUtils {
 		
 				certStore = CertStore.getInstance("Collection", new CollectionCertStoreParameters(certList), "BC");
 			} else {
-				LOG.error("Invalid certificate or configuration. No certificate found in [" + keyStorePath + "] with alias [" + signer + "]");
-				throw new Exception("Invalid certificate or configuration. No certificate found in [" + keyStorePath + "] with alias [" + signer + "]");
+				LOG.debug("Invalid certificate or configuration. No certificate found in [" + keyStorePath + "] with alias [" + signer + "]");
+				throw new Exception("WSAA: Invalid certificate or configuration. No certificate found in [" + keyStorePath + "] with alias [" + signer + "]");
 			}
 			
 		} finally {
@@ -380,12 +380,12 @@ public class AFIPUtils {
 			for(int i=0; i < WSAA_REQUIRED_PARAMS.length; i++) {
 				value = config.get(WSAA_REQUIRED_PARAMS[i]);
 				if(value == null || StringUtils.isEmpty(value.toString())) {
-					throw new Exception("Configuration file [" + configFilePath + "] is missing a value for parameter [" + WSAA_REQUIRED_PARAMS[i] + "]");
+					throw new Exception("WSAA: Configuration file [" + configFilePath + "] is missing a value for parameter [" + WSAA_REQUIRED_PARAMS[i] + "]");
 				}
 			}
 			return config;
 		} else {
-			throw new Exception("Cannot load configuration from file [" + configFilePath + "]. File does not exist");
+			throw new Exception("WSAA: Cannot load configuration from file [" + configFilePath + "]. File does not exist");
 		}
 	}
 
