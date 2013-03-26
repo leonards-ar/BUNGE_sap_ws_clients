@@ -14,6 +14,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 import ar.com.bunge.util.ValidationException;
 import bsh.EvalError;
 import bsh.Interpreter;
+import bsh.TargetError;
 
 /**
  *
@@ -385,6 +386,16 @@ public class ClientXmlRequest {
 			String bshScript = resolveScript(script, context);
 	    	Object result = i.eval(bshScript);
 	    	return result != null ? result.toString() : "";
+		} catch(TargetError e) {
+			if(e.getTarget() instanceof ValidationException) {
+				throw new ValidationException(e.getTarget() != null ? e.getTarget().getMessage() : e.getMessage(), e);
+			} else if(e.getTarget() instanceof Exception) {
+				throw (Exception) e.getTarget();
+			} else if(e.getTarget() instanceof Exception) {
+				throw (Exception) e.getTarget();
+			} else {
+				throw new Exception(e.getTarget() != null ? e.getTarget().getMessage() : e.getMessage(), e);
+			}
 		} catch(EvalError e) {
 			if(e.getCause() instanceof ValidationException) {
 				throw new ValidationException(e.getCause().getMessage(), e);
