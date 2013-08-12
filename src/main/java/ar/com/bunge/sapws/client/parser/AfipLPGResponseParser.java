@@ -37,6 +37,7 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 	private static final String DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES[] = {"codigoConcepto", "detalleAclaratorio", "diasAlmacenaje", "precioPKGdiario", "comisionGastosAdm", "baseCalculo", "alicuotaIva", "importeIva", "importeDeduccion"};
 	private static final String RETENCIONES_LPG_DETAIL_RESPONSE_NODES[] = {"codigoConcepto", "detalleAclaratorio", "baseCalculo", "alicuota", "nroCertificadoRetencion", "fechaCertificadoRetencion", "importeCertificadoRetencion", "importeRetencion"};
 	private static final String CERTIFICACIONES_LPG_DETAIL_RESPONSE_NODES[] = {"tipoCertificadoDeposito", "nroCertificadoDeposito", "pesoNeto", "codLocalidadProcedencia", "codProvProcedencia", "campania", "fechaCierretipoCertificadoDeposito", "nroCertificadoDeposito", "pesoNeto", "codLocalidadProcedencia", "codProvProcedencia", "campania", "fechaCierre"};
+	private static final String IMPORTES_LPG_DETAIL_RESPONSE_NODES[] = {"importe", "concepto", "alicuota", "ivaCalculado"};
 
 	private static final String LIQUIDACION_LPG_NODE = "ns2:liquidacionResp";
 	private static final String LIQUIDACION_LPG_RESPONSE_CONTAINER_NODE = "liqReturn";
@@ -48,6 +49,20 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 	private static final String AJUSTE_LPG_HEADER_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "ptoEmision", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto"};
 	private static final String AJUSTE_LPG_TOTALES_RESPONSE_NODES[] = {"totalDeduccion", "totalRetencion", "totalRetencionAfip", "totalOtrasRetenciones", "totalNetoAPagar", "totalIvaRg2300_07", "totalPagoSegunCondicion"};
 
+	private static final String AJUSTAR_UNIFICADO_LPG_NODE = "ns2:ajustarUnificadoResp";
+	private static final String AJUSTAR_UNIFICADO_LPG_RESPONSE_CONTAINER_NODE = "ajusteUnifReturn";
+	private static final String AJUSTAR_UNIFICADO_LPG_HEADER_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "ptoEmision", "nroOrden", "nroContrato", "codTipoOperacion"};
+	private static final String AJUSTAR_UNIFICADO_LPG_TOTALES_RESPONSE_NODES[] = {"subTotalGeneral", "iva105", "iva21", "retencionesGanancias", "retencionesIVA", "importeNeto", "ivaRG2300_2007", "pagoSCondicion"};
+	private static final String AJUSTAR_UNIFICADO_CREDITO_LPG_RESPONSE_NODES[] = {"nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto", "totalDeduccion", "totalRetencion", "totalRetencionAfip", "totalOtrasRetenciones", "totalNetoAPagar", "totalIvaRg2300_07", "totalPagoSegunCondicion"};
+	private static final String AJUSTAR_UNIFICADO_DEBITO_LPG_RESPONSE_NODES[] = {"nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto", "totalDeduccion", "totalRetencion", "totalRetencionAfip", "totalOtrasRetenciones", "totalNetoAPagar", "totalIvaRg2300_07", "totalPagoSegunCondicion"};
+
+	private static final String AJUSTAR_CONTRATO_LPG_NODE = "ns2:ajustarContratoResp";
+	private static final String AJUSTAR_CONTRATO_LPG_RESPONSE_CONTAINER_NODE = "ajusteContratoReturn";
+	private static final String AJUSTAR_CONTRATO_LPG_HEADER_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "ptoEmision", "nroOrden", "nroContrato", "codTipoOperacion"};
+	private static final String AJUSTAR_CONTRATO_LPG_TOTALES_RESPONSE_NODES[] = {"subTotalGeneral", "iva105", "iva21", "retencionesGanancias", "retencionesIVA", "importeNeto", "ivaRG2300_2007", "pagoSCondicion"};
+	private static final String AJUSTAR_CONTRATO_CREDITO_LPG_RESPONSE_NODES[] = {"nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto", "totalDeduccion", "totalRetencion", "totalRetencionAfip", "totalOtrasRetenciones", "totalNetoAPagar", "totalIvaRg2300_07", "totalPagoSegunCondicion"};
+	private static final String AJUSTAR_CONTRATO_DEBITO_LPG_RESPONSE_NODES[] = {"nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto", "totalDeduccion", "totalRetencion", "totalRetencionAfip", "totalOtrasRetenciones", "totalNetoAPagar", "totalIvaRg2300_07", "totalPagoSegunCondicion"};
+	
 	private static final String ANULACION_LPG_NODE = "ns2:anulacionResp";
 	private static final String ANULACION_LPG_RESPONSE_CONTAINER_NODE = "anulacionReturn";
 	private static final String ANULACION_LPG_HEADER_RESPONSE_NODES[] = {"coe", "resultado"};
@@ -64,7 +79,7 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 	private static final String CONSULTA_NRO_ORDEN_LPG_NODE = "ns2:liqConsXNroOrdenResp";
 	private static final String CONSULTA_NRO_ORDEN_LPG_HEADER1_RESPONSE_NODES[] = {"nroOrden", "cuitComprador", "nroActComprador", "nroIngBrutoComprador", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "esLiquidacionPropia", "esCanje", "codPuerto", "desPuertoLocalidad", "codGrano", "cuitVendedor", "nroIngBrutoVendedor", "actuaCorredor", "liquidaCorredor", "cuitCorredor", "comisionCorredor", "nroIngBrutoCorredor", "fechaPrecioOperacion", "precioRefTn", "codGradoRef", "codGradoEnt", "valGradoEnt", "factorEnt", "precioFleteTn", "contProteico", "alicIvaOperacion", "campaniaPPal", "codLocalidadProcedencia", "datosAdicionales"};
 	private static final String CONSULTA_NRO_ORDEN_LPG_HEADER2_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "ptoEmision", "nroOrden", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto"};
-	
+
 	private static final String CAMPANIA_LPG_NODE = "ns2:campaniaResp";
 	private static final String TIPO_GRANO_LPG_NODE = "ns2:tipoGranoResp";
 	private static final String GRADO_REFERENCIA_LPG_NODE = "ns2:gradoReferenciaResp";
@@ -114,6 +129,53 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 			
 			return response.toString();
 		}
+
+		responseNode = getNode(doc, AJUSTAR_UNIFICADO_LPG_NODE);
+		if(responseNode != null) {
+			LOG.debug("Parsing [" + AJUSTAR_UNIFICADO_LPG_NODE + "] response");
+			StringBuilder response = new StringBuilder();
+
+			generateStatusAndMessages(response, responseNode);
+			response.append(parseSingleRowResponse("H", responseNode, AJUSTAR_UNIFICADO_LPG_RESPONSE_CONTAINER_NODE, AJUSTAR_UNIFICADO_LPG_HEADER_RESPONSE_NODES));
+
+			response.append(parseSingleRowResponse("AJ", responseNode, "ajusteCredito", AJUSTAR_UNIFICADO_CREDITO_LPG_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("I", getNode(responseNode, "ajusteCredito"), "importes", "importeReturn", IMPORTES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("D", getNode(responseNode, "ajusteCredito"), "deducciones", "deduccionReturn", DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("R", getNode(responseNode, "ajusteCredito"), "retenciones", "retencionReturn", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
+
+			response.append(parseSingleRowResponse("AD", responseNode, "ajusteDebito", AJUSTAR_UNIFICADO_DEBITO_LPG_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("I", getNode(responseNode, "ajusteDebito"), "importes", "importeReturn", IMPORTES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("D", getNode(responseNode, "ajusteDebito"), "deducciones", "deduccionReturn", DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("R", getNode(responseNode, "ajusteDebito"), "retenciones", "retencionReturn", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
+			
+			response.append(parseSingleRowResponse("T", responseNode, AJUSTAR_UNIFICADO_LPG_RESPONSE_CONTAINER_NODE, AJUSTAR_UNIFICADO_LPG_TOTALES_RESPONSE_NODES));
+			
+			return response.toString();
+		}		
+
+		responseNode = getNode(doc, AJUSTAR_CONTRATO_LPG_NODE);
+		if(responseNode != null) {
+			LOG.debug("Parsing [" + AJUSTAR_CONTRATO_LPG_NODE + "] response");
+			StringBuilder response = new StringBuilder();
+
+			generateStatusAndMessages(response, responseNode);
+			response.append(parseSingleRowResponse("H", responseNode, AJUSTAR_CONTRATO_LPG_RESPONSE_CONTAINER_NODE, AJUSTAR_CONTRATO_LPG_HEADER_RESPONSE_NODES));
+
+			response.append(parseSingleRowResponse("AJ", responseNode, "ajusteCredito", AJUSTAR_CONTRATO_CREDITO_LPG_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("I", getNode(responseNode, "ajusteCredito"), "importes", "importeReturn", IMPORTES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("D", getNode(responseNode, "ajusteCredito"), "deducciones", "deduccionReturn", DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("R", getNode(responseNode, "ajusteCredito"), "retenciones", "retencionReturn", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
+
+			response.append(parseSingleRowResponse("AD", responseNode, "ajusteDebito", AJUSTAR_CONTRATO_DEBITO_LPG_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("I", getNode(responseNode, "ajusteDebito"), "importes", "importeReturn", IMPORTES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("D", getNode(responseNode, "ajusteDebito"), "deducciones", "deduccionReturn", DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("R", getNode(responseNode, "ajusteDebito"), "retenciones", "retencionReturn", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
+			
+			response.append(parseSingleRowResponse("T", responseNode, AJUSTAR_CONTRATO_LPG_RESPONSE_CONTAINER_NODE, AJUSTAR_CONTRATO_LPG_TOTALES_RESPONSE_NODES));
+
+			
+			return response.toString();
+		}		
 		
 		responseNode = getNode(doc, LIQUIDACION_LPG_NODE);
 		if(responseNode != null) {
