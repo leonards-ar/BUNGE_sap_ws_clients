@@ -70,7 +70,20 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 	private static final String CONSULTA_ULTIMO_NRO_ORDEN_LPG_NODE = "ns2:liqUltNroOrdenResp";
 	private static final String CONSULTA_ULTIMO_NRO_ORDEN_LPG_RESPONSE_CONTAINER_NODE = "liqUltNroOrdenReturn";
 	private static final String CONSULTA_ULTIMO_NRO_ORDEN_LPG_HEADER_RESPONSE_NODES[] = {"nroOrden"};
+
+	private static final String CONSULTAR_CONTRATO_LPG_NODE = "ns2:ajustePorContratoConsultarResp";
+	private static final String CONSULTAR_CONTRATO_LPG_RESPONSE_CONTAINER_NODE = "ajusteContratoReturn";
+	private static final String CONSULTAR_CONTRATO_LPG_HEADER_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "ptoEmision", "nroOrden", "nroContrato", "codTipoOperacion"};
+	private static final String CONSULTAR_CONTRATO_LPG_TOTALES_RESPONSE_NODES[] = {"subTotalGeneral", "iva105", "iva21", "retencionesGanancias", "retencionesIVA", "importeNeto", "ivaRG2300_2007", "pagoSCondicion"};
+	private static final String CONSULTAR_CONTRATO_CREDITO_LPG_RESPONSE_NODES[] = {"nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto", "totalDeduccion", "totalRetencion", "totalRetencionAfip", "totalOtrasRetenciones", "totalNetoAPagar", "totalIvaRg2300_07", "totalPagoSegunCondicion"};
+	private static final String CONSULTAR_CONTRATO_DEBITO_LPG_RESPONSE_NODES[] = {"nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto", "totalDeduccion", "totalRetencion", "totalRetencionAfip", "totalOtrasRetenciones", "totalNetoAPagar", "totalIvaRg2300_07", "totalPagoSegunCondicion"};
 	
+	private static final String CONSULTAR_UNIFICADO_LPG_NODE = "ns2:ajustarUnificadoResp";
+	private static final String CONSULTAR_UNIFICADO_LPG_RESPONSE_CONTAINER_NODE = "ajusteUnifReturn";
+	private static final String CONSULTAR_UNIFICADO_LPG_HEADER_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "ptoEmision", "nroOrden", "nroContrato", "codTipoOperacion"};
+	private static final String CONSULTAR_UNIFICADO_LPG_TOTALES_RESPONSE_NODES[] = {"subTotalGeneral", "iva105", "iva21", "retencionesGanancias", "retencionesIVA", "importeNeto", "ivaRG2300_2007", "pagoSCondicion"};
+	private static final String CONSULTAR_UNIFICADO_CREDITO_LPG_RESPONSE_NODES[] = {"nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto", "totalDeduccion", "totalRetencion", "totalRetencionAfip", "totalOtrasRetenciones", "totalNetoAPagar", "totalIvaRg2300_07", "totalPagoSegunCondicion"};
+	private static final String CONSULTAR_UNIFICADO_DEBITO_LPG_RESPONSE_NODES[] = {"nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto", "totalDeduccion", "totalRetencion", "totalRetencionAfip", "totalOtrasRetenciones", "totalNetoAPagar", "totalIvaRg2300_07", "totalPagoSegunCondicion"};
 	
 	private static final String CONSULTA_COE_LPG_NODE = "ns2:liqConsXCoeResp";
 	private static final String CONSULTA_COE_LPG_HEADER1_RESPONSE_NODES[] = {"nroOrden", "cuitComprador", "nroActComprador", "nroIngBrutoComprador", "codTipoOperacion", "codTipoAjuste", "nroOpComercial", "esLiquidacionPropia", "esCanje", "codPuerto", "desPuertoLocalidad", "codGrano", "cuitVendedor", "nroIngBrutoVendedor", "actuaCorredor", "liquidaCorredor", "cuitCorredor", "comisionCorredor", "nroIngBrutoCorredor", "fechaPrecioOperacion", "precioRefTn", "codGradoRef", "codGradoEnt", "valGradoEnt", "factorEnt", "precioFleteTn", "contProteico", "alicIvaOperacion", "campaniaPPal", "codLocalidadProcedencia", "datosAdicionales"};
@@ -153,6 +166,29 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 			return response.toString();
 		}		
 
+		responseNode = getNode(doc, CONSULTAR_UNIFICADO_LPG_NODE);
+		if(responseNode != null) {
+			LOG.debug("Parsing [" + CONSULTAR_UNIFICADO_LPG_NODE + "] response");
+			StringBuilder response = new StringBuilder();
+
+			generateStatusAndMessages(response, responseNode);
+			response.append(parseSingleRowResponse("H", responseNode, CONSULTAR_UNIFICADO_LPG_RESPONSE_CONTAINER_NODE, CONSULTAR_UNIFICADO_LPG_HEADER_RESPONSE_NODES));
+
+			response.append(parseSingleRowResponse("AJ", responseNode, "ajusteCredito", CONSULTAR_UNIFICADO_CREDITO_LPG_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("I", getNode(responseNode, "ajusteCredito"), "importes", "importeReturn", IMPORTES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("D", getNode(responseNode, "ajusteCredito"), "deducciones", "deduccionReturn", DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("R", getNode(responseNode, "ajusteCredito"), "retenciones", "retencionReturn", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
+
+			response.append(parseSingleRowResponse("AD", responseNode, "ajusteDebito", CONSULTAR_UNIFICADO_DEBITO_LPG_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("I", getNode(responseNode, "ajusteDebito"), "importes", "importeReturn", IMPORTES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("D", getNode(responseNode, "ajusteDebito"), "deducciones", "deduccionReturn", DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("R", getNode(responseNode, "ajusteDebito"), "retenciones", "retencionReturn", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
+			
+			response.append(parseSingleRowResponse("T", responseNode, CONSULTAR_UNIFICADO_LPG_RESPONSE_CONTAINER_NODE, CONSULTAR_UNIFICADO_LPG_TOTALES_RESPONSE_NODES));
+			
+			return response.toString();
+		}
+		
 		responseNode = getNode(doc, AJUSTAR_CONTRATO_LPG_NODE);
 		if(responseNode != null) {
 			LOG.debug("Parsing [" + AJUSTAR_CONTRATO_LPG_NODE + "] response");
@@ -172,6 +208,30 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 			response.append(parseMultiRowResponse("R", getNode(responseNode, "ajusteDebito"), "retenciones", "retencionReturn", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
 			
 			response.append(parseSingleRowResponse("T", responseNode, AJUSTAR_CONTRATO_LPG_RESPONSE_CONTAINER_NODE, AJUSTAR_CONTRATO_LPG_TOTALES_RESPONSE_NODES));
+
+			
+			return response.toString();
+		}		
+
+		responseNode = getNode(doc, CONSULTAR_CONTRATO_LPG_NODE);
+		if(responseNode != null) {
+			LOG.debug("Parsing [" + CONSULTAR_CONTRATO_LPG_NODE + "] response");
+			StringBuilder response = new StringBuilder();
+
+			generateStatusAndMessages(response, responseNode);
+			response.append(parseSingleRowResponse("H", responseNode, CONSULTAR_CONTRATO_LPG_RESPONSE_CONTAINER_NODE, CONSULTAR_CONTRATO_LPG_HEADER_RESPONSE_NODES));
+
+			response.append(parseSingleRowResponse("AJ", responseNode, "ajusteCredito", CONSULTAR_CONTRATO_CREDITO_LPG_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("I", getNode(responseNode, "ajusteCredito"), "importes", "importeReturn", IMPORTES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("D", getNode(responseNode, "ajusteCredito"), "deducciones", "deduccionReturn", DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("R", getNode(responseNode, "ajusteCredito"), "retenciones", "retencionReturn", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
+
+			response.append(parseSingleRowResponse("AD", responseNode, "ajusteDebito", CONSULTAR_CONTRATO_DEBITO_LPG_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("I", getNode(responseNode, "ajusteDebito"), "importes", "importeReturn", IMPORTES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("D", getNode(responseNode, "ajusteDebito"), "deducciones", "deduccionReturn", DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES));
+			response.append(parseMultiRowResponse("R", getNode(responseNode, "ajusteDebito"), "retenciones", "retencionReturn", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
+			
+			response.append(parseSingleRowResponse("T", responseNode, CONSULTAR_CONTRATO_LPG_RESPONSE_CONTAINER_NODE, CONSULTAR_CONTRATO_LPG_TOTALES_RESPONSE_NODES));
 
 			
 			return response.toString();
