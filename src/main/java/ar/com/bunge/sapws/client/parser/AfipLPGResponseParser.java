@@ -174,7 +174,7 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 			generateStatusAndMessages(response, responseNode);
 			response.append(parseSingleRowResponse("H", responseNode, CONSULTAR_UNIFICADO_LPG_RESPONSE_CONTAINER_NODE, CONSULTAR_UNIFICADO_LPG_HEADER_RESPONSE_NODES));
 
-			response.append(parseSingleRowResponse("AJ", responseNode, "ajusteCredito", CONSULTAR_UNIFICADO_CREDITO_LPG_RESPONSE_NODES));
+			response.append(parseSingleRowResponse("AC", responseNode, "ajusteCredito", CONSULTAR_UNIFICADO_CREDITO_LPG_RESPONSE_NODES));
 			response.append(parseMultiRowResponse("I", getNode(responseNode, "ajusteCredito"), "importes", "importeReturn", IMPORTES_LPG_DETAIL_RESPONSE_NODES));
 			response.append(parseMultiRowResponse("D", getNode(responseNode, "ajusteCredito"), "deducciones", "deduccionReturn", DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES));
 			response.append(parseMultiRowResponse("R", getNode(responseNode, "ajusteCredito"), "retenciones", "retencionReturn", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
@@ -221,7 +221,7 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 			generateStatusAndMessages(response, responseNode);
 			response.append(parseSingleRowResponse("H", responseNode, CONSULTAR_CONTRATO_LPG_RESPONSE_CONTAINER_NODE, CONSULTAR_CONTRATO_LPG_HEADER_RESPONSE_NODES));
 
-			response.append(parseSingleRowResponse("AJ", responseNode, "ajusteCredito", CONSULTAR_CONTRATO_CREDITO_LPG_RESPONSE_NODES));
+			response.append(parseSingleRowResponse("AC", responseNode, "ajusteCredito", CONSULTAR_CONTRATO_CREDITO_LPG_RESPONSE_NODES));
 			response.append(parseMultiRowResponse("I", getNode(responseNode, "ajusteCredito"), "importes", "importeReturn", IMPORTES_LPG_DETAIL_RESPONSE_NODES));
 			response.append(parseMultiRowResponse("D", getNode(responseNode, "ajusteCredito"), "deducciones", "deduccionReturn", DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES));
 			response.append(parseMultiRowResponse("R", getNode(responseNode, "ajusteCredito"), "retenciones", "retencionReturn", RETENCIONES_LPG_DETAIL_RESPONSE_NODES));
