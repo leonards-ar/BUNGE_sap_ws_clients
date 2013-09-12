@@ -78,8 +78,8 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 	private static final String CONSULTAR_CONTRATO_CREDITO_LPG_RESPONSE_NODES[] = {"nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto", "totalDeduccion", "totalRetencion", "totalRetencionAfip", "totalOtrasRetenciones", "totalNetoAPagar", "totalIvaRg2300_07", "totalPagoSegunCondicion"};
 	private static final String CONSULTAR_CONTRATO_DEBITO_LPG_RESPONSE_NODES[] = {"nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto", "totalDeduccion", "totalRetencion", "totalRetencionAfip", "totalOtrasRetenciones", "totalNetoAPagar", "totalIvaRg2300_07", "totalPagoSegunCondicion"};
 	
-	private static final String CONSULTAR_UNIFICADO_LPG_NODE = "ns2:ajustarUnificadoResp";
-	private static final String CONSULTAR_UNIFICADO_LPG_RESPONSE_CONTAINER_NODE = "ajusteUnifReturn";
+	private static final String CONSULTAR_UNIFICADO_LPG_NODE = "ns2:ajusteXcoeConsResp";
+	private static final String CONSULTAR_UNIFICADO_LPG_RESPONSE_CONTAINER_NODE = "ajusteConsReturn";
 	private static final String CONSULTAR_UNIFICADO_LPG_HEADER_RESPONSE_NODES[] = {"coe", "coeAjustado", "estado", "ptoEmision", "nroOrden", "nroContrato", "codTipoOperacion"};
 	private static final String CONSULTAR_UNIFICADO_LPG_TOTALES_RESPONSE_NODES[] = {"subTotalGeneral", "iva105", "iva21", "retencionesGanancias", "retencionesIVA", "importeNeto", "ivaRG2300_2007", "pagoSCondicion"};
 	private static final String CONSULTAR_UNIFICADO_CREDITO_LPG_RESPONSE_NODES[] = {"nroOpComercial", "fechaLiquidacion", "precioOperacion", "subTotal", "importeIva", "operacionConIva", "totalPesoNeto", "totalDeduccion", "totalRetencion", "totalRetencionAfip", "totalOtrasRetenciones", "totalNetoAPagar", "totalIvaRg2300_07", "totalPagoSegunCondicion"};
