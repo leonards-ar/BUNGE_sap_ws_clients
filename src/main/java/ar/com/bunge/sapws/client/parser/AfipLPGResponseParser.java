@@ -107,6 +107,7 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 	private static final String PROVINCIAS_LPG_NODE = "ns2:provinciasResp";
 	private static final String LOCALIDADES_LPG_NODE = "ns2:localidadResp";
 	private static final String TIPO_OPERACION_LPG_NODE = "ns2:tipoOperacionResp";
+	private static final String CONSULTA_LIQUIDACION_POR_CONTRATO_LPG_NODE = "ns2:liquidacionPorContratoConsultarResp";
 	
 	// Tokens
 	private static final String RESULT_MESSAGE_SEPARATOR = FileUtils.getNewLine();
@@ -449,6 +450,17 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 			return response.toString();			
 		}
 		
+		responseNode = getNode(doc, CONSULTA_LIQUIDACION_POR_CONTRATO_LPG_NODE);
+		if(responseNode != null) {
+			LOG.debug("Parsing [" + CONSULTA_LIQUIDACION_POR_CONTRATO_LPG_NODE + "] response");
+			StringBuilder response = new StringBuilder();
+			
+			generateStatusAndMessages(response, responseNode);
+			response.append(parseMultiRowResponse("C", responseNode, "coeRelacionados", "coe", new String[] {"coe"}));
+			
+			return response.toString();			
+		}
+		
 		return rawResponse;
 	}
 
@@ -611,7 +623,7 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 	public static void main(String a[]) {
 		try {
 			AfipLPGResponseParser r = new AfipLPGResponseParser();
-			System.out.println(r.parseResponse(FileUtils.readFile("C:\\file.txt"), null));
+			System.out.println(r.parseResponse(FileUtils.readFile("C:\\CONSULTAR_CONTRATO_LPG_NODE.xml"), null));
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
