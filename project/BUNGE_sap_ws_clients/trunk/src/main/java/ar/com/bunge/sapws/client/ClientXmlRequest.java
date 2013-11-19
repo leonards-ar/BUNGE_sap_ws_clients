@@ -37,6 +37,9 @@ public class ClientXmlRequest {
 	public static final String NESTED_ITERATOR_VARIABLE_CLOSE_TOKEN = ")}";
 	public static final String NESTED_ITERATOR_BLOCK_END_TOKEN = "{end xloop}";
 
+	public static final String NESTED_NESTED_ITERATOR_VARIABLE_OPEN_TOKEN = "${xxloop(";
+	public static final String NESTED_NESTED_ITERATOR_VARIABLE_CLOSE_TOKEN = ")}";
+	public static final String NESTED_NESTED_ITERATOR_BLOCK_END_TOKEN = "{end xxloop}";
 	
 	public static final String ITERATOR_NULL_VARIABLE_OPEN_TOKEN = "${loopn(";
 	public static final String ITERATOR_NULL_VARIABLE_CLOSE_TOKEN = ")}";
@@ -45,6 +48,10 @@ public class ClientXmlRequest {
 	public static final String NESTED_ITERATOR_NULL_VARIABLE_OPEN_TOKEN = "${xloopn(";
 	public static final String NESTED_ITERATOR_NULL_VARIABLE_CLOSE_TOKEN = ")}";
 	public static final String NESTED_ITERATOR_NULL_BLOCK_END_TOKEN = "{end xloopn}";	
+
+	public static final String NESTED_NESTED_ITERATOR_NULL_VARIABLE_OPEN_TOKEN = "${xxloopn(";
+	public static final String NESTED_NESTED_ITERATOR_NULL_VARIABLE_CLOSE_TOKEN = ")}";
+	public static final String NESTED_NESTED_ITERATOR_NULL_BLOCK_END_TOKEN = "{end xxloopn}";
 	
 	public static final String IF_VALUE_VARIABLE_OPEN_TOKEN = "${if value(";
 	public static final String IF_VALUE_VARIABLE_CLOSE_TOKEN = ")}";
@@ -74,7 +81,13 @@ public class ClientXmlRequest {
 	 * @throws Exception
 	 */
 	public void compile(Map<String, Object> context) throws Exception {
-		String request = expandNestedNullLoops(getRequestTemplate(), context);
+		String request = expandNestedNestedNullLoops(getRequestTemplate(), context);
+
+		request = expandNestedNullLoops(request, context);
+
+		request = expandNestedNestedLoops(request, context);
+
+		request = expandNestedLoops(request, context);
 
 		request = expandLoops(request, context);
 		
@@ -231,6 +244,111 @@ public class ClientXmlRequest {
 		String parts[];
 		while(expandedRequest.indexOf(NESTED_ITERATOR_NULL_VARIABLE_OPEN_TOKEN) > -1) {
 			parts = splitByWholeSeparators(expandedRequest, new String[] {NESTED_ITERATOR_NULL_VARIABLE_OPEN_TOKEN, NESTED_ITERATOR_NULL_VARIABLE_CLOSE_TOKEN, NESTED_ITERATOR_NULL_BLOCK_END_TOKEN});
+			
+			prefix = parts.length > 0 ? parts[0] : null;
+			loopVariable = parts.length > 1 ? parts[1] : null;
+			xml = parts.length > 2 ? parts[2] : null;
+			suffix = parts.length > 3 ? parts[3] : null;
+			
+			int repetitions = getRepetitions(loopVariable, context, 0);
+			
+			expandedRequest = prefix;
+			
+			for(int i = 0; i < repetitions; i++) {
+				expandedRequest += addIndexToVariables(addIndexToNestedLoopVariables(xml, i), i);
+			}
+			
+			expandedRequest += suffix;
+		}
+		
+		
+		return expandedRequest;
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param context
+	 * @return
+	 * @throws Exception
+	 */
+	private String expandNestedNestedNullLoops(String request, Map<String, Object> context) throws Exception {
+		String expandedRequest = new String(request);
+		
+		String prefix, suffix , loopVariable, xml;
+		String parts[];
+		while(expandedRequest.indexOf(NESTED_NESTED_ITERATOR_NULL_VARIABLE_OPEN_TOKEN) > -1) {
+			parts = splitByWholeSeparators(expandedRequest, new String[] {NESTED_NESTED_ITERATOR_NULL_VARIABLE_OPEN_TOKEN, NESTED_NESTED_ITERATOR_NULL_VARIABLE_CLOSE_TOKEN, NESTED_NESTED_ITERATOR_NULL_BLOCK_END_TOKEN});
+			
+			prefix = parts.length > 0 ? parts[0] : null;
+			loopVariable = parts.length > 1 ? parts[1] : null;
+			xml = parts.length > 2 ? parts[2] : null;
+			suffix = parts.length > 3 ? parts[3] : null;
+			
+			int repetitions = getRepetitions(loopVariable, context, 0);
+			
+			expandedRequest = prefix;
+			
+			for(int i = 0; i < repetitions; i++) {
+				expandedRequest += addIndexToVariables(addIndexToNestedLoopVariables(xml, i), i);
+			}
+			
+			expandedRequest += suffix;
+		}
+		
+		
+		return expandedRequest;
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param context
+	 * @return
+	 * @throws Exception
+	 */
+	private String expandNestedLoops(String request, Map<String, Object> context) throws Exception {
+		String expandedRequest = new String(request);
+		
+		String prefix, suffix , loopVariable, xml;
+		String parts[];
+		while(expandedRequest.indexOf(NESTED_ITERATOR_VARIABLE_OPEN_TOKEN) > -1) {
+			parts = splitByWholeSeparators(expandedRequest, new String[] {NESTED_ITERATOR_VARIABLE_OPEN_TOKEN, NESTED_ITERATOR_VARIABLE_CLOSE_TOKEN, NESTED_ITERATOR_BLOCK_END_TOKEN});
+			
+			prefix = parts.length > 0 ? parts[0] : null;
+			loopVariable = parts.length > 1 ? parts[1] : null;
+			xml = parts.length > 2 ? parts[2] : null;
+			suffix = parts.length > 3 ? parts[3] : null;
+			
+			int repetitions = getRepetitions(loopVariable, context, 0);
+			
+			expandedRequest = prefix;
+			
+			for(int i = 0; i < repetitions; i++) {
+				expandedRequest += addIndexToVariables(addIndexToNestedLoopVariables(xml, i), i);
+			}
+			
+			expandedRequest += suffix;
+		}
+		
+		
+		return expandedRequest;
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param context
+	 * @return
+	 * @throws Exception
+	 */
+	private String expandNestedNestedLoops(String request, Map<String, Object> context) throws Exception {
+		String expandedRequest = new String(request);
+		
+		String prefix, suffix , loopVariable, xml;
+		String parts[];
+		while(expandedRequest.indexOf(NESTED_NESTED_ITERATOR_VARIABLE_OPEN_TOKEN) > -1) {
+			parts = splitByWholeSeparators(expandedRequest, new String[] {NESTED_NESTED_ITERATOR_VARIABLE_OPEN_TOKEN, NESTED_NESTED_ITERATOR_VARIABLE_CLOSE_TOKEN, NESTED_NESTED_ITERATOR_BLOCK_END_TOKEN});
 			
 			prefix = parts.length > 0 ? parts[0] : null;
 			loopVariable = parts.length > 1 ? parts[1] : null;
