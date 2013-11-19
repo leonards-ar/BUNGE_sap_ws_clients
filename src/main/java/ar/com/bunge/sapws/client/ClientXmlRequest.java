@@ -83,15 +83,15 @@ public class ClientXmlRequest {
 	public void compile(Map<String, Object> context) throws Exception {
 		String request = expandNestedNestedNullLoops(getRequestTemplate(), context);
 
-		request = expandNestedNullLoops(request, context);
-
 		request = expandNestedNestedLoops(request, context);
+
+		request = expandNestedNullLoops(request, context);
 
 		request = expandNestedLoops(request, context);
 
-		request = expandLoops(request, context);
-		
 		request = expandNullLoops(request, context);
+
+		request = expandLoops(request, context);
 		
 		request = evaluateIfValues(request, context);
 		
