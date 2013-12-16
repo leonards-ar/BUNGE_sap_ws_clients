@@ -55,4 +55,56 @@ public class ClientXmlRequestTest
     	assertEquals(expected, result);
 
     }
+    
+    public void testNestedNestedLoops1() throws Exception
+    {
+    	String requestXml = "${xxloop(i)}\n" +
+    	"${xloop(v)}\n" +
+    	"\t${loop(j)}\n"
+    	+ "\t\tShow me once\n" +
+    	"\t{end loop}\n" +
+    	"{end xloop}\n" +
+    	"{end xxloop}";
+ 
+
+    	String expected = "\n\n\t\n\t\tShow me once\n\t\n\n";
+
+    	Map<String, Object> context = new HashMap<String, Object>();
+    	context.put("i", "1");
+    	context.put("v(1)", "1");
+    	context.put("j(1)(1)", "1");
+    	
+    	ClientXmlRequest req = new ClientXmlRequest(requestXml);
+    	req.compile(context);
+    	
+    	String result = req.getRequest();
+    	
+    	assertEquals(expected, result);
+
+    }
+    
+    public void testNestedNestedLoops2() throws Exception
+    {
+    	String requestXml = "${xxloop(i)}\n" +
+    	"${xloop(v)}\n" +
+    	"\t${loop(j)}\n"
+    	+ "\t\tShow me once\n" +
+    	"\t{end loop}\n" +
+    	"{end xloop}\n" +
+    	"{end xxloop}";
+ 
+
+    	String expected = "\n\n\t\n\t\tShow me once\n\t\n\n";
+
+    	Map<String, Object> context = new HashMap<String, Object>();
+    	
+    	ClientXmlRequest req = new ClientXmlRequest(requestXml);
+    	req.compile(context);
+    	
+    	String result = req.getRequest();
+    	
+    	assertEquals(expected, result);
+
+    }
+    
 }
