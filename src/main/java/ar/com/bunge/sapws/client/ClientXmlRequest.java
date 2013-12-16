@@ -320,7 +320,7 @@ public class ClientXmlRequest {
 			xml = parts.length > 2 ? parts[2] : null;
 			suffix = parts.length > 3 ? parts[3] : null;
 			
-			int repetitions = getRepetitions(loopVariable, context, 0);
+			int repetitions = getRepetitions(loopVariable, context, 1);
 			
 			expandedRequest = prefix;
 			
@@ -355,7 +355,7 @@ public class ClientXmlRequest {
 			xml = parts.length > 2 ? parts[2] : null;
 			suffix = parts.length > 3 ? parts[3] : null;
 			
-			int repetitions = getRepetitions(loopVariable, context, 0);
+			int repetitions = getRepetitions(loopVariable, context, 1);
 			
 			expandedRequest = prefix;
 			
@@ -406,7 +406,11 @@ public class ClientXmlRequest {
 	
 	private String addIndexToNestedLoopVariables(String xml, int index) {
 		String indexedXml = addIndexToLoopVariable(ITERATOR_VARIABLE_OPEN_TOKEN, ITERATOR_VARIABLE_CLOSE_TOKEN, xml, index);
-		indexedXml = addIndexToLoopVariable(ITERATOR_NULL_VARIABLE_OPEN_TOKEN, ITERATOR_NULL_VARIABLE_CLOSE_TOKEN, xml, index);
+		indexedXml = addIndexToLoopVariable(ITERATOR_NULL_VARIABLE_OPEN_TOKEN, ITERATOR_NULL_VARIABLE_CLOSE_TOKEN, indexedXml, index);
+		indexedXml = addIndexToLoopVariable(NESTED_NESTED_ITERATOR_VARIABLE_OPEN_TOKEN, NESTED_NESTED_ITERATOR_VARIABLE_CLOSE_TOKEN, indexedXml, index);
+		indexedXml = addIndexToLoopVariable(NESTED_ITERATOR_VARIABLE_OPEN_TOKEN, NESTED_ITERATOR_VARIABLE_CLOSE_TOKEN, indexedXml, index);
+		indexedXml = addIndexToLoopVariable(NESTED_ITERATOR_NULL_VARIABLE_OPEN_TOKEN, NESTED_ITERATOR_NULL_VARIABLE_CLOSE_TOKEN, indexedXml, index);
+		indexedXml = addIndexToLoopVariable(NESTED_NESTED_ITERATOR_NULL_VARIABLE_OPEN_TOKEN, NESTED_NESTED_ITERATOR_NULL_VARIABLE_CLOSE_TOKEN, indexedXml, index);
 		return indexedXml;
 	}
 	
@@ -443,7 +447,10 @@ public class ClientXmlRequest {
 			for(int i = 0; i < separators.length; i++) {
 				if(separators[i] != null) {
 					to = text.indexOf(separators[i], from);
-					if(from >= 0 && from < text.length() && to > from && to <= text.length()) {
+					if(from == 0 && to == 0) {
+						temp[partsIdx++] = text.substring(from, to);
+						from = to + separators[i].length();						
+					} else if(from >= 0 && from < text.length() && to > from && to <= text.length()) {
 						temp[partsIdx++] = text.substring(from, to);
 						from = to + separators[i].length();
 					} else if(from >= 0 && from < text.length() && to < 0) {
@@ -566,4 +573,7 @@ public class ClientXmlRequest {
 	   	.append("requestTemplate", getRequestTemplate())
 	   	.toString();		
 	}	
+	
+	public static void main(String args[]) {
+	}
 }
