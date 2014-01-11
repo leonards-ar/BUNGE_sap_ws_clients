@@ -312,29 +312,7 @@ public class AfipCTG10ResponseParser extends BaseResponseParser implements Respo
 		
 		return response.toString();
 	}		
-	/**
-	 * 
-	 * @param responseNode
-	 * @param valueNodeNames
-	 * @return
-	 * @throws Exception
-	 */
-	private String buildResultRow(Node responseNode, String valueNodeNames[]) throws Exception {
-		StringBuffer response = new StringBuffer();
-		String value;
-		for(int i=0; i < valueNodeNames.length; i++) {
-			value = getNodeText(responseNode, valueNodeNames[i]);
-			if(value != null) {
-				response.append(value.trim());
-			}
-			// Jose wants a ; at the end of each row
-			if(i < valueNodeNames.length) {
-				response.append(SUCCESS_MESSAGE_SEPARATOR);
-			}
-		}
-		return response.toString();
-	}
-	
+
 	/**
 	 * 
 	 * @param response
