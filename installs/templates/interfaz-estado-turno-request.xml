@@ -1,0 +1,7 @@
+<com:Interfaz_EstadoTurno.Execute xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:com="com.bunge.ryd">
+   <com:Cuponegocionrocupo>${#Cuponegocionrocupo#}</com:Cuponegocionrocupo>
+   <com:Turnoid>${#Turnoid#}</com:Turnoid>
+   <com:Turnoestado>${#Turnoestado#}</com:Turnoestado>
+   <com:Error>${#Error#}</com:Error>
+   <com:Descripcion>${#Descripcion#}</com:Descripcion>
+</com:Interfaz_EstadoTurno.Execute>
