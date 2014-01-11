@@ -132,5 +132,49 @@ public abstract class BaseResponseParser implements ResponseParser {
 		errorResult.append(message);
 		
 		return errorResult.toString();
-	}    
+	}   
+	
+
+	/**
+	 * 
+	 * @param status
+	 * @param responseNode
+	 * @param valueNodeNames
+	 * @return
+	 * @throws Exception
+	 */
+	protected String buildResultRow(String status, Node responseNode, String valueNodeNames[]) throws Exception {
+		StringBuffer response = new StringBuffer();
+		
+		if(status != null) {
+			response.append(status + LINE_TOKEN);
+		}
+		
+		String value;
+		for(int i=0; i < valueNodeNames.length; i++) {
+			value = getNodeText(responseNode, valueNodeNames[i]);
+			if(value != null) {
+				response.append(value.trim());
+			}
+			
+			// Jose wants a ; at the end of each row
+			if(i < valueNodeNames.length) {
+				response.append(LINE_TOKEN);
+			}
+		}
+		return response.toString();
+	}
+	
+	/**
+	 * 
+	 * @param responseNode
+	 * @param valueNodeNames
+	 * @return
+	 * @throws Exception
+	 */
+	protected String buildResultRow(Node responseNode, String valueNodeNames[]) throws Exception {
+		return buildResultRow(null, responseNode, valueNodeNames);
+	}
+}
+	
 }
