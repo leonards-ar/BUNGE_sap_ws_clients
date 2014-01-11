@@ -176,5 +176,3 @@ public abstract class BaseResponseParser implements ResponseParser {
 		return buildResultRow(null, responseNode, valueNodeNames);
 	}
 }
-	
-}
