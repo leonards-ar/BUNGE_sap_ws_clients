@@ -1,0 +1,6 @@
+<stor:storeSampleDetermination xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stor="http://storesampleinfoservice.ws.industrysystem.com/">
+   <sampleCode>${#sampleCode#}</sampleCode>
+   <labCode>${#labCode#}</labCode>
+   <waybillNumber>${#waybillNumber#}</waybillNumber>
+   <identifier>${#identifier#}</identifier>
+</stor:storeSampleDetermination>
