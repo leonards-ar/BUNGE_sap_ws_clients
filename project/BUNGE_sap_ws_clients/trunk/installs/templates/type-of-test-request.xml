@@ -1,0 +1,3 @@
+<typ:typeOfTest xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:typ="http://typeoftest.ws.industrysystem.com/">
+   <waybillNumber>${#waybillNumber#}</waybillNumber>
+</typ:typeOfTest>

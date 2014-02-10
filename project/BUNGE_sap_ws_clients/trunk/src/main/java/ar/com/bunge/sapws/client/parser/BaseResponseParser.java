@@ -38,6 +38,7 @@ public abstract class BaseResponseParser implements ResponseParser {
 	protected static final String LINE_TOKEN = ";";
 	protected static final String SUCCESS_MESSAGE_SEPARATOR = LINE_TOKEN;
 	protected static final String REPLACEMENT_VALUE_TOKEN = ",";
+	protected static final String LINE_SEPARATOR = FileUtils.getNewLine();
 	private static final String ERROR_RESULT = "ERROR";
 	private static final String ERROR_MESSAGE_SEPARATOR = FileUtils.getNewLine();
 	

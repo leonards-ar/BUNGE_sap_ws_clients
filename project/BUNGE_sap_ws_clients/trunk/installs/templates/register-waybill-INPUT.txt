@@ -1,0 +1,21 @@
+addresseeDocument=
+commercialSenderDocument=
+commercialSenderName=
+destinationCommercialCode=
+destinationDocument=
+destinationLocation=
+grain=
+holderDocument=
+holderName=
+# Opcional con el que le sige
+truck_technology=
+truck_ctg=
+# Opcional con el anterior
+wagon_technology=
+wagon_wagonNumber=
+wagon_wagonsQty=
+
+originLocation=
+waybillType=
+originEstablishment=
+waybillNumber=

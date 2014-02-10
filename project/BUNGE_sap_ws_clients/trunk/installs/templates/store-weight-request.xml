@@ -1,0 +1,6 @@
+<stor:storeWeight xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stor="http://storeweight.ws.industrysystem.com/">
+   <waybillNumber>${#waybillNumber#}</waybillNumber>
+   <weight>${#weight#}</weight>
+   <loadIdentifier>${#loadIdentifier#}</loadIdentifier>
+   <unloadTime>${#unloadTime#}</unloadTime>
+</stor:storeWeight>
