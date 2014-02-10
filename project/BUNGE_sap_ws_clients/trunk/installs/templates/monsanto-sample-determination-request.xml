@@ -1,0 +1,3 @@
+<sam:sampleDetermination xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:sam="http://sampledeterminationservice.ws.industrysystem.com/">
+   <wayBillNumber>${#wayBillNumber#}</wayBillNumber>
+</sam:sampleDetermination>
