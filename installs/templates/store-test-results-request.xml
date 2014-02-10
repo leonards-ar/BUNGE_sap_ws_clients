@@ -1,0 +1,48 @@
+<stor:storeTestResult xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stor="http://storetestresult.ws.industrysystem.com.ar/">
+   <destinationDocumentNumber>${#destinationDocumentNumber#}</destinationDocumentNumber>
+   <sampleCode>${#sampleCode#}</sampleCode>
+   <quantitatives>
+      <!--Zero or more repetitions:-->
+      ${loopn(quantitatives)}
+      <item>
+         <!--Optional:-->
+         <cropCode>${#quan_cropCode#}</cropCode>
+         <!--Optional:-->
+         <technologyCode>${#quan_technologyCode#}</technologyCode>
+         <!--Optional:-->
+         <traitOwnerCode>${#quan_traitOwnerCode#}</traitOwnerCode>
+         <!--Optional:-->
+         <percentage>${#quan_percentage#}</percentage>
+      </item>
+      ${end loopn}
+   </quantitatives>
+   <qualitatives>
+      <!--Zero or more repetitions:-->
+      ${loopn(qualitatives)}
+      <item>
+         <!--Optional:-->
+         <cropCode>${#qual_cropCode#}</cropCode>
+         <!--Optional:-->
+         <technologyCode>${#qual_technologyCode#}</technologyCode>
+         <!--Optional:-->
+         <traitOwnerCode>${#qual_traitOwnerCode#}</traitOwnerCode>
+         <!--Optional:-->
+         <isPositive>${#qual_isPositive#}</isPositive>
+      </item>
+      ${end loopn}
+   </qualitatives>
+   <stakeholders>
+      <!--Optional:-->
+      <commercialSenderDocumentNumber>${#commercialSenderDocumentNumber#}</commercialSenderDocumentNumber>
+      <!--Optional:-->
+      <commercialSenderDocumentType>${#commercialSenderDocumentType#}</commercialSenderDocumentType>
+      <!--Optional:-->
+      <commercialSenderName>${#commercialSenderName#}</commercialSenderName>
+      <!--Optional:-->
+      <holderDocumentNumber>${#holderDocumentNumber#}</holderDocumentNumber>
+      <!--Optional:-->
+      <holderDocumentType>${#holderDocumentType#}</holderDocumentType>
+      <!--Optional:-->
+      <holderName>${#holderName#}</holderName>
+   </stakeholders>
+</stor:storeTestResult>
