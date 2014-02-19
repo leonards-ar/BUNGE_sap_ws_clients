@@ -7,6 +7,7 @@ package ar.com.bunge.sapws.client;
 
 import java.io.IOException;
 
+import javax.xml.namespace.QName;
 import javax.xml.soap.Name;
 import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPException;
@@ -66,40 +67,39 @@ public class WSSEHeaderWebServiceMessageCallback implements WebServiceMessageCal
 	public void doWithMessage(WebServiceMessage message) throws IOException, TransformerException {
     	if(getUsername() != null && getPassword() != null) {
     		try {
-                // You have to use the default SAAJWebMessageFactory 
-                SaajSoapMessage saajSoapMessage = (SaajSoapMessage) message;
+    		     // Assumption: We are using the default SAAJWebMessageFactory
 
+                SaajSoapMessage saajSoapMessage = (SaajSoapMessage) message;
                 SOAPMessage soapMessage = saajSoapMessage.getSaajMessage();
                 SOAPPart soapPart = soapMessage.getSOAPPart();
                 SOAPEnvelope soapEnvelope = soapPart.getEnvelope();
                 SOAPHeader soapHeader = soapEnvelope.getHeader();
 
-            	//soapEnvelope.addAttribute(soapEnvelope.createName("sug"), "http://www.sugarcrm.com/sugarcrm");
-            	//soapEnvelope.addAttribute(soapEnvelope.createName("soapenv"), "http://schemas.xmlsoap.org/soap/envelope/");
-
-                soapEnvelope.removeNamespaceDeclaration(soapEnvelope.getPrefix());
-                soapEnvelope.addNamespaceDeclaration("soapenv", "http://schemas.xmlsoap.org/soap/envelope/");
-                soapEnvelope.addNamespaceDeclaration("xsi", "http://www.w3.org/2001/XMLSchema-instance");
-                soapEnvelope.addNamespaceDeclaration("xsd", "http://www.w3.org/2001/XMLSchema");
-                soapEnvelope.addNamespaceDeclaration("sug", "http://www.sugarcrm.com/sugarcrm");
-
+//                soapEnvelope.removeNamespaceDeclaration(soapEnvelope.getPrefix());
+//                soapEnvelope.addNamespaceDeclaration("soapenv", "http://schemas.xmlsoap.org/soap/envelope/");
+//                soapEnvelope.addNamespaceDeclaration("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+//                soapEnvelope.addNamespaceDeclaration("xsd", "http://www.w3.org/2001/XMLSchema");
+                
             	// Add the WS-Security Header Element
                 Name headerElementName = soapEnvelope.createName(WSSE_SECURITY_ELEMENT, WSSE_SECURITY_PREFIX, WSS_10_NAMESPACE);
                 SOAPHeaderElement soapHeaderElement = soapHeader.addHeaderElement(headerElementName);
 
-                soapHeaderElement.setMustUnderstand(true);
+//                soapHeaderElement.setMustUnderstand(false);
 
                 // Add the usernameToken to "Security" soapHeaderElement
-                SOAPElement usernameTokenSOAPElement = soapHeaderElement.addChildElement(WSSE_USERNAMETOKEN_ELEMENT);
-
+                SOAPElement usernameTokenSOAPElement = soapHeaderElement.addChildElement(WSSE_USERNAMETOKEN_ELEMENT, WSSE_SECURITY_PREFIX);
+                usernameTokenSOAPElement.addAttribute(new QName("wsu:Id"), "UsernameToken-12");
+                usernameTokenSOAPElement.addAttribute(new QName("xmlns:wsu"), WSS_10_NAMESPACE);
+                
                 // Add the username to usernameToken
-                SOAPElement userNameSOAPElement = usernameTokenSOAPElement.addChildElement(WSSE_USERNAME_ELEMENT);
+                SOAPElement userNameSOAPElement = usernameTokenSOAPElement.addChildElement(WSSE_USERNAME_ELEMENT, WSSE_SECURITY_PREFIX);
                 userNameSOAPElement.addTextNode(getUsername());
 
                 // Add the password to usernameToken
-                SOAPElement passwordSOAPElement = usernameTokenSOAPElement.addChildElement(WSSE_PASSWORD_ELEMENT);
+                SOAPElement passwordSOAPElement = usernameTokenSOAPElement.addChildElement(WSSE_PASSWORD_ELEMENT, WSSE_SECURITY_PREFIX);
+                passwordSOAPElement.setAttribute("Type", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText");
                 passwordSOAPElement.addTextNode(getPassword());
-
+                
             } catch (SOAPException ex) {
                 throw new RuntimeException(ex.getClass().getName() + ": " + ex.getLocalizedMessage(), ex);
             }

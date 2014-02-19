@@ -11,6 +11,9 @@ import java.io.StringWriter;
 import java.util.Map;
 
 import javax.xml.soap.MessageFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
@@ -21,6 +24,7 @@ import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.ssl.HttpSecureProtocol;
 import org.apache.commons.ssl.KeyMaterial;
 import org.apache.commons.ssl.TrustMaterial;
@@ -29,6 +33,9 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.transport.http.CommonsHttpMessageSender;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import ar.com.bunge.sapws.client.offline.OfflineInputRetriever;
 import ar.com.bunge.sapws.client.parser.ResponseParser;
@@ -189,6 +196,7 @@ public class SAPWSClient {
 				client.setTracePath(cmdLine.getParameter("td"));
 				client.setTracePrefix(cmdLine.getParameter("tp"));
 				client.setInputRetriever(client.getInputRetrieverInstance(cmdLine.getParameter("ol")));
+				client.setMessageFactoryImplementationClass(cmdLine.getParameter("fi"));
 				
 				Map<String, Object> context = client.parseVariablesFile();
 				context.putAll(cmdLine.getVariables());
@@ -446,6 +454,49 @@ public class SAPWSClient {
 		response.setNumber(number);
 		response.setMessage(ex.getMessage() + (ex.getCause() != null ? " -> Caused by: " + ex.getCause().getMessage() : ""));
 	}
+
+	/**
+	 * 
+	 * @param response
+	 * @param number
+	 * @param ex
+	 */
+	private void setErrorResponse(ClientXmlResponse response, SoapFaultClientException ex) {
+		String message = null;
+		try {
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		    Transformer transformer = transformerFactory.newTransformer();
+		    DOMResult result = new DOMResult();
+		    transformer.transform(ex.getSoapFault().getSource(), result);
+		    NodeList nl = ((Document)result.getNode()).getElementsByTagName("detail");
+		    Node detail = nl.item(0);
+		    message = detail.getTextContent();
+		    Node errors = detail.getFirstChild().getFirstChild();
+		    String code = null;
+		    String description = null;
+		    for(int i=0; i < errors.getChildNodes().getLength(); i++) {
+		    	if("code".equalsIgnoreCase(errors.getChildNodes().item(i).getLocalName())) {
+		    		code = errors.getChildNodes().item(i).getTextContent();
+		    	} else if("description".equalsIgnoreCase(errors.getChildNodes().item(i).getLocalName())) {
+		    		description = errors.getChildNodes().item(i).getTextContent();
+		    	} 
+		    }
+		    if(description != null) {
+		    	response.setNumber(code != null && NumberUtils.isNumber(code) ? new Long(code) : new Long(-2));
+		    	response.setMessage(description);
+		    } else {
+		    	response.setNumber(new Long(-2));
+		    	response.setMessage(ex.getMessage() + " -> Details: " + message);
+		    }
+	    } catch(Throwable t) {
+			response.setNumber(new Long(-2));
+			if(message != null) {
+				response.setMessage(ex.getMessage() + " -> Details: " + message);
+			} else {
+				response.setMessage(ex.getMessage() + (ex.getCause() != null ? " -> Caused by: " + ex.getCause().getMessage() : ""));
+			}
+	    }
+	}
 	
 	/**
 	 * 
@@ -492,7 +543,7 @@ public class SAPWSClient {
 				response.parseResponse();
 			} catch(SoapFaultClientException ex) {
 				LOG.error(ex.getMessage(), ex);
-				setErrorResponse(response, new Long(-2), ex);
+				setErrorResponse(response, ex);
 			} catch(ValidationException ex) {
 				LOG.error(ex.getMessage(), ex);
 				setErrorResponse(response, new Long(-3), ex);
