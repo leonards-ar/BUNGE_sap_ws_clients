@@ -131,6 +131,7 @@ public abstract class BaseResponseParser implements ResponseParser {
 		errorResult.append(errorNumber);
 		errorResult.append(LINE_TOKEN);
 		errorResult.append(message);
+		errorResult.append(LINE_TOKEN);
 		
 		return errorResult.toString();
 	}   
