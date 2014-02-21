@@ -28,6 +28,7 @@ public class MonsantoResponseParser extends BaseResponseParser {
 	private static final String STORE_WEIGHT_RESPONSE_NODE = "ns1:storeWeightResponse";
 	private static final String STORE_TEST_RESULT_RESPONSE_NODE = "ns1:storeTestResultResponse";
 	private static final String SAMPLE_DETERMINATION_RESULT_RESPONSE_NODE = "ns1:sampleDeterminationResponse";
+	private static final String STORE_SAMPLE_RESULT_RESPONSE_NODE = "ns1:storeSampleResponse";
 
 	
 	/**
@@ -90,6 +91,14 @@ public class MonsantoResponseParser extends BaseResponseParser {
 			return response.toString();			
 		}
 
+		responseNode = getNode(doc, STORE_SAMPLE_RESULT_RESPONSE_NODE);
+		if(responseNode != null) {
+			LOG.debug("Parsing [" + STORE_SAMPLE_RESULT_RESPONSE_NODE + "] response");
+			StringBuffer response = new StringBuffer();
+			response.append(buildResultRow(responseNode, new String [] {"return"}));
+			return response.toString();			
+		}
+		
 		responseNode = getNode(doc, SAMPLE_DETERMINATION_RESULT_RESPONSE_NODE);
 		if(responseNode != null) {
 			LOG.debug("Parsing [" + SAMPLE_DETERMINATION_RESULT_RESPONSE_NODE + "] response");
