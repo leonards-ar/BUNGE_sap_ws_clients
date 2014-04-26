@@ -248,12 +248,18 @@ public class FileUtils {
 	public static String fixIndexedVariableName(String name) {
 		String fixedName = null;
 		if(name != null && StringUtils.contains(name, VARIABLE_INDEX_OPEN_TOKEN) && StringUtils.contains(name, VARIABLE_INDEX_CLOSE_TOKEN)) {
-			String indexStr = StringUtils.substringBetween(name, VARIABLE_INDEX_OPEN_TOKEN, VARIABLE_INDEX_CLOSE_TOKEN);
-			try {
-				String correctedIndex = String.valueOf(Integer.parseInt(indexStr, 10));
-				fixedName = StringUtils.replace(name, VARIABLE_INDEX_OPEN_TOKEN + indexStr + VARIABLE_INDEX_CLOSE_TOKEN, VARIABLE_INDEX_OPEN_TOKEN + correctedIndex + VARIABLE_INDEX_CLOSE_TOKEN);
-			} catch(Exception ex) {
-				fixedName = name;
+			
+			String indexStrs[] = StringUtils.substringsBetween(name, VARIABLE_INDEX_OPEN_TOKEN, VARIABLE_INDEX_CLOSE_TOKEN);
+			// Add the name
+			fixedName = name.substring(0, name.indexOf(VARIABLE_INDEX_OPEN_TOKEN));
+			for(int i=0; i < indexStrs.length; i++) {
+				String correctedIndex = null;
+				try {
+					correctedIndex = String.valueOf(Integer.parseInt(indexStrs[i], 10));
+				} catch(Exception ex) {
+					correctedIndex = indexStrs[i];
+				}
+				fixedName += VARIABLE_INDEX_OPEN_TOKEN + correctedIndex + VARIABLE_INDEX_CLOSE_TOKEN;
 			}
 		} else {
 			fixedName = name;

@@ -1,7 +1,10 @@
 package ar.com.bunge.sapws.client;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+
+import ar.com.bunge.util.FileUtils;
 
 import junit.framework.TestCase;
 
@@ -107,4 +110,18 @@ public class ClientXmlRequestTest
 
     }
     
+    public void testComplexNextedLoop() throws Exception {
+    	String template = FileUtils.readFile(new File(getClass().getResource("/complex-nested-loop-template.xml").toURI()).getAbsolutePath());
+    	Map<String, Object> context = FileUtils.parseKeyValueFile(new File(getClass().getResource("/complex-nested-loop-input.txt").toURI()).getAbsolutePath());
+    	String expected = FileUtils.readFile(new File(getClass().getResource("/complex-nested-loop-expected.xml").toURI()).getAbsolutePath());
+
+    	ClientXmlRequest req = new ClientXmlRequest(template);
+    	
+    	req.compile(context);
+    	
+    	String result = req.getRequest();
+    	
+    	assertEquals(expected, result);
+    	
+    }
 }
