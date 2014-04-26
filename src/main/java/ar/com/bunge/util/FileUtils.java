@@ -311,7 +311,11 @@ public class FileUtils {
 					name = paramValue != null ? paramValue[0] : null;
 					value = paramValue != null ? paramValue[1] : null;			
 					if(!StringUtils.isEmpty(name) && !StringUtils.isEmpty(value)) {
-						keyValues.put(fixIndexedVariableName(name), value);
+						String key = fixIndexedVariableName(name);
+						if(keyValues.containsKey(key)) {
+							System.err.println("Repetido: " + name);
+						}
+						keyValues.put(key, value);
 					}
 				}
 			}
