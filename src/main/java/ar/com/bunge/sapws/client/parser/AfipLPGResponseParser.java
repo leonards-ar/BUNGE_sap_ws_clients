@@ -36,7 +36,7 @@ public class AfipLPGResponseParser extends BaseResponseParser implements Respons
 	private static final String CODE_DESCRIPTION_DETAIL_RESPONSE_NODES[] = {"codigo", "descripcion"};  
 	private static final String DEDUCCIONES_LPG_DETAIL_RESPONSE_NODES[] = {"codigoConcepto", "detalleAclaratorio", "diasAlmacenaje", "precioPKGdiario", "comisionGastosAdm", "baseCalculo", "alicuotaIva", "importeIva", "importeDeduccion"};
 	private static final String RETENCIONES_LPG_DETAIL_RESPONSE_NODES[] = {"codigoConcepto", "detalleAclaratorio", "baseCalculo", "alicuota", "nroCertificadoRetencion", "fechaCertificadoRetencion", "importeCertificadoRetencion", "importeRetencion"};
-	private static final String CERTIFICACIONES_LPG_DETAIL_RESPONSE_NODES[] = {"tipoCertificadoDeposito", "nroCertificadoDeposito", "pesoNeto", "codLocalidadProcedencia", "codProvProcedencia", "campania", "fechaCierretipoCertificadoDeposito", "nroCertificadoDeposito", "pesoNeto", "codLocalidadProcedencia", "codProvProcedencia", "campania", "fechaCierre"};
+	private static final String CERTIFICACIONES_LPG_DETAIL_RESPONSE_NODES[] = {"tipoCertificadoDeposito", "nroCertificadoDeposito", "pesoNeto", "codLocalidadProcedencia", "codProvProcedencia", "campania", "fechaCierre"};
 	private static final String IMPORTES_LPG_DETAIL_RESPONSE_NODES[] = {"importe", "concepto", "alicuota", "ivaCalculado"};
 
 	private static final String LIQUIDACION_LPG_NODE = "ns2:liquidacionResp";
