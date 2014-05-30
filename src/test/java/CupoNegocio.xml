@@ -109,7 +109,7 @@
 			${xxloop(CupoDetalles)}
             <CupoDetalles>
                <PosicionCupo>${#PosicionCupo#}</PosicionCupo>
-               <ProductoID>${#ProductoID#}</ProductoID>
+               <ProductoID>${#CupoDetallesProductoID#}</ProductoID>
                <ClaseVal>${#CupoDetallesClaseVal#}</ClaseVal>
                <!--Optional:-->
                <NroCuentaVtaComp>${#NroCuentaVtaComp#}</NroCuentaVtaComp>
@@ -121,7 +121,7 @@
                <ContrCantTotal>${#ContrCantTotal#}</ContrCantTotal>
                <!--Optional:-->
                <ContrCantTotalKG>${#ContrCantTotalKG#}</ContrCantTotalKG>
-               <ProductoUM>${#ProductoUM#}</ProductoUM>
+               <ProductoUM>${#CupoDetallesProductoUM#}</ProductoUM>
                <CantidadDesp>${#CantidadDesp#}</CantidadDesp>
                <!--Optional:-->
                <KilosDesp>${#KilosDesp#}</KilosDesp>
@@ -217,7 +217,7 @@
                <CodProdARBA>${#CodProdARBA#}</CodProdARBA>
                <EsEnvase>${#EsEnvase#}</EsEnvase>
                <!--Optional:-->
-               <PresentacionID>${#PresentacionID#}</PresentacionID>
+               <PresentacionID>${#ProductoPresentacionID#}</PresentacionID>
             </CupoTablaProductos>
 			{end loop}
             <!--Zero or more repetitions:-->
@@ -226,7 +226,7 @@
                <PresentacionID>${#PresentacionID#}</PresentacionID>
                <PresentacionDsc>${#PresentacionDsc#}</PresentacionDsc>
                <!--Optional:-->
-               <BultoID>${#BultoID#}</BultoID>
+               <BultoID>${#PresentacionBultoID#}</BultoID>
                <!--Optional:-->
                <Nivel>${#Nivel#}</Nivel>
                <!--Optional:-->
