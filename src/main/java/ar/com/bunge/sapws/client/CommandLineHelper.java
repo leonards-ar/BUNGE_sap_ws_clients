@@ -62,6 +62,7 @@ public class CommandLineHelper {
 		PARAMS.put("cvc", "cert_config.help");
 		PARAMS.put("ol", "offline.help");
 		PARAMS.put("c", "converter.help");
+		PARAMS.put("sinrespuesta", "async_response.help");
 		
 		List<String> global = new ArrayList<String>();
 		global.add("i");

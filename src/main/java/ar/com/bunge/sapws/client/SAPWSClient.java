@@ -6,12 +6,15 @@
 package ar.com.bunge.sapws.client;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Map;
 
 import javax.xml.soap.MessageFactory;
+import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.stream.StreamResult;
@@ -29,6 +32,9 @@ import org.apache.commons.ssl.HttpSecureProtocol;
 import org.apache.commons.ssl.KeyMaterial;
 import org.apache.commons.ssl.TrustMaterial;
 import org.apache.log4j.Logger;
+import org.springframework.ws.WebServiceMessage;
+import org.springframework.ws.client.core.SourceExtractor;
+import org.springframework.ws.client.core.WebServiceMessageCallback;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.SoapFaultClientException;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
@@ -74,9 +80,8 @@ public class SAPWSClient {
 	private OfflineInputRetriever inputRetriever = null;
 	private String tracePath;
 	private String tracePrefix = null;
-	
 	private String messageFactoryImplementationClass = null;
-	
+	private boolean asynchronousResult = false;
 	
 	/**
 	 * @return the tracePath
@@ -197,6 +202,8 @@ public class SAPWSClient {
 				client.setTracePrefix(cmdLine.getParameter("tp"));
 				client.setInputRetriever(client.getInputRetrieverInstance(cmdLine.getParameter("ol")));
 				client.setMessageFactoryImplementationClass(cmdLine.getParameter("fi"));
+				String asyncResult = cmdLine.getParameter("sinrespuesta");
+				client.setAsynchronousResult(asyncResult != null ? "true".equalsIgnoreCase(asyncResult) || "yes".equalsIgnoreCase(asyncResult) : false);
 				
 				Map<String, Object> context = client.parseVariablesFile();
 				context.putAll(cmdLine.getVariables());
@@ -364,7 +371,7 @@ public class SAPWSClient {
 		
 		String parsedResponse = null;
 		
-		if(getResponseParser() != null) {
+		if(!isAsynchronousResult() && getResponseParser() != null) {
 			if(LOG.isDebugEnabled()) {
 				LOG.debug("Parsing response with parser [" + getResponseParser().getClass().getName() + "]");
 			}
@@ -375,7 +382,7 @@ public class SAPWSClient {
 			}
 		} else {
 			if(LOG.isDebugEnabled()) {
-				LOG.debug("No response parser configured");
+				LOG.debug(isAsynchronousResult() ? "No parsing for asynchronous response" : "No response parser configured");
 			}
 			parsedResponse = response.getResponse();
 		}
@@ -540,7 +547,11 @@ public class SAPWSClient {
 
 				trace(TRACE_RESPONSE_SUFFIX, response.getResponse());
 
-				response.parseResponse();
+				if (!isAsynchronousResult()) {
+					response.parseResponse();
+				} else {
+					response.setAsynchronousResponse(true);
+				}
 			} catch(SoapFaultClientException ex) {
 				LOG.error(ex.getMessage(), ex);
 				setErrorResponse(response, ex);
@@ -632,7 +643,12 @@ public class SAPWSClient {
             
         	webServiceTemplate.setMessageSender(sender);
 
-            webServiceTemplate.sendSourceAndReceiveToResult(getUrl(), source, result);
+        	if(!isAsynchronousResult()) {
+                webServiceTemplate.sendSourceAndReceiveToResult(getUrl(), source, result);
+        	} else {
+        		LOG.debug("Asynchornous response for SSL Authentication");
+        		webServiceTemplate.sendSourceAndReceive(getUrl(), source, getAsynchronousResponseExtractor());
+        	}
         } else if(isBasicAuthentication()) {
         	// Start HTTP Basic Authentication
             CommonsHttpMessageSender sender = new CommonsHttpMessageSender();
@@ -648,16 +664,30 @@ public class SAPWSClient {
             sender.setHttpClient(client);
             
             sender.afterPropertiesSet();
+
             webServiceTemplate.setMessageSender(sender);
 
-            webServiceTemplate.sendSourceAndReceiveToResult(getUrl(), source, result);
+        	if(!isAsynchronousResult()) {
+                webServiceTemplate.sendSourceAndReceiveToResult(getUrl(), source, result);
+        	} else {
+        		LOG.debug("Asynchornous response for Basic Authentication");
+        		webServiceTemplate.sendSourceAndReceive(getUrl(), source, getAsynchronousResponseExtractor());
+        	}
         } else {
             // WSSE Auth
-            webServiceTemplate.sendSourceAndReceiveToResult(getUrl(), source, new WSSEHeaderWebServiceMessageCallback(getUsername(), getPassword()), result);
+        	if(!isAsynchronousResult()) {
+        		webServiceTemplate.sendSourceAndReceiveToResult(getUrl(), source, new WSSEHeaderWebServiceMessageCallback(getUsername(), getPassword()), result);
+        	} else {
+        		LOG.debug("Asynchornous response for WSSE Authentication");
+        		webServiceTemplate.sendSourceAndReceive(getUrl(), source, new WSSEHeaderWebServiceMessageCallback(getUsername(), getPassword()), getAsynchronousResponseExtractor());
+        	}
         }
         
-
-        return response.toString();
+        if(!isAsynchronousResult()) {
+            return response.toString();
+        } else {
+        	return "OK";
+        }
 	}
 
 	/**
@@ -935,5 +965,26 @@ public class SAPWSClient {
 	 */
 	public void setInputRetriever(OfflineInputRetriever inputRetriever) {
 		this.inputRetriever = inputRetriever;
+	}
+	
+	public SourceExtractor getAsynchronousResponseExtractor() {
+		return new SourceExtractor() {
+
+			public Object extractData(Source source) throws IOException, TransformerException {
+				LOG.debug("Ignoring data extract in asynchronous mode. Returning OK");
+				return "OK";
+			}
+		};
+	}
+	
+	public boolean isAsynchronousResult() {
+		return this.asynchronousResult;
+	}
+
+	/**
+	 * @param asynchronousResult the asynchronousResult to set
+	 */
+	public void setAsynchronousResult(boolean asynchronousResult) {
+		this.asynchronousResult = asynchronousResult;
 	}
 }
