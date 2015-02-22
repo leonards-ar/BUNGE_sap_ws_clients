@@ -29,6 +29,7 @@ public class ClientXmlResponse {
 	private String message;
 	private String type;
 	private String id;
+	private boolean asynchronousResponse = false;
 	
 	/**
 	 * 
@@ -224,5 +225,19 @@ public class ClientXmlResponse {
 	   	.append("message", getMessage())
 	   	.append("response", getResponse())
 	   	.toString();		
+	}
+
+	/**
+	 * @return the asynchronousResponse
+	 */
+	public boolean isAsynchronousResponse() {
+		return asynchronousResponse;
+	}
+
+	/**
+	 * @param asynchronousResponse the asynchronousResponse to set
+	 */
+	public void setAsynchronousResponse(boolean asynchronousResponse) {
+		this.asynchronousResponse = asynchronousResponse;
 	}
 }
