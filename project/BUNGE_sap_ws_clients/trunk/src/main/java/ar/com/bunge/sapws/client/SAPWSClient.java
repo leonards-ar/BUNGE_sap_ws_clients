@@ -12,6 +12,7 @@ import java.io.StringWriter;
 import java.util.Map;
 
 import javax.xml.soap.MessageFactory;
+import javax.xml.soap.SOAPConstants;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -28,15 +29,15 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.logging.Log;
 import org.apache.commons.ssl.HttpSecureProtocol;
 import org.apache.commons.ssl.KeyMaterial;
 import org.apache.commons.ssl.TrustMaterial;
 import org.apache.log4j.Logger;
-import org.springframework.ws.WebServiceMessage;
 import org.springframework.ws.client.core.SourceExtractor;
-import org.springframework.ws.client.core.WebServiceMessageCallback;
 import org.springframework.ws.client.core.WebServiceTemplate;
 import org.springframework.ws.soap.client.SoapFaultClientException;
+import org.springframework.ws.soap.client.core.SoapActionCallback;
 import org.springframework.ws.soap.saaj.SaajSoapMessageFactory;
 import org.springframework.ws.transport.http.CommonsHttpMessageSender;
 import org.w3c.dom.Document;
@@ -82,6 +83,7 @@ public class SAPWSClient {
 	private String tracePrefix = null;
 	private String messageFactoryImplementationClass = null;
 	private boolean asynchronousResult = false;
+	private String soapAction = null;
 	
 	/**
 	 * @return the tracePath
@@ -204,6 +206,7 @@ public class SAPWSClient {
 				client.setMessageFactoryImplementationClass(cmdLine.getParameter("fi"));
 				String asyncResult = cmdLine.getParameter("sinrespuesta");
 				client.setAsynchronousResult(asyncResult != null ? "true".equalsIgnoreCase(asyncResult) || "yes".equalsIgnoreCase(asyncResult) : false);
+				client.setSoapAction(cmdLine.getParameter("soapaction"));
 				
 				Map<String, Object> context = client.parseVariablesFile();
 				context.putAll(cmdLine.getVariables());
@@ -626,7 +629,14 @@ public class SAPWSClient {
 
         SaajSoapMessageFactory mf = getMessageFactory();
         if(mf != null) {
-        	webServiceTemplate.setMessageFactory(mf);
+           	webServiceTemplate.setMessageFactory(mf);
+        }
+        
+        SoapActionCallback soapActionCallback = null;
+        
+        if (getSoapAction() != null) {
+        	LOG.debug("Using SOAP Action " + getSoapAction());
+        	soapActionCallback = new SoapActionCallback(getSoapAction());
         }
         
         if(isSslAuthentication()) {
@@ -644,10 +654,10 @@ public class SAPWSClient {
         	webServiceTemplate.setMessageSender(sender);
 
         	if(!isAsynchronousResult()) {
-                webServiceTemplate.sendSourceAndReceiveToResult(getUrl(), source, result);
+                webServiceTemplate.sendSourceAndReceiveToResult(getUrl(), source, soapActionCallback, result);
         	} else {
-        		LOG.debug("Asynchornous response for SSL Authentication");
-        		webServiceTemplate.sendSourceAndReceive(getUrl(), source, getAsynchronousResponseExtractor());
+        		LOG.debug("Asynchronous response for SSL Authentication");
+        		webServiceTemplate.sendSourceAndReceive(getUrl(), source, soapActionCallback, getAsynchronousResponseExtractor());
         	}
         } else if(isBasicAuthentication()) {
         	// Start HTTP Basic Authentication
@@ -668,10 +678,10 @@ public class SAPWSClient {
             webServiceTemplate.setMessageSender(sender);
 
         	if(!isAsynchronousResult()) {
-                webServiceTemplate.sendSourceAndReceiveToResult(getUrl(), source, result);
+                webServiceTemplate.sendSourceAndReceiveToResult(getUrl(), source, soapActionCallback, result);
         	} else {
         		LOG.debug("Asynchornous response for Basic Authentication");
-        		webServiceTemplate.sendSourceAndReceive(getUrl(), source, getAsynchronousResponseExtractor());
+        		webServiceTemplate.sendSourceAndReceive(getUrl(), source, soapActionCallback, getAsynchronousResponseExtractor());
         	}
         } else {
             // WSSE Auth
@@ -804,16 +814,29 @@ public class SAPWSClient {
 	 */
 	private SaajSoapMessageFactory getMessageFactory() {
 		if(getMessageFactoryImplementationClass() != null) {
-        	if(LOG.isDebugEnabled()) {
-        		LOG.debug("Setting message factory with class [" + getMessageFactoryImplementationClass() + "]");
-        	}
-			try {
-				MessageFactory instance = (MessageFactory) Class.forName(getMessageFactoryImplementationClass()).newInstance();
-				SaajSoapMessageFactory mf = new SaajSoapMessageFactory();
-				mf.setMessageFactory(instance);
-				return mf;
-			} catch(Throwable ex) {
-				LOG.error("Cannot create SaajSoapMessageFactory for class [" + getMessageFactoryImplementationClass() + "]", ex);
+			if ("SOAP-1.2".equalsIgnoreCase(getMessageFactoryImplementationClass())) {
+	        	if(LOG.isDebugEnabled()) {
+	        		LOG.debug("Setting message factory with class SOAP 1.2 Protocol");
+	        	}
+				try {
+					MessageFactory mf = MessageFactory.newInstance(SOAPConstants.SOAP_1_2_PROTOCOL);
+				    return new SaajSoapMessageFactory(mf);
+				} catch(Throwable ex) {
+					LOG.error("Cannot create SaajSoapMessageFactory for SOAP 1.2 Protocol", ex);
+				}
+			    
+			} else {
+	        	if(LOG.isDebugEnabled()) {
+	        		LOG.debug("Setting message factory with class [" + getMessageFactoryImplementationClass() + "]");
+	        	}
+				try {
+					MessageFactory instance = (MessageFactory) Class.forName(getMessageFactoryImplementationClass()).newInstance();
+					SaajSoapMessageFactory mf = new SaajSoapMessageFactory();
+					mf.setMessageFactory(instance);
+					return mf;
+				} catch(Throwable ex) {
+					LOG.error("Cannot create SaajSoapMessageFactory for class [" + getMessageFactoryImplementationClass() + "]", ex);
+				}
 			}
 		}
 		return null;
@@ -986,5 +1009,19 @@ public class SAPWSClient {
 	 */
 	public void setAsynchronousResult(boolean asynchronousResult) {
 		this.asynchronousResult = asynchronousResult;
+	}
+
+	/**
+	 * @return the soapAction
+	 */
+	public String getSoapAction() {
+		return soapAction;
+	}
+
+	/**
+	 * @param soapAction the soapAction to set
+	 */
+	public void setSoapAction(String soapAction) {
+		this.soapAction = soapAction;
 	}
 }
