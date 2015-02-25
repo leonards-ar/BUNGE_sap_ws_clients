@@ -63,6 +63,7 @@ public class CommandLineHelper {
 		PARAMS.put("ol", "offline.help");
 		PARAMS.put("c", "converter.help");
 		PARAMS.put("sinrespuesta", "async_response.help");
+		PARAMS.put("soapaction", "soapaction.help");
 		
 		List<String> global = new ArrayList<String>();
 		global.add("i");
