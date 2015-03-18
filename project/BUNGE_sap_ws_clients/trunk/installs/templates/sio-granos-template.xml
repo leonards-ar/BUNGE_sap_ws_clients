@@ -1,0 +1,24 @@
+      <tem:ProcesarOperacion xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:tem="http://tempuri.org/">
+         <!--Optional:-->
+         <operacion>
+         <Lote> 
+      <Documento> 
+       <CabeceraDocumento> 
+        <Bolsa>1</Bolsa> 
+       </CabeceraDocumento> 
+        <DetalleDocumento> 
+        <DetalleContrato> 
+          <Producto>23</Producto> 
+          <FechaConcertacion>14-01-2015</FechaConcertacion> 
+          <Cosecha>1415</Cosecha> 
+          <UnidadMedida>KG</UnidadMedida> 
+        </DetalleContrato> 
+        </DetalleDocumento> 
+      </Documento> 
+      </Lote>
+       </operacion>
+         <!--Optional:-->
+         <tem:usuario>20245778733</tem:usuario>
+         <!--Optional:-->
+         <tem:token>d80d055feb96b7919a4db10fe3a6e4d0729a49965ca94216a1604e7368f83a42</tem:token>
+      </tem:ProcesarOperacion>
