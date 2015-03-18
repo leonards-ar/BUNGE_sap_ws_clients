@@ -29,7 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.commons.logging.Log;
 import org.apache.commons.ssl.HttpSecureProtocol;
 import org.apache.commons.ssl.KeyMaterial;
 import org.apache.commons.ssl.TrustMaterial;
@@ -47,6 +46,7 @@ import org.w3c.dom.NodeList;
 import ar.com.bunge.sapws.client.offline.OfflineInputRetriever;
 import ar.com.bunge.sapws.client.parser.ResponseParser;
 import ar.com.bunge.sapws.converter.FileConverter;
+import ar.com.bunge.util.BypassProtocolSocketFactory;
 import ar.com.bunge.util.CertificateUtils;
 import ar.com.bunge.util.FileUtils;
 import ar.com.bunge.util.ValidationException;
@@ -83,6 +83,7 @@ public class SAPWSClient {
 	private String tracePrefix = null;
 	private String messageFactoryImplementationClass = null;
 	private boolean asynchronousResult = false;
+	private boolean ignoreSSLValidation = false;
 	private String soapAction = null;
 	
 	/**
@@ -206,6 +207,8 @@ public class SAPWSClient {
 				client.setMessageFactoryImplementationClass(cmdLine.getParameter("fi"));
 				String asyncResult = cmdLine.getParameter("sinrespuesta");
 				client.setAsynchronousResult(asyncResult != null ? "true".equalsIgnoreCase(asyncResult) || "yes".equalsIgnoreCase(asyncResult) : false);
+				String ignoreSSLVal = cmdLine.getParameter("ignorarssl");
+				client.setIgnoreSSLValidation(ignoreSSLVal != null ? "true".equalsIgnoreCase(ignoreSSLVal) || "yes".equalsIgnoreCase(ignoreSSLVal) : false);
 				client.setSoapAction(cmdLine.getParameter("soapaction"));
 				
 				Map<String, Object> context = client.parseVariablesFile();
@@ -639,6 +642,11 @@ public class SAPWSClient {
         	soapActionCallback = new SoapActionCallback(getSoapAction());
         }
         
+        if (isIgnoreSSLValidation()) {
+        	LOG.info("Ignoring SSL certificate validations");
+        	Protocol.registerProtocol("https", new Protocol("https", new BypassProtocolSocketFactory(), 443));
+        }
+        
         if(isSslAuthentication()) {
         	// SSL Auth
         	sslProtocolInit();
@@ -1023,5 +1031,19 @@ public class SAPWSClient {
 	 */
 	public void setSoapAction(String soapAction) {
 		this.soapAction = soapAction;
+	}
+
+	/**
+	 * @return the ignoreSSLValidation
+	 */
+	public boolean isIgnoreSSLValidation() {
+		return ignoreSSLValidation;
+	}
+
+	/**
+	 * @param ignoreSSLValidation the ignoreSSLValidation to set
+	 */
+	public void setIgnoreSSLValidation(boolean ignoreSSLValidation) {
+		this.ignoreSSLValidation = ignoreSSLValidation;
 	}
 }

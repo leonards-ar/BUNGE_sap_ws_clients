@@ -64,6 +64,7 @@ public class CommandLineHelper {
 		PARAMS.put("c", "converter.help");
 		PARAMS.put("sinrespuesta", "async_response.help");
 		PARAMS.put("soapaction", "soapaction.help");
+		PARAMS.put("ignorarssl", "ignorarSSL.help");
 		
 		List<String> global = new ArrayList<String>();
 		global.add("i");
